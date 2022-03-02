@@ -1,12 +1,12 @@
 ﻿using Application.Images.Commands;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
-    public class ImagesController : ApiController
+    public class ImagesController : ControllerBase
     {
         private readonly IMediator _mediator;
         public ImagesController(IMediator mediator)
@@ -14,16 +14,19 @@ namespace API.Controllers
             _mediator = mediator;
         }
         [HttpGet]
-        public async Task<IHttpActionResult> GetImageAsync()
+        public async Task<IActionResult> GetImageAsync()
         {
             throw new NotImplementedException();
         }
         [HttpPost]
-        public async Task<IHttpActionResult> PostImageAsync(IFormFile file)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PostImageAsync(IFormFile file)
         {
             await _mediator.Send(new AddImageCommand
             {
-                File = file
+                File = file,
+                FileName = file.FileName,
+                ContentType = file.ContentType
             });
             return Ok();
         }
