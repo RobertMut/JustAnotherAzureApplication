@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
@@ -27,9 +28,13 @@ namespace Infrastructure.Services
             }, ct);
             return response.GetRawResponse().Status;
         }
-        //public async Task DownloadAsync(string filename, CancellationToken ct)
-        //{
+        public async Task<BlobDownloadResult> DownloadAsync(string filename, CancellationToken ct)
+        {
 
-        //}
+            var file = await _client.GetBlobClient(filename).DownloadContentAsync();
+
+            return file;
+
+        }
     }
 }
