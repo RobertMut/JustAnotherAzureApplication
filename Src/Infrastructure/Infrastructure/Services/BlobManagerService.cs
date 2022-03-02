@@ -7,19 +7,15 @@ namespace Infrastructure.Services
 {
     public class BlobManagerService : IBlobManagerService
     {
-        readonly BlobContainerClient _client;
-        public BlobManagerService()
-        {
-            //l1XveR1poEtoV9WEeXbuzYqPdLQyThEXVrCh8tWx8Fp4n5qfK/9rG9cnD2DzzlifQsu7/kNvDw+Z+AStz2PSMw==
-            //jaaastorage
-            BlobServiceClient service = new BlobServiceClient("DefaultEndpointsProtocol=https;AccountName=jaaastorage;AccountKey=l1XveR1poEtoV9WEeXbuzYqPdLQyThEXVrCh8tWx8Fp4n5qfK/9rG9cnD2DzzlifQsu7/kNvDw+Z+AStz2PSMw==;EndpointSuffix=core.windows.net");
-            _client = service.GetBlobContainerClient("jaaablob");
+        private readonly BlobServiceClient _service;
 
-            //
-        }
-        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
+        public BlobManagerService(string connectionString)
         {
-            var response = await _client.GetBlobClient(filename).UploadAsync(fileStream, new BlobUploadOptions()
+            _service = new BlobServiceClient(connectionString);
+        }
+        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, string container, CancellationToken ct)
+        {
+            var response = await _service.GetBlobContainerClient(container).GetBlobClient(filename).UploadAsync(fileStream, new BlobUploadOptions()
             {
                 HttpHeaders = new BlobHttpHeaders()
                 {
@@ -28,10 +24,10 @@ namespace Infrastructure.Services
             }, ct);
             return response.GetRawResponse().Status;
         }
-        public async Task<BlobDownloadResult> DownloadAsync(string filename, CancellationToken ct)
+        public async Task<BlobDownloadResult> DownloadAsync(string filename, string container)
         {
 
-            var file = await _client.GetBlobClient(filename).DownloadContentAsync();
+            var file = await _service.GetBlobContainerClient(container).GetBlobClient(filename).DownloadContentAsync();
 
             return file;
 

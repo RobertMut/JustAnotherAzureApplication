@@ -11,15 +11,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{AEE5E4B3-23E1-4301-9BD4-E700EBCACEF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "Src\Presentation\API\API.csproj", "{69A50E91-99BD-4932-ADC1-E8721DEAFB4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "Src\Presentation\API\API.csproj", "{69A50E91-99BD-4932-ADC1-E8721DEAFB4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Src\Infrastructure\Infrastructure\Infrastructure.csproj", "{39313C67-D8FF-422A-B52D-1694EBD5AB0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Src\Infrastructure\Infrastructure\Infrastructure.csproj", "{39313C67-D8FF-422A-B52D-1694EBD5AB0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Src\Core\Application\Application.csproj", "{E1B86359-5969-42A1-BC33-08C063D03F7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Src\Core\Application\Application.csproj", "{E1B86359-5969-42A1-BC33-08C063D03F7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Src\Core\Domain\Domain.csproj", "{FC44B003-16AC-4BE3-BCB3-7952C301A9B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Src\Core\Domain\Domain.csproj", "{FC44B003-16AC-4BE3-BCB3-7952C301A9B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Functions", "Src\Infrastructure\Functions\Functions.csproj", "{1DB0B50E-A45B-4914-BD15-C68BFF223F94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Functions", "Src\Infrastructure\Functions\Functions.csproj", "{1DB0B50E-A45B-4914-BD15-C68BFF223F94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
