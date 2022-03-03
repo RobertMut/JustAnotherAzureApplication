@@ -28,8 +28,8 @@ namespace Functions
                 {
                     resized.Save(memStream, ImageFormat.Png);
                     memStream.Position = 0;
-                    await _service.AddAsync(memStream, Path.GetFileNameWithoutExtension(name)+".png",
-                        "image/png", "jaaaminiatures", new CancellationToken());
+                    await _service.AddAsync(memStream, Path.GetFileNameWithoutExtension(name)+"-miniature.png",
+                        "image/png", new CancellationToken());
                 }
             }
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes\n");

@@ -21,14 +21,12 @@ namespace API.Controllers
         {
             var file = await _mediator.Send(new GetFileQuery
             {
-                Filename = filename,
-                Container = _configuration.GetValue<string>("MiniaturesContainer")
+                Filename = filename
             });
             return new FileContentResult(file.File.Content.ToArray(), file.File.Details.ContentType);
         }
         [HttpPost]
         [Consumes("multipart/form-data")]
-        [AllowedExtensions]
         public async Task<IActionResult> PostImageAsync([FromForm] IFormFile file)
         {
             await _mediator.Send(new AddImageCommand
@@ -36,7 +34,7 @@ namespace API.Controllers
                 File = file,
                 FileName = file.FileName,
                 ContentType = file.ContentType,
-                Container = _configuration.GetValue<string>("ImagesContainer")
+
             });
             return Ok();
         }

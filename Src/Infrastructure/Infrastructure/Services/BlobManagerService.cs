@@ -8,14 +8,16 @@ namespace Infrastructure.Services
     public class BlobManagerService : IBlobManagerService
     {
         private readonly BlobServiceClient _service;
+        private readonly string _containerName;
 
-        public BlobManagerService(string connectionString)
+        public BlobManagerService(string connectionString, string container)
         {
             _service = new BlobServiceClient(connectionString);
+            _containerName = container;
         }
-        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, string container, CancellationToken ct)
+        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
         {
-            var response = await _service.GetBlobContainerClient(container).GetBlobClient(filename).UploadAsync(fileStream, new BlobUploadOptions()
+            var response = await _service.GetBlobContainerClient(_containerName).GetBlobClient(filename).UploadAsync(fileStream, new BlobUploadOptions()
             {
                 HttpHeaders = new BlobHttpHeaders()
                 {
@@ -24,10 +26,10 @@ namespace Infrastructure.Services
             }, ct);
             return response.GetRawResponse().Status;
         }
-        public async Task<BlobDownloadResult> DownloadAsync(string filename, string container)
+        public async Task<BlobDownloadResult> DownloadAsync(string filename)
         {
 
-            var file = await _service.GetBlobContainerClient(container).GetBlobClient(filename).DownloadContentAsync();
+            var file = await _service.GetBlobContainerClient(_containerName).GetBlobClient(filename).DownloadContentAsync();
 
             return file;
 

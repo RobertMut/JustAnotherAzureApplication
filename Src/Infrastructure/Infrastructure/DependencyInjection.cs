@@ -9,7 +9,7 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IBlobManagerService>(service => new BlobManagerService(configuration.GetConnectionString("Storage")));
+            services.AddScoped<IBlobManagerService>(service => new BlobManagerService(configuration.GetConnectionString("Storage"), configuration.GetSection("ImagesContainer").Value));
             return services;
         }
     }
