@@ -4,6 +4,8 @@ namespace Application.Common.Interfaces
 {
     public interface IBlobManagerService
     {
+        Task<int> AddAsync(Stream fileStream, string filename, string contentType,
+            IDictionary<string, string> metadata, CancellationToken ct);
         Task<int> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct);
         Task<BlobDownloadResult> DownloadAsync(string filename);
     }

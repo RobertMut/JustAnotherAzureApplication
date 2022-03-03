@@ -10,11 +10,9 @@ namespace API.Controllers
     public class ImagesController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IConfiguration _configuration;
-        public ImagesController(IMediator mediator, IConfiguration configuration)
+        public ImagesController(IMediator mediator)
         {
             _mediator = mediator;
-            _configuration = configuration;
         }
         [HttpGet("{filename}")]
         public async Task<IActionResult> GetImageAsync([FromRoute]string filename)
@@ -27,14 +25,19 @@ namespace API.Controllers
         }
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> PostImageAsync([FromForm] IFormFile file)
+        public async Task<IActionResult> PostImageAsync([FromForm] IFormFile file, 
+            [FromForm] string? targetType,
+            [FromForm] int? height,
+            [FromForm] int? width)
         {
             await _mediator.Send(new AddImageCommand
             {
                 File = file,
                 FileName = file.FileName,
                 ContentType = file.ContentType,
-
+                TargetType = targetType,
+                Height = height,
+                Width = width
             });
             return Ok();
         }
