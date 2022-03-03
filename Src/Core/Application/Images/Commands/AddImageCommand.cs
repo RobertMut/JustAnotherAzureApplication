@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
@@ -24,16 +25,20 @@ namespace Application.Images.Commands
             }
             public async Task<Unit> Handle(AddImageCommand request, CancellationToken cancellationToken)
             {
+                if (request.File == null) throw new ArgumentNullException(nameof(request.File));
                 var metadata = new Dictionary<string, string>
                 {
                     { "OriginalFile", request.FileName },
-                    { "TargetType", request.TargetType },
-                    { "TargetWidth", request.Width.Value.ToString() },
-                    { "TargetHeight", request.Height.Value.ToString() },
+                    { "TargetType", String.IsNullOrEmpty(request.TargetType) ? request.ContentType : request.TargetType },
+                    { "TargetWidth", request.Width.HasValue ? request.Width.ToString() : default },
+                    { "TargetHeight", request.Height.HasValue ? request.Height.ToString() : default },
                 };
                 using (var stream = request.File.OpenReadStream())
-                    await _service.AddAsync(stream, "original-" + request.FileName, request.ContentType, metadata, cancellationToken);
-                return Unit.Value;
+                {
+                    var response = await _service.AddAsync(stream, "original-" + request.FileName, request.ContentType, metadata, cancellationToken);
+                    if (response == 200) return Unit.Value;
+                    throw new OperationFailedException(200.ToString(), response.ToString(), nameof(AddImageCommandHandler));
+                }
             }
         }
     }

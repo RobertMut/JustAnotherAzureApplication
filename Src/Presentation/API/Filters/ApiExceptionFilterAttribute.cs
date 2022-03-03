@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Web.Http.ExceptionHandling;
-using System.Web.Http.Filters;
+﻿using Application.Common.Exceptions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.Filters
 {
@@ -12,17 +12,26 @@ namespace API.Filters
             _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
             {
                 {typeof(NullReferenceException), HandleException},
-                {typeof(ArgumentException), HandleException}
+                {typeof(ArgumentException), HandleException},
+                {typeof(OperationFailedException), HandleException }
             };
         }
 
         private void HandleException(ExceptionContext obj)
         {
-
-            obj.Response = new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+            var details = new ProblemDetails
             {
-                ReasonPhrase = "An error occurred while processing your request.\n https://tools.ietf.org/html/rfc7231#section-6.6.1"
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "An error occurred while processing your request.",
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
             };
+
+            obj.Result = new ObjectResult(details)
+            {
+                StatusCode = StatusCodes.Status500InternalServerError
+            };
+
+            obj.ExceptionHandled = true;
         }
 
         private void HandleNullException(ExceptionContext obj)
