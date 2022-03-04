@@ -2,7 +2,7 @@
 using Application.Common.Interfaces;
 using Application.Images.Commands;
 using MediatR;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -38,7 +38,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
         public async Task HandleDoesNotThrow()
         {
             _service.Setup(x => x.AddAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>(),
-                 It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(200);
+                 It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(201);
             var handler = new AddImageCommand.AddImageCommandHandler(_service.Object);
             var command = new AddImageCommand()
             {
@@ -55,7 +55,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
             Assert.That(responseMediator, Is.Not.Null);
         }
         [Test]
-        public async Task HandleThrows()
+        public async Task ThrowsNullReferenceException()
         {
             _service.Setup(x => x.AddAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>(),
                 It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(500);
@@ -63,7 +63,33 @@ namespace Application.UnitTests.Images.Commands.AddImage
             var command = new AddImageCommand()
             {
                 ContentType = "image/jpeg",
-                File = new FormFile(_stream.Object, 0, _stream.Object.Length, "file", "sample.jpg"),
+                File = null,
+                FileName = "sample.jpg",
+                TargetType = "png"
+            };
+            Assert.ThrowsAsync<NullReferenceException>(async () =>
+            {
+                await handler.Handle(command, CancellationToken.None);
+            });
+
+        }
+        [Test]
+        public async Task ThrowsOperationFailedException()
+        {
+            var stream = new Mock<Stream>();
+            stream.Setup(x => x.Write(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>()))
+                .Callback((byte[] buffer, int offset, int size) =>
+                {
+                    Array.Copy(new byte[] { }, buffer, 0);
+                }
+                );
+            _service.Setup(x => x.AddAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(500);
+            var handler = new AddImageCommand.AddImageCommandHandler(_service.Object);
+            var command = new AddImageCommand()
+            {
+                ContentType = "image/jpeg",
+                File = new FormFile(stream.Object, 0, stream.Object.Length, "file", "broken.jpg"),
                 FileName = "sample.jpg",
                 TargetType = "png"
             };
@@ -73,5 +99,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
             });
 
         }
+
+
     }
 }

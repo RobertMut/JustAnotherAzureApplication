@@ -25,7 +25,6 @@ namespace Application.Images.Commands
             }
             public async Task<Unit> Handle(AddImageCommand request, CancellationToken cancellationToken)
             {
-                if (request.File == null) throw new ArgumentNullException(nameof(request.File));
                 var metadata = new Dictionary<string, string>
                 {
                     { "OriginalFile", request.FileName },
@@ -36,8 +35,8 @@ namespace Application.Images.Commands
                 using (var stream = request.File.OpenReadStream())
                 {
                     var response = await _service.AddAsync(stream, "original-" + request.FileName, request.ContentType, metadata, cancellationToken);
-                    if (response == 200) return Unit.Value;
-                    throw new OperationFailedException(200.ToString(), response.ToString(), nameof(AddImageCommandHandler));
+                    if (response == 201) return Unit.Value;
+                    throw new OperationFailedException(201.ToString(), response.ToString(), nameof(AddImageCommandHandler));
                 }
             }
         }
