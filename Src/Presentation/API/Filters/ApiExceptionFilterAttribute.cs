@@ -65,20 +65,18 @@ namespace API.Filters
             {
                 Status = StatusCodes.Status500InternalServerError,
                 Title = "An error occurred while processing your request.",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+                Detail = obj.Exception.Message
             };
 
             obj.Result = new ObjectResult(details)
             {
                 StatusCode = StatusCodes.Status500InternalServerError
+
             };
 
             obj.ExceptionHandled = true;
         }
 
-        private void HandleNullException(ExceptionContext obj)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

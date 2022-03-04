@@ -1,6 +1,5 @@
 using API.Filters;
 using Application;
-using Application.Common.Interfaces;
 using FluentValidation.AspNetCore;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
@@ -36,4 +35,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-public partial class Program { }

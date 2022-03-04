@@ -15,6 +15,7 @@ namespace Application.Images.Commands
             RuleFor(x => x.File.Length).GreaterThan(0);
             RuleFor(x => x.Width.Value).GreaterThan(0);
             RuleFor(x => x.Height.Value).GreaterThan(0);
+            RuleFor(x => x.ContentType).Must(x => x.StartsWith("image/"));
         }
     }
 }
