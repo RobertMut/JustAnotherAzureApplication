@@ -12,10 +12,10 @@ namespace Functions
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddSingleton<IBlobManagerService>(service => 
+            builder.Services.AddSingleton<IBlobManagerService>(service =>
             new BlobManagerService(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), Environment.GetEnvironmentVariable("ImagesContainer")));
             builder.Services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
-            
+
         }
     }
 }

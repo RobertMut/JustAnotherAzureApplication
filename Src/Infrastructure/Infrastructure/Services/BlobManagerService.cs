@@ -16,8 +16,8 @@ namespace Infrastructure.Services
             _service = new BlobServiceClient(connectionString);
             _containerName = container;
         }
-        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, 
-            IDictionary<string,string> metadata, CancellationToken ct)
+        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType,
+            IDictionary<string, string> metadata, CancellationToken ct)
         {
             var blobClient = _service.GetBlobContainerClient(_containerName).GetBlobClient(filename);
             var blobOptions = new BlobUploadOptions()
@@ -27,7 +27,7 @@ namespace Infrastructure.Services
                 {
                     ContentType = contentType
                 },
-                
+
             };
             var response = await blobClient.UploadAsync(fileStream, blobOptions, ct);
             return response.GetRawResponse().Status;

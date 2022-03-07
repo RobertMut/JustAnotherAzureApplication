@@ -3,27 +3,28 @@ using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Functions.UnitTests.Common
 {
     public class MockBlobBaseClient : BlobBaseClient
     {
-        private readonly long fileLenght;
+        private readonly long _fileLenght;
+        private readonly string _contentType;
+        private readonly IDictionary<string, string> _metadata;
 
-        protected MockBlobBaseClient(long fileLenght)
+        public MockBlobBaseClient(long fileLenght, string contentType, IDictionary<string, string> metadata)
         {
-            this.fileLenght = fileLenght;
+            _fileLenght = fileLenght;
+            _contentType = contentType;
+            _metadata = metadata;
         }
 
-        public override Response<BlobProperties> GetProperties(BlobRequestConditions conditions = null, CancellationToken cancellationToken = default)
+        public override Response<BlobProperties> GetProperties(BlobRequestConditions? conditions = null, CancellationToken cancellationToken = default)
         {
-            var r = BlobsModelFactory.BlobProperties(DateTimeOffset.Now, LeaseStatus.Unlocked, fileLenght, "image/bmp", default, LeaseState.Available, "image/bmp", null, null, null, default, LeaseDurationType.Infinite, null, null, 0, default, default, default, null, null, null, null, null, null, false, null);
-            
-            return base.GetProperties(conditions, cancellationToken);
+            var properties = BlobsModelFactory.BlobProperties(default, default, _fileLenght, _contentType, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, _metadata, default, DateTimeOffset.Now);
+
+            return new MockResponse<BlobProperties>(properties);
         }
     }
 }

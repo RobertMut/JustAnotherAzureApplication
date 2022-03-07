@@ -15,7 +15,7 @@ namespace API.Controllers
             _mediator = mediator;
         }
         [HttpGet("{filename}")]
-        public async Task<IActionResult> GetImageAsync([FromRoute]string filename)
+        public async Task<IActionResult> GetImageAsync([FromRoute] string filename)
         {
             var file = await _mediator.Send(new GetFileQuery
             {
@@ -25,7 +25,7 @@ namespace API.Controllers
         }
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> PostImageAsync([FromForm] IFormFile file, 
+        public async Task<IActionResult> PostImageAsync([FromForm] IFormFile file,
             [FromForm] string? targetType,
             [FromForm] int? height,
             [FromForm] int? width)

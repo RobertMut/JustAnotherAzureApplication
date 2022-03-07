@@ -15,7 +15,7 @@ namespace API.IntegrationTests.Common
         public MockBlobManagerService()
         {
 
-            var bytes = new byte[]{ 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00 };
+            var bytes = new byte[] { 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00 };
             FileLenght = bytes.Length;
             blobs = new Dictionary<string, BlobDownloadResult>()
             {
@@ -47,9 +47,9 @@ namespace API.IntegrationTests.Common
                 var bytes = new BinaryData(memStream.ToArray());
                 var details = BlobsModelFactory.BlobDownloadDetails(BlobType.Block, memStream.Length, contentType, new byte[] { 00 }, DateTimeOffset.Now, metadata, null, null, null, null, null, 1, DateTimeOffset.Now, null, null, null, null, CopyStatus.Success, LeaseDurationType.Infinite, LeaseState.Available, LeaseStatus.Unlocked, null, 1, false, null, null, new byte[] { 00 }, 0, null, false, null, null);
                 return BlobsModelFactory.BlobDownloadResult(bytes, details);
-                
+
             }
-            
+
         }
     }
 }
