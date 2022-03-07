@@ -6,6 +6,7 @@ namespace Application.Images.Queries
     public class GetFileQuery : IRequest<FileVm>
     {
         public string Filename { get; set; }
+        public int? Id { get; set; }
     }
     public class GetFileQueryHandler : IRequestHandler<GetFileQuery, FileVm>
     {
@@ -18,7 +19,7 @@ namespace Application.Images.Queries
 
         public async Task<FileVm> Handle(GetFileQuery request, CancellationToken cancellationToken)
         {
-            var response = await _service.DownloadAsync(request.Filename);
+            var response = await _service.DownloadAsync(request.Filename, request.Id);
             return new FileVm
             {
                 File = response

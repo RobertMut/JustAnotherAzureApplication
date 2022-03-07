@@ -19,7 +19,7 @@ namespace Application.UnitTests.Images.Queries.GetFile
         {
             var blob = new Mock<BlobDownloadResult>();
             _service = new Mock<IBlobManagerService>();
-            _service.Setup(x => x.DownloadAsync(It.IsAny<string>()))
+            _service.Setup(x => x.DownloadAsync(It.IsAny<string>(), It.IsAny<int>()))
                 .ReturnsAsync(blob.Object);
             _mediator = new Mock<IMediator>();
             _mediator.Setup(x => x.Send(It.IsAny<GetFileQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new FileVm()

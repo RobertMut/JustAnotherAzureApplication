@@ -28,10 +28,21 @@ namespace Functions.UnitTests.Common
             return 201;
         }
 
-        public async Task<BlobDownloadResult> DownloadAsync(string filename)
+        public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id = 0)
         {
             return blobs[filename];
         }
+
+        public Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
         private BlobDownloadResult MakeFakeDownloadResult(Stream fileStream, string contentType, IDictionary<string, string>? metadata = null)
         {
             using (var memStream = new MemoryStream())

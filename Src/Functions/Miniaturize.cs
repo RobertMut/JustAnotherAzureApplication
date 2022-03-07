@@ -26,16 +26,19 @@ namespace Functions
             string name, ILogger log)
         {
             var metadata = blob.GetProperties().Value.Metadata;
-            string targetType = metadata["TargetType"];
+            var targetType = metadata["TargetType"];
+            var format = _formats.FileFormat[targetType];
             using (var image = Image.FromStream(myBlob))
             {
                 var resized = new Bitmap(image, int.Parse(metadata["TargetWidth"]), int.Parse(metadata["TargetHeight"]));
                 using (var memStream = new MemoryStream())
                 {
-                    resized.Save(memStream, _formats.FileFormat[targetType]);
+                    
+                    resized.Save(memStream, format);
                     memStream.Position = 0;
-                    await _service.AddAsync(memStream, $"miniature-{Path.GetFileNameWithoutExtension(name)}.{targetType}",
-                        $"image/{targetType}", new CancellationToken());
+                    var converted = new ImageFormatConverter().ConvertToString(format);
+                    await _service.AddAsync(memStream, $"miniature-{Path.GetFileNameWithoutExtension(name)}.{converted}",
+                        $"image/{converted}", new CancellationToken());
                 }
             }
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes\n");

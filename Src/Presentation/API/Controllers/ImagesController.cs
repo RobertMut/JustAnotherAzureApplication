@@ -14,14 +14,33 @@ namespace API.Controllers
         {
             _mediator = mediator;
         }
-        [HttpGet("{filename}")]
-        public async Task<IActionResult> GetImageAsync([FromRoute] string filename)
+        [HttpGet("{filename}/{id?}")]
+        public async Task<IActionResult> GetImageAsync([FromRoute] string filename, int? id)
         {
             var file = await _mediator.Send(new GetFileQuery
             {
-                Filename = filename
+                Filename = filename,
+                Id = id
             });
             return new FileContentResult(file.File.Content.ToArray(), file.File.Details.ContentType);
+        }
+        [HttpPut]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateExistingMiniature([FromForm] string file,
+            [FromForm] int width,
+            [FromForm] int height,
+            [FromForm] string targetType,
+            [FromForm] int? version)
+        {
+            await _mediator.Send(new UpdateImageCommand
+            {
+                Filename = file,
+                Width = width,
+                Height = height,
+                TargetType = targetType,
+                Version = version
+            });
+            return Ok();
         }
         [HttpPost]
         [Consumes("multipart/form-data")]

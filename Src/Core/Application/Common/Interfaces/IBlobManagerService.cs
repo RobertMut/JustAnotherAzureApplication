@@ -7,6 +7,8 @@ namespace Application.Common.Interfaces
         Task<int> AddAsync(Stream fileStream, string filename, string contentType,
             IDictionary<string, string> metadata, CancellationToken ct);
         Task<int> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct);
-        Task<BlobDownloadResult> DownloadAsync(string filename);
+        Task<int> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct);
+        Task<BlobDownloadResult> DownloadAsync(string filename, int? id);
+        Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct);
     }
 }

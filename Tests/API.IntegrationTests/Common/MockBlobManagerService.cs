@@ -34,7 +34,7 @@ namespace API.IntegrationTests.Common
             return 201;
         }
 
-        public async Task<BlobDownloadResult> DownloadAsync(string filename)
+        public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id = 0)
         {
             return blobs[filename];
 
@@ -50,6 +50,15 @@ namespace API.IntegrationTests.Common
 
             }
 
+        }
+        public Task<int> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
+        {
+            throw new NotImplementedException();
         }
     }
 }
