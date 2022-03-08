@@ -2,7 +2,7 @@
 using Application.Common.Interfaces;
 using MediatR;
 
-namespace Application.Images.Commands
+namespace Application.Images.Commands.UpdateImage
 {
     public class UpdateImageCommand : IRequest
     {
@@ -29,11 +29,11 @@ namespace Application.Images.Commands
                     { "TargetWidth", request.Width.ToString() },
                     { "TargetHeight", request.Height.ToString() },
                 };
-                if(request.Version != null)
+                if (request.Version != null)
                 {
                     var promoteResponse = await _service.PromoteBlobVersionAsync(request.Filename, request.Version.Value, cancellationToken);
-                    if (promoteResponse != 200)
-                        throw new OperationFailedException(200.ToString(), promoteResponse.ToString(), nameof(UpdateImageCommand));
+                    if (promoteResponse != 201)
+                        throw new OperationFailedException(201.ToString(), promoteResponse.ToString(), nameof(UpdateImageCommand));
                 }
                 var response = await _service.UpdateAsync(request.Filename, metadata, cancellationToken);
                 if (response == 200) return Unit.Value;

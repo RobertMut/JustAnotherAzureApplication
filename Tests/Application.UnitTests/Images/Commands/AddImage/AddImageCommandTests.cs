@@ -1,6 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces;
-using Application.Images.Commands;
+using Application.Images.Commands.AddImage;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;

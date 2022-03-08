@@ -3,7 +3,7 @@ using Application.Common.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
-namespace Application.Images.Commands
+namespace Application.Images.Commands.AddImage
 {
     public class AddImageCommand : IRequest
     {
@@ -28,7 +28,7 @@ namespace Application.Images.Commands
                 var metadata = new Dictionary<string, string>
                 {
                     { "OriginalFile", request.FileName },
-                    { "TargetType", String.IsNullOrEmpty(request.TargetType) ? request.ContentType : request.TargetType },
+                    { "TargetType", string.IsNullOrEmpty(request.TargetType) ? request.ContentType : request.TargetType },
                     { "TargetWidth", request.Width.HasValue ? request.Width.ToString() : default },
                     { "TargetHeight", request.Height.HasValue ? request.Height.ToString() : default },
                 };

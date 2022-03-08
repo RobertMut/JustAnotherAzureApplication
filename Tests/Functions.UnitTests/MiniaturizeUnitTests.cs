@@ -53,9 +53,9 @@ namespace Functions.UnitTests
                     {
                         await _miniaturize.Run(memoryStream, baseClient, "test.bmp", NullLogger.Instance);
                     });
-                    var processedFile = await _blobManager.DownloadAsync("miniature-test.png", null);
+                    var processedFile = await _blobManager.DownloadAsync("miniature-test.Png", null);
                     Assert.NotNull(processedFile.Content);
-                    Assert.True(processedFile.Details.ContentType == "image/png");
+                    Assert.True(processedFile.Details.ContentType == "image/Png");
                 }
 
             }

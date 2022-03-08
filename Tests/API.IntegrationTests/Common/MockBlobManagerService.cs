@@ -3,6 +3,7 @@ using Azure.Storage.Blobs.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,33 +11,37 @@ namespace API.IntegrationTests.Common
 {
     public class MockBlobManagerService : IBlobManagerService
     {
-        private IDictionary<string, BlobDownloadResult> blobs;
-        public static int FileLenght;
+        private IDictionary<string, BlobDownloadResult[]> blobs;
         public MockBlobManagerService()
         {
 
-            var bytes = new byte[] { 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00 };
-            FileLenght = bytes.Length;
-            blobs = new Dictionary<string, BlobDownloadResult>()
+            var bytes = new byte[] { 00, 50, 00, 00, 40, 00, 03, 00, 00, 00, 00, 10 };
+            blobs = new Dictionary<string, BlobDownloadResult[]>()
             {
-                {"miniature-sample.jpg", MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-sample.jpg", "image/jpeg") }
+                {"original-sample.jpeg", new [] {MakeFakeDownloadResult(new MemoryStream(bytes), "original-sample.png", "image/png"),
+                MakeFakeDownloadResult(new MemoryStream(bytes.Reverse().ToArray()),
+                                       "original-sample.png",
+                                       "image/png")} },
+                {"miniature-sample.jpeg", new [] {MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-sample.jpeg", "image/jpeg") } }
             };
         }
         public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, IDictionary<string, string> metadata, CancellationToken ct)
         {
-            blobs.Add($"miniature-{filename}", MakeFakeDownloadResult(fileStream, filename, contentType, metadata));
+            var fakeResult = MakeFakeDownloadResult(fileStream, filename, contentType, metadata);
+            PrependOrAddToDictionary("miniature", filename, fakeResult);
             return 201;
         }
 
         public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
         {
-            blobs.Add($"miniature-{filename}", MakeFakeDownloadResult(fileStream, filename, contentType));
+            var fakeResult = MakeFakeDownloadResult(fileStream, filename, contentType);
+            PrependOrAddToDictionary("miniature", filename, fakeResult);
             return 201;
         }
 
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id = 0)
         {
-            return blobs[filename];
+            return blobs[filename][id.Value];
 
         }
         private BlobDownloadResult MakeFakeDownloadResult(Stream fileStream, string filename, string contentType, IDictionary<string, string>? metadata = null)
@@ -51,14 +56,37 @@ namespace API.IntegrationTests.Common
             }
 
         }
-        public Task<int> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
+        public async Task<int> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            string filenameWithPrefix = $"original-{filename}";
+            var blob = blobs[filenameWithPrefix];
+            using (var stream = new MemoryStream(blob[0].Content.ToArray()))
+            {
+                var updated = MakeFakeDownloadResult(stream, filenameWithPrefix, blob[0].Details.ContentType, metadata);
+                blobs[filenameWithPrefix] = blob.Prepend(updated).ToArray();
+                blobs[$"miniature-{filename}"] = blob.Prepend(updated).ToArray();
+            }
+            return 200;
         }
 
-        public Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
+        public async Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            string filenameWithPrefix = $"original-{filename}";
+            var blob = blobs[filenameWithPrefix];
+            (blob[id], blob[0]) = (blob[0], blob[id]);
+            blobs[filenameWithPrefix] = blob;
+            return 201;
+        }
+        private void PrependOrAddToDictionary(string filenamePrefix, string filename, BlobDownloadResult fakeResult)
+        {
+            var filenameWithPrefix = $"{filenamePrefix}-{filename}";
+            if (blobs.ContainsKey(filename))
+            {
+                var blob = blobs[filenameWithPrefix];
+                blobs[filenameWithPrefix] = blob.Prepend(fakeResult).ToArray();
+            }
+            else
+                blobs.Add($"miniature-{filename}", new[] { fakeResult });
         }
     }
 }

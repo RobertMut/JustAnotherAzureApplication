@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Application.Images.Commands.UpdateImage;
+using FluentValidation;
 
 namespace Application.Images.Commands
 {

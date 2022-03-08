@@ -2,18 +2,13 @@
 using API.IntegrationTests.Common;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Mime;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace API.IntegrationTests.Controller.Images
 {
-    internal class Get
+    public class Get
     {
         private CustomWebApplicationFactory<ImagesController> _factory;
         private HttpClient _client;
@@ -27,10 +22,10 @@ namespace API.IntegrationTests.Controller.Images
         [Test]
         public async Task GetImage()
         {
-            var response = await _client.GetAsync("/api/Images/miniature-sample.jpg");
+            var response = await _client.GetAsync("/api/Images/miniature-sample.jpeg");
             response.EnsureSuccessStatusCode();
             Assert.AreEqual(response.Content.Headers.ContentType, MediaTypeHeaderValue.Parse("image/jpeg"));
-            var bytes = await response.Content.ReadAsByteArrayAsync();
+            byte[]? bytes = await response.Content.ReadAsByteArrayAsync();
             Assert.True(bytes.Length > 0);
         }
         [Test]

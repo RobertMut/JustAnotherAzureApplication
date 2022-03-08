@@ -1,4 +1,5 @@
-﻿using Application.Images.Commands;
+﻿using Application.Images.Commands.AddImage;
+using Application.Images.Commands.UpdateImage;
 using Application.Images.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

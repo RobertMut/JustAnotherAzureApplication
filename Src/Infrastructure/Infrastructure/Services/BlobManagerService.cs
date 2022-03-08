@@ -51,14 +51,35 @@ namespace Infrastructure.Services
             return await client.WithVersion(versions[id.Value].VersionId).DownloadContentAsync();
 
         }
-
+        /// <summary>
+        /// Promotes previous blob version to actual.
+        /// Opens stream with blob and uploads it again due to lack of method to promote in a simple way.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns>
+        /// A int representing HTTP status of operation.
+        /// </returns>
         public async Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
         {
             var client = _client.GetBlobClient($"original-{filename}");
-            var versions = await GetBlobVersions($"original-{filename}");
-            var sourceBlobUri = new Uri($"{_client.Uri.AbsoluteUri}/{_client.Name}/original-{filename}?versionId={versions[id].VersionId}");
-            var operation = await client.StartCopyFromUriAsync(sourceBlobUri, null, ct); //crashes
-            return operation.GetRawResponse().Status;
+            var version = await GetBlobVersions($"original-{filename}");
+            var properties = client.GetProperties().Value;
+            using (var stream = await client.WithVersion(version[id].VersionId).OpenReadAsync(new BlobOpenReadOptions(false), ct))
+            {
+                var response = await client.UploadAsync(stream, new BlobUploadOptions
+                {
+                    Metadata = properties.Metadata,
+                    HttpHeaders = new BlobHttpHeaders()
+                    {
+                        ContentType = properties.ContentType,
+                        CacheControl = properties.CacheControl,
+                    },
+                    AccessTier = properties.AccessTier
+                }, ct);
+                return response.GetRawResponse().Status;
+            }
 
         }
 
@@ -69,7 +90,13 @@ namespace Infrastructure.Services
             return response.GetRawResponse().Status;
 
         }
-
+        /// <summary>
+        /// Gets all blobs (and their versions) using provided filename.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns>
+        /// BlobItem array with basic data about blob
+        /// </returns>
         private async Task<BlobItem[]> GetBlobVersions(string filename)
         {
             return _client.GetBlobs(BlobTraits.All, BlobStates.All).Where(x => x.Name.StartsWith(filename)).Reverse().ToArray();
