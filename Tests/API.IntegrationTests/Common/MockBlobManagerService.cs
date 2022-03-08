@@ -18,7 +18,7 @@ namespace API.IntegrationTests.Common
             var bytes = new byte[] { 00, 50, 00, 00, 40, 00, 03, 00, 00, 00, 00, 10 };
             blobs = new Dictionary<string, BlobDownloadResult[]>()
             {
-                {"original-sample.jpeg", new [] {MakeFakeDownloadResult(new MemoryStream(bytes), "original-sample.png", "image/png"),
+                {"original-sample.png", new [] {MakeFakeDownloadResult(new MemoryStream(bytes), "original-sample.png", "image/png"),
                 MakeFakeDownloadResult(new MemoryStream(bytes.Reverse().ToArray()),
                                        "original-sample.png",
                                        "image/png")} },
@@ -41,7 +41,7 @@ namespace API.IntegrationTests.Common
 
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id = 0)
         {
-            return blobs[filename][id.Value];
+            return blobs[filename][id.GetValueOrDefault()];
 
         }
         private BlobDownloadResult MakeFakeDownloadResult(Stream fileStream, string filename, string contentType, IDictionary<string, string>? metadata = null)
