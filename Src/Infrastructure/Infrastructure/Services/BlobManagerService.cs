@@ -29,20 +29,6 @@ namespace Infrastructure.Services
             var response = await blobClient.UploadAsync(fileStream, blobOptions, ct);
             return response.GetRawResponse().Status;
         }
-        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
-        {
-
-            var response = await _client.GetBlobClient(filename)
-                .UploadAsync(fileStream, new BlobUploadOptions()
-                {
-                    HttpHeaders = new BlobHttpHeaders()
-                    {
-                        ContentType = contentType,
-                    },
-
-                }, ct);
-            return response.GetRawResponse().Status;
-        }
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id)
         {
             var client = _client.GetBlobClient(filename);

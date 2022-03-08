@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Functions.UnitTests.Common
 {
-    public class MockBlobManagerService : IBlobManagerService
+    public class MockBlobManagerService : IBlobCreatorService, IBlobManagerService
     {
         private IDictionary<string, BlobDownloadResult> blobs;
         public MockBlobManagerService()

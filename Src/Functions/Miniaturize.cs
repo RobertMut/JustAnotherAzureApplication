@@ -12,10 +12,10 @@ namespace Functions
 {
     public class Miniaturize
     {
-        private readonly IBlobManagerService _service;
+        private readonly IBlobCreatorService _service;
         private readonly ISupportedImageFormats _formats;
 
-        public Miniaturize(IBlobManagerService service, ISupportedImageFormats formats)
+        public Miniaturize(IBlobCreatorService service, ISupportedImageFormats formats)
         {
             _service = service;
             _formats = formats;

@@ -19,7 +19,9 @@ namespace Functions.UnitTests.Common
 
         private void OverrideServices(IServiceCollection services)
         {
-            services.AddScoped<IBlobManagerService, MockBlobManagerService>();
+            var manager = new MockBlobManagerService();
+            services.AddSingleton<IBlobManagerService>(provider => manager);
+            services.AddSingleton<IBlobCreatorService>(provider => manager);
             services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
 
         }

@@ -16,16 +16,17 @@ namespace Functions.UnitTests
     public class MiniaturizeUnitTests
     {
         private Miniaturize _miniaturize;
+        private IBlobCreatorService _blobCreator;
         private IBlobManagerService _blobManager;
 
         [SetUp]
         public void Setup()
         {
             var testStartup = new CustomTestStartup();
+            _blobCreator = testStartup.Builder.Services.GetRequiredService<IBlobCreatorService>();
             _blobManager = testStartup.Builder.Services.GetRequiredService<IBlobManagerService>();
-
             var formats = testStartup.Builder.Services.GetRequiredService<ISupportedImageFormats>();
-            _miniaturize = new Miniaturize(_blobManager, formats);
+            _miniaturize = new Miniaturize(_blobCreator, formats);
         }
 
         [Test]
