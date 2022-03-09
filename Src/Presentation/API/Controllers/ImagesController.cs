@@ -1,6 +1,7 @@
 ﻿using Application.Images.Commands.AddImage;
 using Application.Images.Commands.UpdateImage;
 using Application.Images.Queries;
+using Domain.Enums.Image;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +35,7 @@ namespace API.Controllers
         public async Task<IActionResult> UpdateExistingMiniature([FromForm] string file,
             [FromForm] int width,
             [FromForm] int height,
-            [FromForm] string targetType,
+            [FromForm] Format targetType,
             [FromForm] int? version)
         {
             await _mediator.Send(new UpdateImageCommand
@@ -52,7 +53,7 @@ namespace API.Controllers
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> PostImageAsync([FromForm] IFormFile file,
-            [FromForm] string? targetType,
+            [FromForm] Format targetType,
             [FromForm] int? height,
             [FromForm] int? width)
         {

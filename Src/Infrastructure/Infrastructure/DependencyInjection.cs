@@ -1,5 +1,4 @@
-﻿using Application.Common.Interfaces;
-
+﻿using Application.Common.Interfaces.Blob;
 using Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

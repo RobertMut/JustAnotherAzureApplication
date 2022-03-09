@@ -1,9 +1,10 @@
-﻿using System.Drawing.Imaging;
+﻿using Domain.Enums.Image;
+using System.Drawing.Imaging;
 
 namespace Common
 {
     public interface ISupportedImageFormats
     {
-        IDictionary<string, ImageFormat> FileFormat { get; }
+        IDictionary<Format, ImageFormat> FileFormat { get; }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Common;
+using Domain.Common.Helper.Enum;
+using Domain.Enums.Image;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 
@@ -6,13 +8,13 @@ namespace Functions
 {
     public class FunctionImageFormats : ISupportedImageFormats
     {
-        public IDictionary<string, ImageFormat> FileFormat => new Dictionary<string, ImageFormat>
+        public IDictionary<Format, ImageFormat> FileFormat => new Dictionary<Format, ImageFormat>
         {
-            {"png", ImageFormat.Png },
-            {"jpeg", ImageFormat.Jpeg },
-            {"jpg", ImageFormat.Jpeg },
-            {"bmp", ImageFormat.Bmp },
-            {"tiff", ImageFormat.Tiff }
+            {Format.png, ImageFormat.Png },
+            {Format.jpg, ImageFormat.Jpeg },
+            {Format.jpeg, ImageFormat.Jpeg },
+            {Format.bmp, ImageFormat.Bmp },
+            {Format.tiff, ImageFormat.Tiff }
         };
     }
 }

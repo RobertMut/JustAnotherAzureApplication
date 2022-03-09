@@ -1,12 +1,15 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Common.Interfaces;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
 using Azure.Storage.Blobs.Specialized;
 using Common;
+using Application.Common.Interfaces.Blob;
+using Domain.Constants.Image;
+using Domain.Common.Helper.Enum;
+using Domain.Enums.Image;
 
 namespace Functions
 {
@@ -27,10 +30,11 @@ namespace Functions
             string name, ILogger log)
         {
             var metadata = blob.GetProperties().Value.Metadata;
-            var targetType = metadata["TargetType"];
-            int width = int.Parse(metadata["TargetWidth"]);
-            int height = int.Parse(metadata["TargetHeight"]);
-            var format = _formats.FileFormat[targetType];
+            var targetType = metadata[Metadata.TargetType];
+            int width = int.Parse(metadata[Metadata.TargetWidth]);
+            int height = int.Parse(metadata[Metadata.TargetHeight]);
+            var format = _formats.FileFormat[EnumHelper.GetEnumValueFromDescription<Format>(targetType)];
+
             using (var image = Image.FromStream(myBlob))
             {
                 var resized = new Bitmap(image, width, height);
@@ -39,10 +43,12 @@ namespace Functions
                     resized.Save(memStream, format);
                     memStream.Position = 0;
                     var converted = new ImageFormatConverter().ConvertToString(format);
+
                     await _service.AddAsync(memStream, $"miniature-{width}x{height}-{Path.GetFileNameWithoutExtension(name)}.{converted}",
                         $"image/{converted}", new CancellationToken());
                 }
             }
+
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes\n");
         }
     }

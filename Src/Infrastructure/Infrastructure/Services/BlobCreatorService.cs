@@ -1,6 +1,7 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Blob;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using System.Net;
 
 namespace Infrastructure.Services
 {
@@ -13,7 +14,7 @@ namespace Infrastructure.Services
             _client = new BlobServiceClient(connectionString).GetBlobContainerClient(container);
         }
 
-        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
+        public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
         {
             var response = await _client.GetBlobClient(filename)
                 .UploadAsync(fileStream, new BlobUploadOptions()
@@ -25,7 +26,7 @@ namespace Infrastructure.Services
 
                 }, ct);
 
-            return response.GetRawResponse().Status;
+            return (HttpStatusCode)response.GetRawResponse().Status;
         }
     }
 }

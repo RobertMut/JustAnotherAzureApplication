@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Blob;
 using MediatR;
 
 namespace Application.Images.Queries
@@ -19,11 +19,11 @@ namespace Application.Images.Queries
 
         public async Task<FileVm> Handle(GetFileQuery request, CancellationToken cancellationToken)
         {
-            var response = await _service.DownloadAsync(request.Filename, request.Id);
+            var file = await _service.DownloadAsync(request.Filename, request.Id);
 
             return new FileVm
             {
-                File = response
+                File = file
             };
         }
     }

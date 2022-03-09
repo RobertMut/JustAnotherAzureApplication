@@ -1,7 +1,8 @@
-﻿using Application.Common.Interfaces;
-using System.Linq;
+﻿using System.Linq;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Application.Common.Interfaces.Blob;
+using System.Net;
 
 namespace Infrastructure.Services
 {
@@ -14,7 +15,7 @@ namespace Infrastructure.Services
             _client = new BlobServiceClient(connectionString).GetBlobContainerClient(container);
         }
 
-        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType,
+        public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType,
             IDictionary<string, string> metadata, CancellationToken ct)
         {
             var blobClient = _client.GetBlobClient(filename);
@@ -28,20 +29,20 @@ namespace Infrastructure.Services
             };
             var response = await blobClient.UploadAsync(fileStream, blobOptions, ct);
 
-            return response.GetRawResponse().Status;
+            return (HttpStatusCode)response.GetRawResponse().Status;
         }
 
-        public async Task<int> DeleteBlobAsync(string filename, CancellationToken ct)
+        public async Task<HttpStatusCode> DeleteBlobAsync(string filename, CancellationToken ct)
         {
             var response = await _client.DeleteBlobAsync(filename, DeleteSnapshotsOption.None, null, ct);
 
-            return response.Status;
+            return (HttpStatusCode)response.Status;
         }
 
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id)
         {
             var client = _client.GetBlobClient(filename);
-            if (id == null)
+            if (!id.HasValue)
             {
                 return await client.DownloadContentAsync();
             }
@@ -68,10 +69,10 @@ namespace Infrastructure.Services
         /// <returns>
         /// An int representing HTTP status of operation.
         /// </returns>
-        public async Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
+        public async Task<HttpStatusCode> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
         {
-            var client = _client.GetBlobClient($"original-{filename}");
-            var version = await GetBlobVersions($"original-{filename}");
+            var client = _client.GetBlobClient(filename);
+            var version = await GetBlobVersions(filename);
             var properties = client.GetProperties().Value;
             using (var stream = await client.WithVersion(version[id].VersionId).OpenReadAsync(new BlobOpenReadOptions(false), ct))
             {
@@ -86,16 +87,16 @@ namespace Infrastructure.Services
                     AccessTier = properties.AccessTier
                 }, ct);
 
-                return response.GetRawResponse().Status;
+                return (HttpStatusCode)response.GetRawResponse().Status;
             }
         }
 
-        public async Task<int> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
+        public async Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
         {
-            var client = _client.GetBlobClient($"original-{filename}");
+            var client = _client.GetBlobClient(filename);
             var response = await client.SetMetadataAsync(metadata, default, ct);
 
-            return response.GetRawResponse().Status;
+            return (HttpStatusCode)response.GetRawResponse().Status;
         }
         /// <summary>
         /// Gets all blobs (and their versions) using provided filename.

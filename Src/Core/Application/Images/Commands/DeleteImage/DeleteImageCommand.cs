@@ -1,6 +1,7 @@
 ﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces;
+using Application.Common.Interfaces.Blob;
 using MediatR;
+using System.Net;
 
 namespace Application.Images.Commands.UpdateImage
 {
@@ -12,11 +13,11 @@ namespace Application.Images.Commands.UpdateImage
 
         public class DeleteImageCommandHandler : IRequestHandler<DeleteImageCommand>
         {
-            private readonly IBlobManagerService _service;
+            private readonly IBlobManagerService _blobManagerService;
 
-            public DeleteImageCommandHandler(IBlobManagerService service)
+            public DeleteImageCommandHandler(IBlobManagerService blobManagerService)
             {
-                _service = service;
+                _blobManagerService = blobManagerService;
             }
 
             public async Task<Unit> Handle(DeleteImageCommand request, CancellationToken cancellationToken)
@@ -25,11 +26,12 @@ namespace Application.Images.Commands.UpdateImage
 
                 string prefix = request.DeleteMiniatures.HasValue && request.DeleteMiniatures.Value ? "miniature" : "";
                 string size = request.Size == "any" || string.IsNullOrEmpty(request.Size) ? "" : request.Size;
-                var blobItems = await _service.GetBlobsInfoByName(prefix, size, filename[filename.Length - 1], cancellationToken);
+                var blobItems = await _blobManagerService.GetBlobsInfoByName(prefix, size, filename[filename.Length - 1], cancellationToken);
                 foreach (var blob in blobItems)
                 {
-                    var response = await _service.DeleteBlobAsync(blob.Name, cancellationToken);
-                    if (response != 202) throw new OperationFailedException(202.ToString(), response.ToString(), nameof(DeleteImageCommandHandler));
+                    var statusCode = await _blobManagerService.DeleteBlobAsync(blob.Name, cancellationToken);
+                    if (statusCode != HttpStatusCode.Accepted) throw new OperationFailedException(HttpStatusCode.Accepted,
+                        statusCode, nameof(DeleteImageCommandHandler));
                 }
 
                 return Unit.Value;

@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Blob;
 using Common;
 using Infrastructure.Services;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;

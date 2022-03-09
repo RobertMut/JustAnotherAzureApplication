@@ -7,6 +7,7 @@ namespace API.Filters
     public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     {
         private readonly IDictionary<Type, Action<ExceptionContext>> _exceptionHandlers;
+        private const string Rfc = "https://tools.ietf.org/html/rfc7231";
 
         public ApiExceptionFilterAttribute()
         {
@@ -46,7 +47,7 @@ namespace API.Filters
         {
             var details = new ValidationProblemDetails(context.ModelState)
             {
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+                Type = Rfc + "#section-6.5.1"
             };
             context.Result = new BadRequestObjectResult(details);
             context.ExceptionHandled = true;
@@ -56,7 +57,7 @@ namespace API.Filters
         {
             var detail = new ValidationProblemDetails(obj.ModelState)
             {
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+                Type = Rfc + "#section-6.5.1"
             };
             obj.Result = new BadRequestObjectResult(detail);
             obj.ExceptionHandled = true;
@@ -68,7 +69,7 @@ namespace API.Filters
             {
                 Status = StatusCodes.Status500InternalServerError,
                 Title = "An error occurred while processing your request.",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+                Type = Rfc + "#section-6.6.1",
                 Detail = obj.Exception.Message
             };
             obj.Result = new ObjectResult(details)
