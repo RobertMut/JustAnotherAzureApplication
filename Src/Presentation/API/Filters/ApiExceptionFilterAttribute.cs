@@ -7,6 +7,7 @@ namespace API.Filters
     public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     {
         private readonly IDictionary<Type, Action<ExceptionContext>> _exceptionHandlers;
+
         public ApiExceptionFilterAttribute()
         {
             _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
@@ -17,6 +18,7 @@ namespace API.Filters
                 {typeof(ValidationException), HandleValidationException}
             };
         }
+
         public override void OnException(ExceptionContext context)
         {
             HandleException(context);
@@ -34,6 +36,7 @@ namespace API.Filters
             if (!context.ModelState.IsValid)
             {
                 HandleInvalidModelStateException(context);
+
                 return;
             }
             HandleUnknownException(context);
@@ -68,13 +71,11 @@ namespace API.Filters
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
                 Detail = obj.Exception.Message
             };
-
             obj.Result = new ObjectResult(details)
             {
                 StatusCode = StatusCodes.Status500InternalServerError
 
             };
-
             obj.ExceptionHandled = true;
         }
 

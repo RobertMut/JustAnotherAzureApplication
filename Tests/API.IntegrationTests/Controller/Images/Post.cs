@@ -19,6 +19,7 @@ namespace API.IntegrationTests.Controller.Images
             _factory = new CustomWebApplicationFactory<ImagesController>();
             _client = _factory.CreateClient(_factory.ClientOptions);
         }
+
         [Test]
         public async Task PostNewImage()
         {
@@ -29,6 +30,7 @@ namespace API.IntegrationTests.Controller.Images
             var response = await _client.PostAsync("api/Images/", content);
             response.EnsureSuccessStatusCode();
         }
+
         [Test]
         public async Task ThrowValidationFailed()
         {
@@ -39,6 +41,7 @@ namespace API.IntegrationTests.Controller.Images
             var response = await _client.PostAsync("api/Images/", content);
             Assert.True(response.StatusCode == System.Net.HttpStatusCode.BadRequest);
         }
+
         [Test]
         public async Task WrongFormDataCausesBadRequest()
         {

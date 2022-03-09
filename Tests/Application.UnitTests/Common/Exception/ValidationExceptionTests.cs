@@ -12,8 +12,10 @@ namespace Application.UnitTests.Common.Exception
         public void DefaultConstructorCreatesEmptyDictionary()
         {
             var actual = new ValidationException().Errors;
+
             Assert.True(actual.Count == 0);
         }
+
         [Test]
         public void ValidationFailureAddElementToDictionary()
         {

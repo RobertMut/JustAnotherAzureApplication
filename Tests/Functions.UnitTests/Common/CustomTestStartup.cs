@@ -23,7 +23,6 @@ namespace Functions.UnitTests.Common
             services.AddSingleton<IBlobManagerService>(provider => manager);
             services.AddSingleton<IBlobCreatorService>(provider => manager);
             services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
-
         }
     }
 }

@@ -19,6 +19,7 @@ namespace API.IntegrationTests.Controller.Images
             _factory = new CustomWebApplicationFactory<ImagesController>();
             _client = _factory.CreateClient(_factory.ClientOptions);
         }
+
         [Test]
         public async Task GetImage()
         {
@@ -28,6 +29,7 @@ namespace API.IntegrationTests.Controller.Images
             byte[]? bytes = await response.Content.ReadAsByteArrayAsync();
             Assert.True(bytes.Length > 0);
         }
+
         [Test]
         public async Task GetUnknown()
         {

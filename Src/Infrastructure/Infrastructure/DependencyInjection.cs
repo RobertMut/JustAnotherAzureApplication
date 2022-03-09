@@ -13,6 +13,7 @@ namespace Infrastructure
             var storage = configuration.GetConnectionString("Storage");
             var container = configuration["ImagesContainer"];
             services.AddScoped<IBlobManagerService>(service => new BlobManagerService(storage, container));
+
             return services;
         }
     }

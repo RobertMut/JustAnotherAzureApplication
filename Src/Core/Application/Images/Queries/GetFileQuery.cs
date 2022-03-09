@@ -20,6 +20,7 @@ namespace Application.Images.Queries
         public async Task<FileVm> Handle(GetFileQuery request, CancellationToken cancellationToken)
         {
             var response = await _service.DownloadAsync(request.Filename, request.Id);
+
             return new FileVm
             {
                 File = response

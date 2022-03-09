@@ -25,7 +25,6 @@ namespace API.IntegrationTests.Common
 
             });
 
-
             base.ConfigureWebHost(builder);
         }
     }

@@ -21,6 +21,7 @@ namespace API.IntegrationTests.Controller.Images
             _factory = new CustomWebApplicationFactory<ImagesController>();
             _client = _factory.CreateClient(_factory.ClientOptions);
         }
+
         [Test]
         public async Task UpdateImage()
         {
@@ -31,6 +32,7 @@ namespace API.IntegrationTests.Controller.Images
             var bytes = await fromGet.Content.ReadAsByteArrayAsync();
             Assert.NotNull(bytes);
         }
+
         [Test]
         public async Task Throw500StatusUnknownFile()
         {
@@ -38,6 +40,7 @@ namespace API.IntegrationTests.Controller.Images
             var fromPut = await _client.PutAsync("api/Images/", content);
             Assert.True(fromPut.StatusCode == System.Net.HttpStatusCode.InternalServerError);
         }
+
         [Test]
         public async Task ThrowValidationFailed()
         {
@@ -53,7 +56,10 @@ namespace API.IntegrationTests.Controller.Images
             content.Add(new StringContent(height.ToString()), "height");
             content.Add(new StringContent(contentType), "targetType");
             if (version != null)
+            {
                 content.Add(new StringContent(version.Value.ToString()), "version");
+            }
+                
             return content;
         }
     }

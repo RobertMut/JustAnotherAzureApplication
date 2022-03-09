@@ -16,6 +16,7 @@ namespace API.IntegrationTests.Common
             var imageContent = new ByteArrayContent(imageBytes);
             imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
             requestContent.Add(imageContent, "file", filename);
+
             return requestContent;
 
         }

@@ -33,10 +33,15 @@ namespace Application.Images.Commands.UpdateImage
                 {
                     var promoteResponse = await _service.PromoteBlobVersionAsync(request.Filename, request.Version.Value, cancellationToken);
                     if (promoteResponse != 201)
+                    {
                         throw new OperationFailedException(201.ToString(), promoteResponse.ToString(), nameof(UpdateImageCommand));
+                    }
                 }
                 var response = await _service.UpdateAsync(request.Filename, metadata, cancellationToken);
-                if (response == 200) return Unit.Value;
+                if (response == 200)
+                {
+                    return Unit.Value;
+                }
                 throw new OperationFailedException(200.ToString(), response.ToString(), nameof(UpdateImageCommand));
             }
         }

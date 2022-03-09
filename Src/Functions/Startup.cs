@@ -15,7 +15,6 @@ namespace Functions
             builder.Services.AddSingleton<IBlobCreatorService>(service =>
             new BlobCreatorService(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), Environment.GetEnvironmentVariable("ImagesContainer")));
             builder.Services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
-
         }
     }
 }

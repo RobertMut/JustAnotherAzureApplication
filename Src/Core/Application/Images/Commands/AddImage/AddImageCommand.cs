@@ -17,12 +17,11 @@ namespace Application.Images.Commands.AddImage
         {
             private readonly IBlobManagerService _service;
 
-
             public AddImageCommandHandler(IBlobManagerService service)
             {
                 _service = service;
-
             }
+
             public async Task<Unit> Handle(AddImageCommand request, CancellationToken cancellationToken)
             {
                 var metadata = new Dictionary<string, string>
@@ -35,7 +34,10 @@ namespace Application.Images.Commands.AddImage
                 using (var stream = request.File.OpenReadStream())
                 {
                     var response = await _service.AddAsync(stream, "original-" + request.FileName, request.ContentType, metadata, cancellationToken);
-                    if (response == 201) return Unit.Value;
+                    if (response == 201)
+                    {
+                        return Unit.Value;
+                    }
                     throw new OperationFailedException(201.ToString(), response.ToString(), nameof(AddImageCommandHandler));
                 }
             }
