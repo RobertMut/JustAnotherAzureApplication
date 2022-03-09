@@ -24,6 +24,7 @@ namespace API.IntegrationTests.Controller.Images
         public async Task GetImage()
         {
             var response = await _client.GetAsync("/api/Images/miniature-sample.jpeg");
+
             response.EnsureSuccessStatusCode();
             Assert.AreEqual(response.Content.Headers.ContentType, MediaTypeHeaderValue.Parse("image/jpeg"));
             byte[]? bytes = await response.Content.ReadAsByteArrayAsync();
@@ -34,6 +35,7 @@ namespace API.IntegrationTests.Controller.Images
         public async Task GetUnknown()
         {
             var response = await _client.GetAsync("/api/Images/miniature-unknown.tiff");
+
             Assert.False(response.IsSuccessStatusCode);
         }
     }

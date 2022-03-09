@@ -1,4 +1,4 @@
-using Application.Common.Interfaces;
+using Application.Common.Interfaces.Blob;
 using Common;
 using Functions.UnitTests.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +50,7 @@ namespace Functions.UnitTests
                     memoryStream.Position = 0;
                     await _blobManager.AddAsync(memoryStream, "test.bmp", "image/bmp", metadata, CancellationToken.None);
                     var baseClient = new MockBlobBaseClient(memoryStream.Length, "image/bmp", metadata);
+
                     Assert.DoesNotThrowAsync(async () =>
                     {
                         await _miniaturize.Run(memoryStream, baseClient, "test.bmp", NullLogger.Instance);
@@ -58,10 +59,7 @@ namespace Functions.UnitTests
                     Assert.NotNull(processedFile.Content);
                     Assert.True(processedFile.Details.ContentType == "image/Png");
                 }
-
             }
-
-
         }
     }
 }

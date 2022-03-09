@@ -21,6 +21,7 @@ namespace Application.Common.Behaviours
                 var validationResults = await Task.WhenAll(
                     _validators.Select(v =>
                         v.ValidateAsync(context, cancellationToken)));
+
                 var failures = validationResults
                     .Where(r => r.Errors.Any())
                     .SelectMany(r => r.Errors)

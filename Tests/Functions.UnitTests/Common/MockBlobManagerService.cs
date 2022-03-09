@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Blob;
 using Azure.Storage.Blobs.Models;
 using System;
 using System.Collections.Generic;
@@ -19,12 +19,14 @@ namespace Functions.UnitTests.Common
         public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, IDictionary<string, string> metadata, CancellationToken ct)
         {
             blobs.Add($"original-{filename}", MakeFakeDownloadResult(fileStream, contentType, metadata));
+
             return 201;
         }
 
         public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
         {
             blobs.Add(filename, MakeFakeDownloadResult(fileStream, contentType));
+
             return 201;
         }
 

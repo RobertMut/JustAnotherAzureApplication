@@ -14,6 +14,7 @@ namespace API.IntegrationTests.Common
         {
             var requestContent = new MultipartFormDataContent();
             var imageContent = new ByteArrayContent(imageBytes);
+
             imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
             requestContent.Add(imageContent, "file", filename);
 

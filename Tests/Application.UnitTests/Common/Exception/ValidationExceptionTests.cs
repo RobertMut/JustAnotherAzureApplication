@@ -24,6 +24,7 @@ namespace Application.UnitTests.Common.Exception
                 new ValidationFailure("Image", "wrong extension")
             };
             var actual = new ValidationException(failures).Errors;
+
             Assert.True(actual.Keys.First() == "Image");
             Assert.True(actual["Image"].First() == "wrong extension");
         }

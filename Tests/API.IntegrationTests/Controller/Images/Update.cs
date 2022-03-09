@@ -26,6 +26,7 @@ namespace API.IntegrationTests.Controller.Images
         public async Task UpdateImage()
         {
             var content = GenerateFormData("sample.png", 50, 50, "tiff", 1);
+
             var fromPut = await _client.PutAsync("api/Images/", content);
             var fromGet = await _client.GetAsync("/api/Images/miniature-sample.tiff");
             fromPut.EnsureSuccessStatusCode();
@@ -38,6 +39,7 @@ namespace API.IntegrationTests.Controller.Images
         {
             var content = GenerateFormData("unknown.tiff", 1, 1, "png");
             var fromPut = await _client.PutAsync("api/Images/", content);
+
             Assert.True(fromPut.StatusCode == System.Net.HttpStatusCode.InternalServerError);
         }
 
@@ -46,6 +48,7 @@ namespace API.IntegrationTests.Controller.Images
         {
             var content = GenerateFormData("sample.png", 0, 0, "");
             var fromPut = await _client.PutAsync("api/Images/", content);
+
             Assert.True(fromPut.StatusCode == System.Net.HttpStatusCode.BadRequest);
         }
         private MultipartFormDataContent GenerateFormData(string filename, int width, int height, string contentType, int? version = 0)
@@ -55,6 +58,7 @@ namespace API.IntegrationTests.Controller.Images
             content.Add(new StringContent(width.ToString()), "width");
             content.Add(new StringContent(height.ToString()), "height");
             content.Add(new StringContent(contentType), "targetType");
+
             if (version != null)
             {
                 content.Add(new StringContent(version.Value.ToString()), "version");

@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces.Blob;
 using Azure.Storage.Blobs.Models;
 using System;
 using System.Collections.Generic;
@@ -29,6 +29,7 @@ namespace API.IntegrationTests.Common
         public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, IDictionary<string, string> metadata, CancellationToken ct)
         {
             var fakeResult = MakeFakeDownloadResult(fileStream, filename, contentType, metadata);
+
             PrependOrAddToDictionary("miniature", filename, fakeResult);
 
             return 201;
@@ -65,6 +66,7 @@ namespace API.IntegrationTests.Common
         {
             string filenameWithPrefix = $"original-{filename}";
             var blob = blobs[filenameWithPrefix];
+
             using (var stream = new MemoryStream(blob[0].Content.ToArray()))
             {
                 var updated = MakeFakeDownloadResult(stream, filenameWithPrefix, blob[0].Details.ContentType, metadata);
@@ -79,6 +81,7 @@ namespace API.IntegrationTests.Common
         {
             string filenameWithPrefix = $"original-{filename}";
             var blob = blobs[filenameWithPrefix];
+
             (blob[id], blob[0]) = (blob[0], blob[id]);
             blobs[filenameWithPrefix] = blob;
 
@@ -88,6 +91,7 @@ namespace API.IntegrationTests.Common
         private void PrependOrAddToDictionary(string filenamePrefix, string filename, BlobDownloadResult fakeResult)
         {
             var filenameWithPrefix = $"{filenamePrefix}-{filename}";
+
             if (blobs.ContainsKey(filename))
             {
                 var blob = blobs[filenameWithPrefix];

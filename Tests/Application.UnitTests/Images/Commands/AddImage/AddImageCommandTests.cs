@@ -1,5 +1,5 @@
 ﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces;
+using Application.Common.Interfaces.Blob;
 using Application.Images.Commands.AddImage;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -39,6 +39,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
         {
             _service.Setup(x => x.AddAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>(),
                  It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(201);
+
             var handler = new AddImageCommand.AddImageCommandHandler(_service.Object);
             var command = new AddImageCommand()
             {
@@ -48,8 +49,10 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 TargetType = "png"
             };
             var responseMediator = await _mediator.Object.Send(command, CancellationToken.None);
+
             _mediator.Verify(x => x.Send(It.IsAny<AddImageCommand>(), It.IsAny<CancellationToken>()), Times.Once);
             var response = await handler.Handle(command, CancellationToken.None);
+
             Assert.IsInstanceOf(typeof(Unit), response);
             Assert.IsInstanceOf(typeof(Unit), responseMediator);
             Assert.That(responseMediator, Is.Not.Null);
@@ -59,6 +62,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
         {
             _service.Setup(x => x.AddAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>(),
                 It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(500);
+
             var handler = new AddImageCommand.AddImageCommandHandler(_service.Object);
             var command = new AddImageCommand()
             {
@@ -67,6 +71,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 FileName = "sample.jpg",
                 TargetType = "png"
             };
+
             Assert.ThrowsAsync<NullReferenceException>(async () =>
             {
                 await handler.Handle(command, CancellationToken.None);
@@ -93,6 +98,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 FileName = "sample.jpg",
                 TargetType = "png"
             };
+
             Assert.ThrowsAsync<OperationFailedException>(async () =>
             {
                 await handler.Handle(command, CancellationToken.None);
