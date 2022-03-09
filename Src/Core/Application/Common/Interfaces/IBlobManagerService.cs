@@ -9,5 +9,7 @@ namespace Application.Common.Interfaces
         Task<int> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct);
         Task<BlobDownloadResult> DownloadAsync(string filename, int? id);
         Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct);
+        Task<int> DeleteBlobAsync(string filename, CancellationToken ct);
+        Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct);
     }
 }

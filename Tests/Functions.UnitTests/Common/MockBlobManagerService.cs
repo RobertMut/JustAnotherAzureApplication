@@ -28,9 +28,19 @@ namespace Functions.UnitTests.Common
             return 201;
         }
 
+        public Task<int> DeleteBlobAsync(string filename, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id = 0)
         {
             return blobs[filename];
+        }
+
+        public Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)

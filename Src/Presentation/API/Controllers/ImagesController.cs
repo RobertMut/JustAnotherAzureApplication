@@ -11,10 +11,12 @@ namespace API.Controllers
     public class ImagesController : ControllerBase
     {
         private readonly IMediator _mediator;
+
         public ImagesController(IMediator mediator)
         {
             _mediator = mediator;
         }
+
         [HttpGet("{filename}/{id?}")]
         public async Task<IActionResult> GetImageAsync([FromRoute] string filename, int? id)
         {
@@ -23,8 +25,10 @@ namespace API.Controllers
                 Filename = filename,
                 Id = id
             });
+
             return new FileContentResult(file.File.Content.ToArray(), file.File.Details.ContentType);
         }
+
         [HttpPut]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UpdateExistingMiniature([FromForm] string file,
@@ -41,8 +45,10 @@ namespace API.Controllers
                 TargetType = targetType,
                 Version = version
             });
+
             return Ok();
         }
+
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> PostImageAsync([FromForm] IFormFile file,
@@ -59,6 +65,25 @@ namespace API.Controllers
                 Height = height,
                 Width = width
             });
+
+            return Ok();
+        }
+        
+        [HttpDelete]
+        [Route("{file}")]
+        [Route("{file}/{deleteMiniatures:bool?}")]
+        [Route("{file}/{deleteMiniatures:bool?}/{size?}")]
+        public async Task<IActionResult> DeleteImageAsync([FromRoute] string file,
+            [FromRoute] bool? deleteMiniatures,
+            [FromRoute] string? size)
+        {
+            await _mediator.Send(new DeleteImageCommand
+            {
+                Filename = file,
+                Size=size,
+                DeleteMiniatures = deleteMiniatures
+            });
+
             return Ok();
         }
     }

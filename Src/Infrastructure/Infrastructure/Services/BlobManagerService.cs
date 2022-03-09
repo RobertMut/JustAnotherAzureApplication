@@ -13,6 +13,7 @@ namespace Infrastructure.Services
         {
             _client = new BlobServiceClient(connectionString).GetBlobContainerClient(container);
         }
+
         public async Task<int> AddAsync(Stream fileStream, string filename, string contentType,
             IDictionary<string, string> metadata, CancellationToken ct)
         {
@@ -25,18 +26,38 @@ namespace Infrastructure.Services
                     ContentType = contentType
                 },
             };
-
             var response = await blobClient.UploadAsync(fileStream, blobOptions, ct);
+
             return response.GetRawResponse().Status;
         }
+
+        public async Task<int> DeleteBlobAsync(string filename, CancellationToken ct)
+        {
+            var response = await _client.DeleteBlobAsync(filename, DeleteSnapshotsOption.None, null, ct);
+
+            return response.Status;
+        }
+
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id)
         {
             var client = _client.GetBlobClient(filename);
-            if (id == null) return await client.DownloadContentAsync();
+            if (id == null)
+            {
+                return await client.DownloadContentAsync();
+            }
             var versions = await GetBlobVersions(filename);
-            return await client.WithVersion(versions[id.Value].VersionId).DownloadContentAsync();
 
+            return await client.WithVersion(versions[id.Value].VersionId).DownloadContentAsync();
         }
+
+        public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct)
+        {
+            return _client.GetBlobs(BlobTraits.All, BlobStates.None, prefix, ct)
+                .Where(x => x.Name.Contains($"{Path.GetFileNameWithoutExtension(blobName)}."))
+                .Where(x => x.Name.Contains(size))
+                .ToList();
+        }
+
         /// <summary>
         /// Promotes previous blob version to actual.
         /// Opens stream with blob and uploads it again due to lack of method to promote in a simple way.
@@ -45,7 +66,7 @@ namespace Infrastructure.Services
         /// <param name="id"></param>
         /// <param name="ct"></param>
         /// <returns>
-        /// A int representing HTTP status of operation.
+        /// An int representing HTTP status of operation.
         /// </returns>
         public async Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
         {
@@ -64,24 +85,24 @@ namespace Infrastructure.Services
                     },
                     AccessTier = properties.AccessTier
                 }, ct);
+
                 return response.GetRawResponse().Status;
             }
-
         }
 
         public async Task<int> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
         {
             var client = _client.GetBlobClient($"original-{filename}");
             var response = await client.SetMetadataAsync(metadata, default, ct);
-            return response.GetRawResponse().Status;
 
+            return response.GetRawResponse().Status;
         }
         /// <summary>
         /// Gets all blobs (and their versions) using provided filename.
         /// </summary>
         /// <param name="filename"></param>
         /// <returns>
-        /// BlobItem array with basic data about blob
+        /// A BlobItem array with basic data about blob
         /// </returns>
         private async Task<BlobItem[]> GetBlobVersions(string filename)
         {

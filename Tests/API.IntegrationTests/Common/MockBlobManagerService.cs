@@ -12,9 +12,9 @@ namespace API.IntegrationTests.Common
     public class MockBlobManagerService : IBlobManagerService
     {
         private IDictionary<string, BlobDownloadResult[]> blobs;
+
         public MockBlobManagerService()
         {
-
             var bytes = new byte[] { 00, 50, 00, 00, 40, 00, 03, 00, 00, 00, 00, 10 };
             blobs = new Dictionary<string, BlobDownloadResult[]>()
             {
@@ -25,10 +25,12 @@ namespace API.IntegrationTests.Common
                 {"miniature-sample.jpeg", new [] {MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-sample.jpeg", "image/jpeg") } }
             };
         }
+
         public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, IDictionary<string, string> metadata, CancellationToken ct)
         {
             var fakeResult = MakeFakeDownloadResult(fileStream, filename, contentType, metadata);
             PrependOrAddToDictionary("miniature", filename, fakeResult);
+
             return 201;
         }
 
@@ -36,6 +38,7 @@ namespace API.IntegrationTests.Common
         {
             var fakeResult = MakeFakeDownloadResult(fileStream, filename, contentType);
             PrependOrAddToDictionary("miniature", filename, fakeResult);
+
             return 201;
         }
 
@@ -44,6 +47,7 @@ namespace API.IntegrationTests.Common
             return blobs[filename][id.GetValueOrDefault()];
 
         }
+
         private BlobDownloadResult MakeFakeDownloadResult(Stream fileStream, string filename, string contentType, IDictionary<string, string>? metadata = null)
         {
             using (var memStream = new MemoryStream())
@@ -51,11 +55,12 @@ namespace API.IntegrationTests.Common
                 fileStream.CopyTo(memStream);
                 var bytes = new BinaryData(memStream.ToArray());
                 var details = BlobsModelFactory.BlobDownloadDetails(BlobType.Block, memStream.Length, contentType, new byte[] { 00 }, DateTimeOffset.Now, metadata, null, null, null, null, null, 1, DateTimeOffset.Now, null, null, null, null, CopyStatus.Success, LeaseDurationType.Infinite, LeaseState.Available, LeaseStatus.Unlocked, null, 1, false, null, null, new byte[] { 00 }, 0, null, false, null, null);
+                
                 return BlobsModelFactory.BlobDownloadResult(bytes, details);
-
             }
 
         }
+
         public async Task<int> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
         {
             string filenameWithPrefix = $"original-{filename}";
@@ -66,6 +71,7 @@ namespace API.IntegrationTests.Common
                 blobs[filenameWithPrefix] = blob.Prepend(updated).ToArray();
                 blobs[$"miniature-{filename}"] = blob.Prepend(updated).ToArray();
             }
+
             return 200;
         }
 
@@ -75,8 +81,10 @@ namespace API.IntegrationTests.Common
             var blob = blobs[filenameWithPrefix];
             (blob[id], blob[0]) = (blob[0], blob[id]);
             blobs[filenameWithPrefix] = blob;
+
             return 201;
         }
+
         private void PrependOrAddToDictionary(string filenamePrefix, string filename, BlobDownloadResult fakeResult)
         {
             var filenameWithPrefix = $"{filenamePrefix}-{filename}";
@@ -87,6 +95,16 @@ namespace API.IntegrationTests.Common
             }
             else
                 blobs.Add($"miniature-{filename}", new[] { fakeResult });
+        }
+
+        public Task<int> DeleteBlobAsync(string filename, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -20,6 +20,7 @@ namespace Functions
             _service = service;
             _formats = formats;
         }
+
         [FunctionName("Miniaturize")]
         public async Task Run([BlobTrigger("%ImagesContainer%/original-{name}", Connection = "AzureWebJobsStorage")] Stream myBlob,
             [Blob("%ImagesContainer%/original-{name}", FileAccess.Read, Connection = "AzureWebJobsStorage")] BlobBaseClient blob,
@@ -27,17 +28,18 @@ namespace Functions
         {
             var metadata = blob.GetProperties().Value.Metadata;
             var targetType = metadata["TargetType"];
+            int width = int.Parse(metadata["TargetWidth"]);
+            int height = int.Parse(metadata["TargetHeight"]);
             var format = _formats.FileFormat[targetType];
             using (var image = Image.FromStream(myBlob))
             {
-                var resized = new Bitmap(image, int.Parse(metadata["TargetWidth"]), int.Parse(metadata["TargetHeight"]));
+                var resized = new Bitmap(image, width, height);
                 using (var memStream = new MemoryStream())
                 {
-                    
                     resized.Save(memStream, format);
                     memStream.Position = 0;
                     var converted = new ImageFormatConverter().ConvertToString(format);
-                    await _service.AddAsync(memStream, $"miniature-{Path.GetFileNameWithoutExtension(name)}.{converted}",
+                    await _service.AddAsync(memStream, $"miniature-{width}x{height}-{Path.GetFileNameWithoutExtension(name)}.{converted}",
                         $"image/{converted}", new CancellationToken());
                 }
             }
