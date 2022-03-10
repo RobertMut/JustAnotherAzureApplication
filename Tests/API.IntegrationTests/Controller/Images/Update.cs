@@ -1,11 +1,7 @@
 ﻿using API.Controllers;
 using API.IntegrationTests.Common;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace API.IntegrationTests.Controller.Images
@@ -29,18 +25,19 @@ namespace API.IntegrationTests.Controller.Images
 
             var fromPut = await _client.PutAsync("api/Images/", content);
             var fromGet = await _client.GetAsync("/api/Images/miniature-sample.tiff");
+
             fromPut.EnsureSuccessStatusCode();
             var bytes = await fromGet.Content.ReadAsByteArrayAsync();
             Assert.NotNull(bytes);
         }
 
         [Test]
-        public async Task Throw500StatusUnknownFile()
+        public async Task ThrowInternalServerErrorStatusUnknownFile()
         {
             var content = GenerateFormData("unknown.tiff", 1, 1, "png");
             var fromPut = await _client.PutAsync("api/Images/", content);
 
-            Assert.True(fromPut.StatusCode == System.Net.HttpStatusCode.InternalServerError);
+            Assert.True(fromPut.StatusCode == System.Net.HttpStatusCode.BadRequest);
         }
 
         [Test]

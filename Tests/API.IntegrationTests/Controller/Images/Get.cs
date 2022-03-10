@@ -18,6 +18,7 @@ namespace API.IntegrationTests.Controller.Images
         {
             _factory = new CustomWebApplicationFactory<ImagesController>();
             _client = _factory.CreateClient(_factory.ClientOptions);
+
         }
 
         [Test]

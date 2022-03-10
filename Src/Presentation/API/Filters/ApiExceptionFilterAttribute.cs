@@ -47,7 +47,8 @@ namespace API.Filters
         {
             var details = new ValidationProblemDetails(context.ModelState)
             {
-                Type = Rfc + "#section-6.5.1"
+                Type = Rfc + "#section-6.5.1",
+                Detail = context.Exception.Message
             };
             context.Result = new BadRequestObjectResult(details);
             context.ExceptionHandled = true;
@@ -57,7 +58,8 @@ namespace API.Filters
         {
             var detail = new ValidationProblemDetails(obj.ModelState)
             {
-                Type = Rfc + "#section-6.5.1"
+                Type = Rfc + "#section-6.5.1",
+                Detail = obj.Exception.Message
             };
             obj.Result = new BadRequestObjectResult(detail);
             obj.ExceptionHandled = true;
@@ -70,7 +72,7 @@ namespace API.Filters
                 Status = StatusCodes.Status500InternalServerError,
                 Title = "An error occurred while processing your request.",
                 Type = Rfc + "#section-6.6.1",
-                Detail = obj.Exception.Message
+                Detail = obj.Exception.Message,
             };
             obj.Result = new ObjectResult(details)
             {

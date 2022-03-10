@@ -3,6 +3,7 @@ using Azure.Storage.Blobs.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,23 +17,24 @@ namespace Functions.UnitTests.Common
             blobs = new Dictionary<string, BlobDownloadResult>();
         }
 
-        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, IDictionary<string, string> metadata, CancellationToken ct)
+        public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType, IDictionary<string, string> metadata, CancellationToken ct)
         {
             blobs.Add($"original-{filename}", MakeFakeDownloadResult(fileStream, contentType, metadata));
 
-            return 201;
+            return HttpStatusCode.Created;
         }
 
-        public async Task<int> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
+        public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
         {
             blobs.Add(filename, MakeFakeDownloadResult(fileStream, contentType));
 
-            return 201;
+            return HttpStatusCode.Created;
         }
 
-        public Task<int> DeleteBlobAsync(string filename, CancellationToken ct)
+        public async Task<HttpStatusCode> DeleteBlobAsync(string filename, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return HttpStatusCode.Accepted;
         }
 
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id = 0)
@@ -40,19 +42,21 @@ namespace Functions.UnitTests.Common
             return blobs[filename];
         }
 
-        public Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct)
+        public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
+        public async Task<HttpStatusCode> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();ZZZZZ
+            return HttpStatusCode.Created;
         }
 
-        public Task<int> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
+        public async Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return HttpStatusCode.OK;
         }
 
         private BlobDownloadResult MakeFakeDownloadResult(Stream fileStream, string contentType, IDictionary<string, string>? metadata = null)

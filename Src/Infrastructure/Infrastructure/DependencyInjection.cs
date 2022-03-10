@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Blob;
+using Azure.Storage.Blobs;
 using Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,10 @@ namespace Infrastructure
         {
             var storage = configuration.GetConnectionString("Storage");
             var container = configuration["ImagesContainer"];
-            services.AddScoped<IBlobManagerService>(service => new BlobManagerService(storage, container));
+            services.AddScoped<IBlobManagerService>(service =>
+            {
+                return new BlobManagerService<BlobServiceClient>(storage, container);
+            });
 
             return services;
         }

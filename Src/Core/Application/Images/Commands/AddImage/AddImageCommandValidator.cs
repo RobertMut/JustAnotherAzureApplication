@@ -1,5 +1,4 @@
 ﻿using Application.Images.Commands.AddImage;
-using Domain.Enums.Image;
 using FluentValidation;
 
 namespace Application.Images.Commands
@@ -11,8 +10,8 @@ namespace Application.Images.Commands
         {
             RuleFor(x => x.File).NotNull();
             RuleFor(x => x.File.Length).GreaterThan(0);
-            RuleFor(x => x.Width.Value).GreaterThan(0);
-            RuleFor(x => x.Height.Value).GreaterThan(0);
+            RuleFor(x => x.Width).GreaterThan(0);
+            RuleFor(x => x.Height).GreaterThan(0);
             RuleFor(x => x.ContentType).Must(x => x.StartsWith(_imageType));
         }
     }

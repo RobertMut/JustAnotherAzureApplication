@@ -6,19 +6,25 @@ using System.Net;
 
 namespace Infrastructure.Services
 {
-    public class BlobManagerService : IBlobManagerService
+    public class BlobManagerService<TBlobServiceClient> : IBlobManagerService where TBlobServiceClient : BlobServiceClient
     {
-        private readonly BlobContainerClient _client;
+        private readonly BlobContainerClient _blobContainerClient;
 
         public BlobManagerService(string connectionString, string container)
         {
-            _client = new BlobServiceClient(connectionString).GetBlobContainerClient(container);
+            _blobContainerClient = new BlobServiceClient(connectionString).GetBlobContainerClient(container);
+        }
+
+        public BlobManagerService(TBlobServiceClient client, string container)
+        {
+;
+            _blobContainerClient = client.GetBlobContainerClient(container);
         }
 
         public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType,
             IDictionary<string, string> metadata, CancellationToken ct)
         {
-            var blobClient = _client.GetBlobClient(filename);
+            var blobClient = _blobContainerClient.GetBlobClient(filename);
             var blobOptions = new BlobUploadOptions()
             {
                 Metadata = metadata,
@@ -34,14 +40,14 @@ namespace Infrastructure.Services
 
         public async Task<HttpStatusCode> DeleteBlobAsync(string filename, CancellationToken ct)
         {
-            var response = await _client.DeleteBlobAsync(filename, DeleteSnapshotsOption.None, null, ct);
+            var response = await _blobContainerClient.DeleteBlobAsync(filename, DeleteSnapshotsOption.None, null, ct);
 
             return (HttpStatusCode)response.Status;
         }
 
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id)
         {
-            var client = _client.GetBlobClient(filename);
+            var client = _blobContainerClient.GetBlobClient(filename);
             if (!id.HasValue)
             {
                 return await client.DownloadContentAsync();
@@ -53,7 +59,7 @@ namespace Infrastructure.Services
 
         public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct)
         {
-            return _client.GetBlobs(BlobTraits.All, BlobStates.None, prefix, ct)
+            return _blobContainerClient.GetBlobs(BlobTraits.All, BlobStates.None, prefix, ct)
                 .Where(x => x.Name.Contains($"{Path.GetFileNameWithoutExtension(blobName)}."))
                 .Where(x => x.Name.Contains(size))
                 .ToList();
@@ -71,7 +77,7 @@ namespace Infrastructure.Services
         /// </returns>
         public async Task<HttpStatusCode> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
         {
-            var client = _client.GetBlobClient(filename);
+            var client = _blobContainerClient.GetBlobClient(filename);
             var version = await GetBlobVersions(filename);
             var properties = client.GetProperties().Value;
             using (var stream = await client.WithVersion(version[id].VersionId).OpenReadAsync(new BlobOpenReadOptions(false), ct))
@@ -93,7 +99,7 @@ namespace Infrastructure.Services
 
         public async Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
         {
-            var client = _client.GetBlobClient(filename);
+            var client = _blobContainerClient.GetBlobClient(filename);
             var response = await client.SetMetadataAsync(metadata, default, ct);
 
             return (HttpStatusCode)response.GetRawResponse().Status;
@@ -107,7 +113,7 @@ namespace Infrastructure.Services
         /// </returns>
         private async Task<BlobItem[]> GetBlobVersions(string filename)
         {
-            return _client.GetBlobs(BlobTraits.All, BlobStates.All).Where(x => x.Name.StartsWith(filename)).Reverse().ToArray();
+            return _blobContainerClient.GetBlobs(BlobTraits.All, BlobStates.All).Where(x => x.Name.StartsWith(filename)).Reverse().ToArray();
         }
     }
 }

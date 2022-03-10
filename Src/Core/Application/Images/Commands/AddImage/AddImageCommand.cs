@@ -15,8 +15,8 @@ namespace Application.Images.Commands.AddImage
         public string FileName { get; set; }
         public string ContentType { get; set; }
         public Format? TargetType { get; set; }
-        public int? Width { get; set; }
-        public int? Height { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
 
         public class AddImageCommandHandler : IRequestHandler<AddImageCommand>
         {
@@ -33,8 +33,8 @@ namespace Application.Images.Commands.AddImage
                 {
                     { Metadata.OriginalFile, request.FileName },
                     { Metadata.TargetType, !request.TargetType.HasValue ? request.ContentType : EnumHelper.GetDescriptionFromEnumValue(request.TargetType.Value) },
-                    { Metadata.TargetWidth, request.Width.HasValue ? request.Width.ToString() : default },
-                    { Metadata.TargetHeight, request.Height.HasValue ? request.Height.ToString() : default },
+                    { Metadata.TargetWidth, request.Width.ToString()},
+                    { Metadata.TargetHeight, request.Height.ToString()},
                 };
                 using (var stream = request.File.OpenReadStream())
                 {

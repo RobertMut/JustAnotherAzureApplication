@@ -20,9 +20,11 @@ namespace API.IntegrationTests.Common
             {
                 services.Remove(services.SingleOrDefault(
                 d => d.ServiceType ==
-                     typeof(BlobManagerService)));
-                services.AddScoped<IBlobManagerService, MockBlobManagerService>();
+                     typeof(BlobManagerService<Azure.Storage.Blobs.BlobServiceClient>)));
 
+                var blobService = new BlobServiceClient();
+
+                services.AddScoped<IBlobManagerService>(provider => new BlobManagerService<BlobServiceClient>(blobService, ""));
             });
 
             base.ConfigureWebHost(builder);

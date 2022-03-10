@@ -10,16 +10,16 @@ namespace Application.Images.Queries
     }
     public class GetFileQueryHandler : IRequestHandler<GetFileQuery, FileVm>
     {
-        private readonly IBlobManagerService _service;
+        private readonly IBlobManagerService _blobManagerService;
 
-        public GetFileQueryHandler(IBlobManagerService service)
+        public GetFileQueryHandler(IBlobManagerService blobManagerService)
         {
-            _service = service;
+            _blobManagerService = blobManagerService;
         }
 
         public async Task<FileVm> Handle(GetFileQuery request, CancellationToken cancellationToken)
         {
-            var file = await _service.DownloadAsync(request.Filename, request.Id);
+            var file = await _blobManagerService.DownloadAsync(request.Filename, request.Id);
 
             return new FileVm
             {

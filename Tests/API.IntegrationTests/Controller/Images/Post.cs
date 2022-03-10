@@ -27,6 +27,7 @@ namespace API.IntegrationTests.Controller.Images
             content.Add(new StringContent("100"), "width");
             content.Add(new StringContent("100"), "height");
             content.Add(new StringContent("tiff"), "targetType");
+
             var response = await _client.PostAsync("api/Images/", content);
 
             response.EnsureSuccessStatusCode();
@@ -39,6 +40,7 @@ namespace API.IntegrationTests.Controller.Images
             content.Add(new StringContent("0"), "width");
             content.Add(new StringContent("0"), "height");
             content.Add(new StringContent("jpeg"), "targetType");
+
             var response = await _client.PostAsync("api/Images/", content);
 
             Assert.True(response.StatusCode == System.Net.HttpStatusCode.BadRequest);
@@ -51,6 +53,7 @@ namespace API.IntegrationTests.Controller.Images
             content.Add(new StringContent("100"), "width");
             content.Add(new StringContent("100"), "height");
             content.Add(new StringContent("test"), "file", "file");
+
             var response = await _client.PostAsync("api/Images/", content);
 
             Assert.True(response.StatusCode == System.Net.HttpStatusCode.BadRequest);

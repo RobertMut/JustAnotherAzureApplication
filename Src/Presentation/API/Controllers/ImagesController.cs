@@ -54,8 +54,8 @@ namespace API.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> PostImageAsync([FromForm] IFormFile file,
             [FromForm] Format targetType,
-            [FromForm] int? height,
-            [FromForm] int? width)
+            [FromForm] int height,
+            [FromForm] int width)
         {
             await _mediator.Send(new AddImageCommand
             {
