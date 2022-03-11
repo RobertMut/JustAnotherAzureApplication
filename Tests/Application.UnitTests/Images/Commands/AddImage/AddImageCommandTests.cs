@@ -40,7 +40,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
         {
             _service.Setup(x => x.AddAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>(),
                  It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.Created);
-            _mediator.Verify(x => x.Send(It.IsAny<AddImageCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediator.Verify(x => x.Send(It.IsAny<AddImageCommand>(), It.IsAny<CancellationToken>()), Times.Never);
 
             var handler = new AddImageCommand.AddImageCommandHandler(_service.Object);
             var command = new AddImageCommand()

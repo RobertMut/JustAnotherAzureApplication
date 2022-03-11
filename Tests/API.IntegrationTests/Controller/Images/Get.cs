@@ -24,7 +24,7 @@ namespace API.IntegrationTests.Controller.Images
         [Test]
         public async Task GetImage()
         {
-            var response = await _client.GetAsync("/api/Images/miniature-sample.jpeg");
+            var response = await _client.GetAsync("/api/Images/miniature-300x300-sample1.jpeg");
 
             response.EnsureSuccessStatusCode();
             Assert.AreEqual(response.Content.Headers.ContentType, MediaTypeHeaderValue.Parse("image/jpeg"));

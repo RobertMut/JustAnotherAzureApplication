@@ -29,7 +29,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
         {
             _service.Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.OK);
             _service.Setup(x => x.PromoteBlobVersionAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.Created);
-            _mediator.Verify(x => x.Send(It.IsAny<UpdateImageCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediator.Verify(x => x.Send(It.IsAny<UpdateImageCommand>(), It.IsAny<CancellationToken>()), Times.Never);
 
             var handler = new UpdateImageCommand.UpdateImageCommandHandler(_service.Object);
             var command = new UpdateImageCommand()
