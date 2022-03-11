@@ -1,5 +1,6 @@
 using Application.Common.Interfaces.Blob;
 using Common;
+using Domain.Constants.Image;
 using Functions.UnitTests.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -34,10 +35,10 @@ namespace Functions.UnitTests
         {
             var metadata = new Dictionary<string, string>
                 {
-                    { "OriginalFile", "test.bmp" },
-                    { "TargetType", "png" },
-                    { "TargetWidth", "50" },
-                    { "TargetHeight", "50" },
+                    { Metadata.OriginalFile, "test.bmp" },
+                    { Metadata.TargetType, "png" },
+                    { Metadata.TargetWidth, "50" },
+                    { Metadata.TargetHeight, "50" },
                 };
 
             using (var bitmap = new Bitmap(100, 100))
@@ -55,9 +56,39 @@ namespace Functions.UnitTests
                     {
                         await _miniaturize.Run(memoryStream, baseClient, "test.bmp", NullLogger.Instance);
                     });
-                    var processedFile = await _blobManager.DownloadAsync("miniature-test.Png", null);
+
+                    var processedFile = await _blobManager.DownloadAsync(Prefixes.MiniatureImage+$"{metadata[Metadata.TargetWidth]}x{metadata[Metadata.TargetHeight]}-test.Png", null);
+
                     Assert.NotNull(processedFile.Content);
                     Assert.True(processedFile.Details.ContentType == "image/Png");
+                }
+            }
+        }
+
+        [Test]
+        public async Task MiniaturizeImageButCustomExtension()
+        {
+            var metadata = new Dictionary<string, string>
+                {
+                    { Metadata.OriginalFile, "test.exe" },
+                    { Metadata.TargetType, "exe" },
+                    { Metadata.TargetWidth, "50" },
+                    { Metadata.TargetHeight, "50" },
+                };
+
+            using (var bitmap = new Bitmap(100, 100))
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.Clear(Color.Green);
+                using (var memoryStream = new MemoryStream())
+                {
+                    bitmap.Save(memoryStream, ImageFormat.Bmp);
+                    memoryStream.Position = 0;
+                    await _blobManager.AddAsync(memoryStream, "test.bmp", "image/bmp", metadata, CancellationToken.None);
+                    var baseClient = new MockBlobBaseClient(memoryStream.Length, "image/bmp", metadata);
+
+                    Assert.DoesNotThrowAsync( async () => 
+                    await _miniaturize.Run(memoryStream, baseClient, "test.bmp", NullLogger.Instance));
                 }
             }
         }

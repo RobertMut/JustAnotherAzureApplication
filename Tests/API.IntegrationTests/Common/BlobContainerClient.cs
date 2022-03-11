@@ -14,9 +14,11 @@ namespace API.IntegrationTests.Common
         {
             _blobClient = new BlobClient();
         }
+
         public override BlobClient GetBlobClient(string blobName)
         {
             _blobClient.BlobName = blobName;
+
             return _blobClient;
         }
 

@@ -24,9 +24,11 @@ namespace API.IntegrationTests.Controller.Images
             var content = GenerateFormData("sample.png", 50, 50, "tiff", 1);
 
             var fromPut = await _client.PutAsync("api/Images/", content);
-            var fromGet = await _client.GetAsync("/api/Images/miniature-sample.tiff");
-
             fromPut.EnsureSuccessStatusCode();
+
+            var fromGet = await _client.GetAsync("/api/Images/miniature-sample.tiff");
+            fromGet.EnsureSuccessStatusCode();
+
             var bytes = await fromGet.Content.ReadAsByteArrayAsync();
             Assert.NotNull(bytes);
         }
@@ -34,10 +36,10 @@ namespace API.IntegrationTests.Controller.Images
         [Test]
         public async Task ThrowInternalServerErrorStatusUnknownFile()
         {
-            var content = GenerateFormData("unknown.tiff", 1, 1, "png");
+            var content = GenerateFormData("unknown.bmp", 50, 50, "tiff", 1);
             var fromPut = await _client.PutAsync("api/Images/", content);
 
-            Assert.True(fromPut.StatusCode == System.Net.HttpStatusCode.BadRequest);
+            Assert.True(fromPut.StatusCode == System.Net.HttpStatusCode.InternalServerError);
         }
 
         [Test]

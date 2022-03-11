@@ -14,8 +14,6 @@ namespace API.IntegrationTests.Common
 
         private string _version = "0";
         private string _blobName;
-        private static BlobClient instance = null;
-        private static readonly object padlock = new object();
 
         public BlobClient()
         {
@@ -26,10 +24,16 @@ namespace API.IntegrationTests.Common
                 Utils.MakeFakeDownloadResult(new MemoryStream(bytes.Reverse().ToArray()),
                                         "original-sample.png",
                                         "image/png", null, "1")} },
-                {"miniature-sample.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-sample.jpeg", "image/jpeg") } }
+                {"original-sample2.png", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "original-sample2.png", "image/png", null, "0"),
+                Utils.MakeFakeDownloadResult(new MemoryStream(bytes.Reverse().ToArray()),
+                                        "original-sample2.png",
+                                        "image/png", null, "1")} },
+                {"miniature-300x300-sample1.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-300x300-sample1.jpeg", "image/jpeg") }},
+                {"miniature-200x200-sample1.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-200x200-sample1.jpeg", "image/jpeg") }},
+                {"miniature-400x400-sample2.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-400x400-sample2.jpeg", "image/jpeg") }}
             };
         }
-
+        
         public string BlobName
         {
             get
@@ -39,34 +43,6 @@ namespace API.IntegrationTests.Common
             set
             {
                 _blobName = value;
-            }
-        }
-
-        public string VersionId
-        {
-            get
-            {
-                return _version.ToString();
-            }
-            set
-            {
-                _version = value.ToString();
-            }
-        }
-
-        public static BlobClient Instance
-        {
-            get
-            {
-                lock (padlock)
-                {
-                    if (instance == null)
-                    {
-                        instance = new BlobClient();
-                    }
-
-                    return instance;
-                }
             }
         }
 
@@ -115,6 +91,7 @@ namespace API.IntegrationTests.Common
         {
             var mock = new Mock<Azure.Response<BlobDownloadResult>>();
             var blobDownloadResult = Utils.Repository[_blobName][int.Parse(_version)];
+            
             mock.Setup(x => x.Value).Returns(blobDownloadResult);
 
             return mock.Object;
@@ -124,8 +101,8 @@ namespace API.IntegrationTests.Common
         {
             var mock = new Mock<Azure.Response<BlobInfo>>();
             mock.Setup(x => x.GetRawResponse().Status).Returns(200);
-            var original = Utils.Repository[_blobName][0];
 
+            var original = Utils.Repository[_blobName][0];
             Utils.Repository[_blobName][0] = Utils.MakeFakeDownloadResult(original.Content.ToStream(), _blobName, original.Details.ContentType, metadata);
 
             return mock.Object;

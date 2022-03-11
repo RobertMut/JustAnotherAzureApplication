@@ -18,12 +18,11 @@ namespace Application.UnitTests.Images.Queries.GetFile
         public async Task SetUp()
         {
             var blob = new Mock<BlobDownloadResult>();
-
             _service = new Mock<IBlobManagerService>();
-            _service.Setup(x => x.DownloadAsync(It.IsAny<string>(), It.IsAny<int>()))
-                .ReturnsAsync(blob.Object);
             _mediator = new Mock<IMediator>();
 
+            _service.Setup(x => x.DownloadAsync(It.IsAny<string>(), It.IsAny<int>()))
+                .ReturnsAsync(blob.Object);
             _mediator.Setup(x => x.Send(It.IsAny<GetFileQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new FileVm()
             {
                 File = blob.Object

@@ -24,7 +24,7 @@ namespace API.IntegrationTests.Common
 
                 var blobService = new BlobServiceClient();
 
-                services.AddScoped<IBlobManagerService>(provider => new BlobManagerService<BlobServiceClient>(blobService, ""));
+                services.AddSingleton<IBlobManagerService>(provider => new BlobManagerService<BlobServiceClient>(blobService, ""));
             });
 
             base.ConfigureWebHost(builder);

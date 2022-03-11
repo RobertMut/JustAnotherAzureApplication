@@ -19,7 +19,7 @@ namespace Functions.UnitTests.Common
 
         public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType, IDictionary<string, string> metadata, CancellationToken ct)
         {
-            blobs.Add($"original-{filename}", MakeFakeDownloadResult(fileStream, contentType, metadata));
+            blobs.Add(filename, MakeFakeDownloadResult(fileStream, contentType, metadata));
 
             return HttpStatusCode.Created;
         }
@@ -33,8 +33,7 @@ namespace Functions.UnitTests.Common
 
         public async Task<HttpStatusCode> DeleteBlobAsync(string filename, CancellationToken ct)
         {
-            //throw new NotImplementedException();
-            return HttpStatusCode.Accepted;
+            throw new NotImplementedException();
         }
 
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id = 0)
@@ -49,14 +48,12 @@ namespace Functions.UnitTests.Common
 
         public async Task<HttpStatusCode> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
         {
-            //throw new NotImplementedException();ZZZZZ
-            return HttpStatusCode.Created;
+            throw new NotImplementedException();
         }
 
         public async Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
         {
-            //throw new NotImplementedException();
-            return HttpStatusCode.OK;
+            throw new NotImplementedException();
         }
 
         private BlobDownloadResult MakeFakeDownloadResult(Stream fileStream, string contentType, IDictionary<string, string>? metadata = null)
@@ -66,6 +63,7 @@ namespace Functions.UnitTests.Common
                 fileStream.CopyTo(memStream);
                 var bytes = new BinaryData(memStream.ToArray());
                 var details = BlobsModelFactory.BlobDownloadDetails(BlobType.Block, memStream.Length, contentType, default, DateTimeOffset.Now, metadata, default, default, default, default, default, 0, DateTimeOffset.Now, default, default, default, default, CopyStatus.Success, LeaseDurationType.Infinite, LeaseState.Available, LeaseStatus.Unlocked, default, default, default, default, default, default, default, default, default, default, default);
+
                 return BlobsModelFactory.BlobDownloadResult(bytes, details);
             }
         }
