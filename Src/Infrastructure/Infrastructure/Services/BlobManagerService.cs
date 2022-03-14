@@ -1,24 +1,17 @@
-﻿using System.Linq;
-using Azure.Storage.Blobs;
+﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Application.Common.Interfaces.Blob;
 using System.Net;
 
 namespace Infrastructure.Services
 {
-    public class BlobManagerService<TBlobServiceClient> : IBlobManagerService where TBlobServiceClient : BlobServiceClient
+    public class BlobManagerService : IBlobManagerService 
     {
         private readonly BlobContainerClient _blobContainerClient;
 
         public BlobManagerService(string connectionString, string container)
         {
             _blobContainerClient = new BlobServiceClient(connectionString).GetBlobContainerClient(container);
-        }
-
-        public BlobManagerService(TBlobServiceClient client, string container)
-        {
-;
-            _blobContainerClient = client.GetBlobContainerClient(container);
         }
 
         public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType,

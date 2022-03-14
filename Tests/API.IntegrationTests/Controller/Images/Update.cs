@@ -21,12 +21,12 @@ namespace API.IntegrationTests.Controller.Images
         [Test]
         public async Task UpdateImage()
         {
-            var content = GenerateFormData("sample.png", 50, 50, "tiff", 1);
+            var content = GenerateFormData("sample1.png", 50, 50, "tiff", 1);
 
             var fromPut = await _client.PutAsync("api/Images/", content);
             fromPut.EnsureSuccessStatusCode();
 
-            var fromGet = await _client.GetAsync("/api/Images/miniature-sample.tiff");
+            var fromGet = await _client.GetAsync("/api/Images/miniature-50x50-sample1.tiff");
             fromGet.EnsureSuccessStatusCode();
 
             var bytes = await fromGet.Content.ReadAsByteArrayAsync();
@@ -45,11 +45,12 @@ namespace API.IntegrationTests.Controller.Images
         [Test]
         public async Task ThrowValidationFailed()
         {
-            var content = GenerateFormData("sample.png", 0, 0, "");
+            var content = GenerateFormData("sample1.png", 0, 0, "");
             var fromPut = await _client.PutAsync("api/Images/", content);
 
             Assert.True(fromPut.StatusCode == System.Net.HttpStatusCode.BadRequest);
         }
+
         private MultipartFormDataContent GenerateFormData(string filename, int width, int height, string contentType, int? version = 0)
         {
             var content = new MultipartFormDataContent();

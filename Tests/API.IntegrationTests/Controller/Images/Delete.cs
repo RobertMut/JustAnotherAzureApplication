@@ -39,7 +39,7 @@ namespace API.IntegrationTests.Controller.Images
             var response = await _client.DeleteAsync("/api/Images/sample2.png");
             response.EnsureSuccessStatusCode();
             var responseGetMiniature = await _client.GetAsync("/api/Images/miniature-400x400-sample2.jpeg");
-            var responseGetOtherOriginal = await _client.GetAsync("/api/Images/original-sample.png");
+            var responseGetOtherOriginal = await _client.GetAsync("/api/Images/original-sample1.png");
             Assert.Throws<HttpRequestException>(() => responseGetMiniature.EnsureSuccessStatusCode());
             responseGetOtherOriginal.EnsureSuccessStatusCode();
         }
