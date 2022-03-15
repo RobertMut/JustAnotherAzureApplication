@@ -7,16 +7,16 @@ namespace API.Filters
     public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     {
         private readonly IDictionary<Type, Action<ExceptionContext>> _exceptionHandlers;
-        private const string Rfc = "https://tools.ietf.org/html/rfc7231";
+        private const string Rfc7231 = "https://tools.ietf.org/html/rfc7231";
 
         public ApiExceptionFilterAttribute()
         {
             _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
             {
-                {typeof(NullReferenceException), HandleUnknownException},
-                {typeof(ArgumentException), HandleUnknownException},
-                {typeof(OperationFailedException), HandleUnknownException },
-                {typeof(ValidationException), HandleValidationException}
+                { typeof(NullReferenceException), HandleUnknownException },
+                { typeof(ArgumentException), HandleUnknownException },
+                { typeof(OperationFailedException), HandleUnknownException },
+                { typeof(ValidationException), HandleValidationException }
             };
         }
 
@@ -47,7 +47,7 @@ namespace API.Filters
         {
             var details = new ValidationProblemDetails(context.ModelState)
             {
-                Type = Rfc + "#section-6.5.1",
+                Type = Rfc7231 + "#section-6.5.1",
                 Detail = context.Exception.Message
             };
             context.Result = new BadRequestObjectResult(details);
@@ -58,7 +58,7 @@ namespace API.Filters
         {
             var detail = new ValidationProblemDetails(obj.ModelState)
             {
-                Type = Rfc + "#section-6.5.1",
+                Type = Rfc7231 + "#section-6.5.1",
                 Detail = obj.Exception.Message
             };
             obj.Result = new BadRequestObjectResult(detail);
@@ -71,7 +71,7 @@ namespace API.Filters
             {
                 Status = StatusCodes.Status500InternalServerError,
                 Title = "An error occurred while processing your request.",
-                Type = Rfc + "#section-6.6.1",
+                Type = Rfc7231 + "#section-6.6.1",
                 Detail = obj.Exception.Message,
             };
             obj.Result = new ObjectResult(details)

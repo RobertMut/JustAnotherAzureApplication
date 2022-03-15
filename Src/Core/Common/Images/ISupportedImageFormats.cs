@@ -1,7 +1,7 @@
 ﻿using Domain.Enums.Image;
 using System.Drawing.Imaging;
 
-namespace Common
+namespace Common.Images
 {
     public interface ISupportedImageFormats
     {

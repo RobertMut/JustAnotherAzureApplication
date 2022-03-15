@@ -1,13 +1,14 @@
 ﻿using Application.Common.Interfaces.Blob;
 using MediatR;
 
-namespace Application.Images.Queries
+namespace Application.Images.Queries.GetFile
 {
     public class GetFileQuery : IRequest<FileVm>
     {
         public string Filename { get; set; }
         public int? Id { get; set; }
     }
+
     public class GetFileQueryHandler : IRequestHandler<GetFileQuery, FileVm>
     {
         private readonly IBlobManagerService _blobManagerService;

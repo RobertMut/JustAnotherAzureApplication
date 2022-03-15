@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces.Blob;
-using Application.Images.Queries;
+using Application.Images.Queries.GetFile;
 using Azure.Storage.Blobs.Models;
 using MediatR;
 using Moq;
@@ -28,6 +28,7 @@ namespace Application.UnitTests.Images.Queries.GetFile
                 File = blob.Object
             });
         }
+
         [Test]
         public async Task GetFile()
         {

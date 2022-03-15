@@ -15,7 +15,7 @@ namespace Infrastructure.Services
         }
 
         public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType,
-            IDictionary<string, string> metadata, CancellationToken ct)
+            IDictionary<string, string> metadata = null, CancellationToken ct = default)
         {
             var blobClient = _blobContainerClient.GetBlobClient(filename);
             var blobOptions = new BlobUploadOptions()
@@ -70,12 +70,12 @@ namespace Infrastructure.Services
         /// </returns>
         public async Task<HttpStatusCode> PromoteBlobVersionAsync(string filename, int id, CancellationToken ct)
         {
-            var client = _blobContainerClient.GetBlobClient(filename);
+            var blobClient = _blobContainerClient.GetBlobClient(filename);
             var version = await GetBlobVersions(filename);
-            var properties = client.GetProperties().Value;
-            using (var stream = await client.WithVersion(version[id].VersionId).OpenReadAsync(new BlobOpenReadOptions(false), ct))
+            var properties = blobClient.GetProperties().Value;
+            using (var stream = await blobClient.WithVersion(version[id].VersionId).OpenReadAsync(new BlobOpenReadOptions(false), ct))
             {
-                var response = await client.UploadAsync(stream, new BlobUploadOptions
+                var response = await blobClient.UploadAsync(stream, new BlobUploadOptions
                 {
                     Metadata = properties.Metadata,
                     HttpHeaders = new BlobHttpHeaders()

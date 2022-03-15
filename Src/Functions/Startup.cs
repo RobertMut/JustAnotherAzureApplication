@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces.Blob;
-using Common;
+using Common.Images;
 using Infrastructure.Services;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,8 +12,8 @@ namespace Functions
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddSingleton<IBlobCreatorService>(service =>
-            new BlobCreatorService(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), Environment.GetEnvironmentVariable("ImagesContainer")));
+            builder.Services.AddSingleton<IBlobManagerService>(service =>
+                new BlobManagerService(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), Environment.GetEnvironmentVariable("ImagesContainer")));
             builder.Services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
         }
     }

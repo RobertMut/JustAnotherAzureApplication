@@ -1,5 +1,4 @@
-﻿using Common;
-using Domain.Common.Helper.Enum;
+﻿using Common.Images;
 using Domain.Enums.Image;
 using System.Collections.Generic;
 using System.Drawing.Imaging;

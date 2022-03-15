@@ -33,9 +33,10 @@ namespace Application.Images.Commands.AddImage
                 {
                     { Metadata.OriginalFile, request.FileName },
                     { Metadata.TargetType, !request.TargetType.HasValue ? request.ContentType : EnumHelper.GetDescriptionFromEnumValue(request.TargetType.Value) },
-                    { Metadata.TargetWidth, request.Width.ToString()},
-                    { Metadata.TargetHeight, request.Height.ToString()},
+                    { Metadata.TargetWidth, request.Width.ToString() },
+                    { Metadata.TargetHeight, request.Height.ToString() },
                 };
+
                 using (var stream = request.File.OpenReadStream())
                 {
                     var statusCode = await _service.AddAsync(stream, Prefixes.OriginalImage + request.FileName, request.ContentType, metadata, cancellationToken);

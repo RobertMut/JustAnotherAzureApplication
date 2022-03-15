@@ -1,6 +1,7 @@
 ﻿using Application.Images.Commands.AddImage;
+using Application.Images.Commands.DeleteImage;
 using Application.Images.Commands.UpdateImage;
-using Application.Images.Queries;
+using Application.Images.Queries.GetFile;
 using Domain.Enums.Image;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

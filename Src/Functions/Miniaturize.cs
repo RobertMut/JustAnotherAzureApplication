@@ -5,28 +5,30 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
 using Azure.Storage.Blobs.Specialized;
-using Common;
 using Application.Common.Interfaces.Blob;
 using Domain.Constants.Image;
 using Domain.Common.Helper.Enum;
 using Domain.Enums.Image;
+using Common.Images;
 
 namespace Functions
 {
     public class Miniaturize
     {
-        private readonly IBlobCreatorService _service;
+        private readonly IBlobManagerService _service;
         private readonly ISupportedImageFormats _formats;
+        private const string ConnectionStringSetting = "AzureWebJobsStorage";
+        private const string ContainerStringSetting = "%ImagesContainer%/";
 
-        public Miniaturize(IBlobCreatorService service, ISupportedImageFormats formats)
+        public Miniaturize(IBlobManagerService service, ISupportedImageFormats formats)
         {
             _service = service;
             _formats = formats;
         }
 
         [FunctionName("Miniaturize")]
-        public async Task Run([BlobTrigger("%ImagesContainer%/original-{name}", Connection = "AzureWebJobsStorage")] Stream myBlob,
-            [Blob("%ImagesContainer%/original-{name}", FileAccess.Read, Connection = "AzureWebJobsStorage")] BlobBaseClient blob,
+        public async Task Run([BlobTrigger(ContainerStringSetting + Prefixes.OriginalImage + "{name}", Connection = ConnectionStringSetting)] Stream myBlob,
+            [Blob(ContainerStringSetting + Prefixes.OriginalImage + "{name}", FileAccess.Read, Connection = ConnectionStringSetting)] BlobBaseClient blob,
             string name, ILogger log)
         {
             var metadata = blob.GetProperties().Value.Metadata;
@@ -37,15 +39,15 @@ namespace Functions
 
             using (var image = Image.FromStream(myBlob))
             {
-                var resized = new Bitmap(image, width, height);
+                var resizedImage = new Bitmap(image, width, height);
                 using (var memStream = new MemoryStream())
                 {
-                    resized.Save(memStream, format);
+                    resizedImage.Save(memStream, format);
                     memStream.Position = 0;
-                    var converted = new ImageFormatConverter().ConvertToString(format);
+                    var convertedFormatToString = new ImageFormatConverter().ConvertToString(format);
 
-                    await _service.AddAsync(memStream, $"miniature-{width}x{height}-{Path.GetFileNameWithoutExtension(name)}.{converted}",
-                        $"image/{converted}", new CancellationToken());
+                    await _service.AddAsync(memStream, $"{Prefixes.MiniatureImage}{width}x{height}-{Path.GetFileNameWithoutExtension(name)}.{convertedFormatToString}",
+                        $"{Prefixes.ImageFormat}{convertedFormatToString}", null, new CancellationToken());
                 }
             }
 

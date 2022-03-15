@@ -8,7 +8,7 @@ namespace Application.Common.Interfaces.Blob
         Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType,
             IDictionary<string, string> metadata, CancellationToken ct);
 
-        Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct);
+        Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata = null, CancellationToken ct = default);
 
         Task<BlobDownloadResult> DownloadAsync(string filename, int? id);
 

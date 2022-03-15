@@ -3,7 +3,7 @@ using Application.Common.Interfaces.Blob;
 using MediatR;
 using System.Net;
 
-namespace Application.Images.Commands.UpdateImage
+namespace Application.Images.Commands.DeleteImage
 {
     public class DeleteImageCommand : IRequest
     {

@@ -12,7 +12,7 @@ namespace Domain.Common.Helper.Enum
                 .GetCustomAttributes(typeof(EnumMemberAttribute), false)
                 .SingleOrDefault() as EnumMemberAttribute;
 
-            return attribute == null ? value.ToString() : attribute.Value;
+            return attribute.Value ?? value.ToString();
         }
 
         public static T GetEnumValueFromDescription<T>(string description)

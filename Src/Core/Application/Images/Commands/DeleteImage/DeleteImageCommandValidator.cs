@@ -1,5 +1,4 @@
-﻿using Application.Images.Commands.UpdateImage;
-using FluentValidation;
+﻿using FluentValidation;
 using System.Text.RegularExpressions;
 
 namespace Application.Images.Commands.DeleteImage

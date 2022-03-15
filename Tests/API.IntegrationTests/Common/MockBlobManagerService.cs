@@ -87,7 +87,6 @@ namespace API.IntegrationTests.Common
                 var blobs = _blobs[filename];
 
                 _blobs[filename] = blobs.Prepend(blob).ToArray();
-
             }
             else
             {

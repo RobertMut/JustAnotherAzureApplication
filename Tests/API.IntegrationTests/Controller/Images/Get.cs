@@ -1,7 +1,6 @@
 ﻿using API.Controllers;
 using API.IntegrationTests.Common;
 using NUnit.Framework;
-using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -18,7 +17,6 @@ namespace API.IntegrationTests.Controller.Images
         {
             _factory = new CustomWebApplicationFactory<ImagesController>();
             _client = _factory.CreateClient(_factory.ClientOptions);
-
         }
 
         [Test]
