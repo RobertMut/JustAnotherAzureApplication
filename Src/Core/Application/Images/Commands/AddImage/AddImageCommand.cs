@@ -12,7 +12,7 @@ namespace Application.Images.Commands.AddImage
     public class AddImageCommand : IRequest
     {
         public IFormFile File { get; set; }
-        public string FileName { get; set; }
+        public string Filename { get; set; }
         public string ContentType { get; set; }
         public Format? TargetType { get; set; }
         public int Width { get; set; }
@@ -31,7 +31,7 @@ namespace Application.Images.Commands.AddImage
             {
                 var metadata = new Dictionary<string, string>
                 {
-                    { Metadata.OriginalFile, request.FileName },
+                    { Metadata.OriginalFile, request.Filename },
                     { Metadata.TargetType, !request.TargetType.HasValue ? request.ContentType : EnumHelper.GetDescriptionFromEnumValue(request.TargetType.Value) },
                     { Metadata.TargetWidth, request.Width.ToString() },
                     { Metadata.TargetHeight, request.Height.ToString() },
@@ -39,7 +39,7 @@ namespace Application.Images.Commands.AddImage
 
                 using (var stream = request.File.OpenReadStream())
                 {
-                    var statusCode = await _service.AddAsync(stream, Prefixes.OriginalImage + request.FileName, request.ContentType, metadata, cancellationToken);
+                    var statusCode = await _service.AddAsync(stream, Prefixes.OriginalImage + request.Filename, request.ContentType, metadata, cancellationToken);
                     if (statusCode == HttpStatusCode.Created)
                     {
                         return Unit.Value;

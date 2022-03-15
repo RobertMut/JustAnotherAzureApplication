@@ -47,7 +47,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
             {
                 ContentType = "image/jpeg",
                 File = new FormFile(_stream.Object, 0, _stream.Object.Length, "file", "sample.jpg"),
-                FileName = "sample.jpg",
+                Filename = "sample.jpg",
                 TargetType = Domain.Enums.Image.Format.jpg
             };
 
@@ -70,7 +70,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
             {
                 ContentType = "image/jpeg",
                 File = null,
-                FileName = "sample.jpg",
+                Filename = "sample.jpg",
                 TargetType = Domain.Enums.Image.Format.png
             };
 
@@ -98,7 +98,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
             {
                 ContentType = "image/jpeg",
                 File = new FormFile(stream.Object, 0, stream.Object.Length, "file", "broken.jpg"),
-                FileName = "sample.jpg",
+                Filename = "sample.jpg",
                 TargetType = Domain.Enums.Image.Format.png
             };
 
