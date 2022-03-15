@@ -26,6 +26,7 @@ namespace API.IntegrationTests.Controller.Images
             response.EnsureSuccessStatusCode();
             var responseGetFirstMiniature = await _client.GetAsync("/api/Images/miniature-300x300-sample1.jpeg");
             var responseGetSecondMiniature = await _client.GetAsync("/api/Images/miniature-200x200-sample1.jpeg");
+
             Assert.Throws<HttpRequestException>(() => 
             {
                 responseGetFirstMiniature.EnsureSuccessStatusCode();
@@ -40,6 +41,7 @@ namespace API.IntegrationTests.Controller.Images
             response.EnsureSuccessStatusCode();
             var responseGetMiniature = await _client.GetAsync("/api/Images/miniature-400x400-sample2.jpeg");
             var responseGetOtherOriginal = await _client.GetAsync("/api/Images/original-sample1.png");
+
             Assert.Throws<HttpRequestException>(() => responseGetMiniature.EnsureSuccessStatusCode());
             responseGetOtherOriginal.EnsureSuccessStatusCode();
         }
@@ -52,6 +54,7 @@ namespace API.IntegrationTests.Controller.Images
             var responseGetFirstMiniature = await _client.GetAsync("/api/Images/miniature-300x300-sample1.jpeg");
             var responseGetDeletedMiniature = await _client.GetAsync("/api/Images/miniature-200x200-sample1.jpeg");
             responseGetFirstMiniature.EnsureSuccessStatusCode();
+
             Assert.Throws<HttpRequestException>(() =>
             {
                 responseGetDeletedMiniature.EnsureSuccessStatusCode();
@@ -62,6 +65,7 @@ namespace API.IntegrationTests.Controller.Images
         public async Task DeleteWithNullFilename()
         {
             var response = await _client.DeleteAsync("/api/Images/");
+
             Assert.Throws<HttpRequestException>(() =>
             {
                 response.EnsureSuccessStatusCode();
