@@ -82,7 +82,7 @@ namespace API.Controllers
             await _mediator.Send(new DeleteImageCommand
             {
                 Filename = file,
-                Size=size,
+                Size = size,
                 DeleteMiniatures = deleteMiniatures
             });
 
