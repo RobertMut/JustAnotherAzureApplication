@@ -32,7 +32,8 @@ namespace Application.Common.Behaviours
                 mutex.WaitOne();
 
                 return await next();
-            } finally
+            } 
+            finally
             {
                 if (!string.IsNullOrEmpty(leaseId))
                 {

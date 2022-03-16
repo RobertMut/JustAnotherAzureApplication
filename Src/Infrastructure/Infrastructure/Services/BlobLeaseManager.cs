@@ -28,12 +28,14 @@ namespace Infrastructure.Services
                 var lease = await leaseClient.AcquireAsync(TimeSpan.FromSeconds(15), null, cancellationToken);
 
                 return lease.Value.LeaseId;
-            } catch (RequestFailedException storageException)
+            } 
+            catch (RequestFailedException storageException)
             {
-                if(storageException.Status == (int) HttpStatusCode.NotFound)
+                if (storageException.Status == (int) HttpStatusCode.NotFound)
                 {
                     return string.Empty;
-                } else
+                } 
+                else
                 {
                     throw storageException;
                 }
