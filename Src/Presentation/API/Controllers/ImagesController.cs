@@ -61,7 +61,7 @@ namespace API.Controllers
             await _mediator.Send(new AddImageCommand
             {
                 File = file,
-                FileName = file.FileName,
+                Filename = file.FileName,
                 ContentType = file.ContentType,
                 TargetType = targetType,
                 Height = height,

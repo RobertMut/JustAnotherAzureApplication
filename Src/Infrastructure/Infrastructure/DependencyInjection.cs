@@ -14,6 +14,7 @@ namespace Infrastructure
             var container = configuration["ImagesContainer"];
 
             services.AddScoped<IBlobManagerService>(service => new BlobManagerService(storage, container));
+            services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(storage, container));
 
             return services;
         }
