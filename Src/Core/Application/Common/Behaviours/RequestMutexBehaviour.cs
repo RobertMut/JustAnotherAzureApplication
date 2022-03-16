@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces.Blob;
 using MediatR;
+using System.Reflection;
 
 namespace Application.Common.Behaviours
 {
@@ -15,7 +16,7 @@ namespace Application.Common.Behaviours
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
             string filename = request.GetType()
-                .GetProperty("Filename", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+                .GetProperty("Filename", BindingFlags.Public | BindingFlags.Instance)
                 .GetValue(request).ToString();
             _blobLeaseManager.SetBlobName(filename);
 

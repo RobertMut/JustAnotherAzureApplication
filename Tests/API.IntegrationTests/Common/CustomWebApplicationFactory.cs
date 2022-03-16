@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces.Blob;
-using Infrastructure.Services;
+using Infrastructure.Services.Blob;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;

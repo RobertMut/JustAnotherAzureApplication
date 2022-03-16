@@ -3,9 +3,9 @@ using Azure.Storage.Blobs.Models;
 using Application.Common.Interfaces.Blob;
 using System.Net;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services.Blob
 {
-    public class BlobManagerService : IBlobManagerService 
+    public class BlobManagerService : IBlobManagerService
     {
         private readonly BlobContainerClient _blobContainerClient;
 
