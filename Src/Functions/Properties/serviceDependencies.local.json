@@ -7,6 +7,18 @@
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/jaaastorage",
       "type": "storage.azure",
       "connectionId": "AzureWebJobsStorage"
+    },
+    "secrets1": {
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/JAAAKeyVault",
+      "type": "secrets.keyVault",
+      "connectionId": "VaultUri"
+    },
+    "storage2": {
+      "secretStore": "AzureKeyVault",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/jaaastorage",
+      "type": "storage.azure",
+      "connectionId": "StorageConnectionString"
     }
   }
 }

@@ -4,12 +4,14 @@ using Application.Images.Commands.UpdateImage;
 using Application.Images.Queries.GetFile;
 using Domain.Enums.Image;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ImagesController : ControllerBase
     {
         private readonly IMediator _mediator;

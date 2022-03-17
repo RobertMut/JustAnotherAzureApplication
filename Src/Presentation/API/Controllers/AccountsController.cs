@@ -1,9 +1,8 @@
 ﻿using Application.Common.Interfaces.Identity;
 using Application.Common.Models;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -17,11 +16,14 @@ namespace API.Controllers
         {
             _userManager = userManager;
         }
-
+        
+        [AllowAnonymous]
+        [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             var user = await _userManager.GetUserByNameAsync(model.UserName);
-            if (model.UserName == user.Username && model.Password == user.Password) //move to login
+
+            if (model.UserName == user.Username && model.Password == user.Password)
             {
                 var token = await _userManager.GetToken(user);
                 return Ok(new

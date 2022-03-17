@@ -16,8 +16,8 @@ namespace Application.Common.Behaviours
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
             string filename = request.GetType()
-                .GetProperty("Filename", BindingFlags.Public | BindingFlags.Instance)
-                .GetValue(request).ToString();
+                .GetProperty("Filename", BindingFlags.Public | BindingFlags.Instance)?
+                .GetValue(request).ToString() ?? "NoFileMutex";
             _blobLeaseManager.SetBlobName(filename);
 
             bool mutexExist = Mutex.TryOpenExisting(filename, out var mutex);

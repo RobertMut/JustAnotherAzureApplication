@@ -3,14 +3,18 @@ using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
 using Application.System.Commands.SeedSampleData;
 using Domain.Constants.Configuration;
-using Domain.Entities;
 using Infrastructure.Persistence;
 using Infrastructure.Services.Blob;
 using Infrastructure.Services.Identity;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Infrastructure
 {
@@ -21,6 +25,7 @@ namespace Infrastructure
             var storage = configuration.GetConnectionString("Storage");
             var container = configuration["ImagesContainer"];
             var database = configuration.GetConnectionString(Database.ConnectionStringName);
+            var jwt = configuration.GetSection("JWT");
 
             services.AddDbContext<JAAADbContext>(options => options.UseSqlServer(database));
             services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>());
@@ -29,7 +34,39 @@ namespace Infrastructure
             services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(storage, container));
 
             services.AddScoped<IUserManager, UserManagerService>();
-            
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                string validAudience = jwt.GetValue<string>("ValidAudience");
+                string validIssuer = jwt.GetValue<string>("ValidIssuer");
+                options.Audience = validAudience;
+                options.Authority = validIssuer;
+                options.ClaimsIssuer = validIssuer;
+                options.RequireHttpsMetadata = false;
+                options.Configuration = new OpenIdConnectConfiguration();
+                //options.IncludeErrorDetails = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidAudience = validAudience,
+                    ValidIssuer = validIssuer,
+                    ValidateLifetime = true,
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(MD5.HashData(Encoding.UTF8.GetBytes(jwt.GetValue<string>("Secret"))))
+                };
+                if (jwt.GetValue<bool>("AllowDangerousCertificate"))
+                {
+                    options.BackchannelHttpHandler = new HttpClientHandler()
+                    {
+                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    };
+                }
+            });
+
             services.DatabaseInitializer<JAAADbContext>();
             services.BlobContainerInitializer();
 

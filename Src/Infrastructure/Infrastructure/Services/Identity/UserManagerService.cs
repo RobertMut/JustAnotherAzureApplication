@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Infrastructure.Services.Identity
@@ -60,11 +61,12 @@ namespace Infrastructure.Services.Identity
 
         public async Task<JwtSecurityToken> GetToken(User user)
         {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.GetValue<string>("Secret")));
+            var secret = MD5.HashData(Encoding.UTF8.GetBytes(_jwt.GetValue<string>("Secret")));
+            var authSigningKey = new SymmetricSecurityKey(secret);
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             var token = new JwtSecurityToken(
                 issuer: _jwt.GetValue<string>("ValidIssuer"),
