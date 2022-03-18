@@ -17,7 +17,6 @@ namespace Functions
     {
         private readonly IBlobManagerService _service;
         private readonly ISupportedImageFormats _formats;
-        private const string ConnectionStringSetting = "AzureWebJobsStorage";
         private const string ContainerStringSetting = "%ImagesContainer%/";
 
         public Miniaturize(IBlobManagerService service, ISupportedImageFormats formats)
@@ -27,8 +26,8 @@ namespace Functions
         }
 
         [FunctionName("Miniaturize")]
-        public async Task Run([BlobTrigger(ContainerStringSetting + Prefixes.OriginalImage + "{name}", Connection = ConnectionStringSetting)] Stream myBlob,
-            [Blob(ContainerStringSetting + Prefixes.OriginalImage + "{name}", FileAccess.Read, Connection = ConnectionStringSetting)] BlobBaseClient blob,
+        public async Task Run([BlobTrigger(ContainerStringSetting + Prefixes.OriginalImage + "{name}", Connection = Startup.Storage)] Stream myBlob,
+            [Blob(ContainerStringSetting + Prefixes.OriginalImage + "{name}", FileAccess.Read, Connection = Startup.Storage)] BlobBaseClient blob,
             string name, ILogger log)
         {
             var metadata = blob.GetProperties().Value.Metadata;

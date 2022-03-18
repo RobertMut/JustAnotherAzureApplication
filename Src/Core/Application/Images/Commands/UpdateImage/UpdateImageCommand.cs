@@ -15,6 +15,7 @@ namespace Application.Images.Commands.UpdateImage
         public int Height { get; set; }
         public Format TargetType { get; set; }
         public int? Version { get; set; }
+        public string UserId { get; set; }
 
         public class UpdateImageCommandHandler : IRequestHandler<UpdateImageCommand>
         {
@@ -42,7 +43,7 @@ namespace Application.Images.Commands.UpdateImage
                         throw new OperationFailedException(HttpStatusCode.Created, statusCode, nameof(UpdateImageCommand));
                     }
                 }
-                var updateStatusCode = await _blobManagerService.UpdateAsync(Prefixes.OriginalImage+request.Filename,
+                var updateStatusCode = await _blobManagerService.UpdateAsync($"{Prefixes.OriginalImage}{request.UserId}-{request.Filename}",
                     metadata, cancellationToken);
                 if (updateStatusCode == HttpStatusCode.OK)
                 {

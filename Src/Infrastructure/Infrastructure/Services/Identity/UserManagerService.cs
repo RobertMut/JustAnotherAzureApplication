@@ -2,24 +2,16 @@
 using Application.Common.Interfaces.Identity;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Infrastructure.Services.Identity
 {
     public class UserManagerService : IUserManager
     {
         private readonly IJAAADbContext _jaaaaDbContext;
-        private readonly IConfigurationSection _jwt;
 
-        public UserManagerService(IJAAADbContext jaaaaDbContext, IConfiguration configuration)
+        public UserManagerService(IJAAADbContext jaaaaDbContext)
         {
             _jaaaaDbContext = jaaaaDbContext;
-            _jwt = configuration.GetSection("JWT");
         }
 
         public async Task<string> CreateUserAsync(string username, string password, CancellationToken cancellationToken = default)
@@ -57,26 +49,6 @@ namespace Infrastructure.Services.Identity
             var user = await _jaaaaDbContext.Users.SingleAsync(u => u.Username == username, cancellationToken: cancellationToken);
 
             return user;
-        }
-
-        public async Task<JwtSecurityToken> GetToken(User user)
-        {
-            var secret = MD5.HashData(Encoding.UTF8.GetBytes(_jwt.GetValue<string>("Secret")));
-            var authSigningKey = new SymmetricSecurityKey(secret);
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
-            var token = new JwtSecurityToken(
-                issuer: _jwt.GetValue<string>("ValidIssuer"),
-                audience: _jwt.GetValue<string>("ValidAudience"),
-                claims: authClaims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                );
-
-            return token;
         }
     }
 }

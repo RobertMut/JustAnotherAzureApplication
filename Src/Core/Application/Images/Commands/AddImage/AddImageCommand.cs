@@ -17,6 +17,7 @@ namespace Application.Images.Commands.AddImage
         public Format? TargetType { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public string UserId { get; set; }
 
         public class AddImageCommandHandler : IRequestHandler<AddImageCommand>
         {
@@ -39,7 +40,7 @@ namespace Application.Images.Commands.AddImage
 
                 using (var stream = request.File.OpenReadStream())
                 {
-                    var statusCode = await _service.AddAsync(stream, Prefixes.OriginalImage + request.Filename, request.ContentType, metadata, cancellationToken);
+                    var statusCode = await _service.AddAsync(stream, $"{Prefixes.OriginalImage}{request.UserId}-{request.Filename}", request.ContentType, metadata, cancellationToken);
                     if (statusCode == HttpStatusCode.Created)
                     {
                         return Unit.Value;

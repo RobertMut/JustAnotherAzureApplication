@@ -16,6 +16,6 @@ namespace Application.Common.Interfaces.Blob
 
         Task<HttpStatusCode> DeleteBlobAsync(string filename, CancellationToken ct);
 
-        Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct);
+        Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, string userId, CancellationToken ct);
     }
 }

@@ -50,11 +50,12 @@ namespace Infrastructure.Services.Blob
             return await client.WithVersion(versions[id.Value].VersionId).DownloadContentAsync();
         }
 
-        public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct)
+        public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, string userId, CancellationToken ct)
         {
             return _blobContainerClient.GetBlobs(BlobTraits.All, BlobStates.None, prefix, ct)
                 .Where(x => x.Name.Contains($"{Path.GetFileNameWithoutExtension(blobName)}."))
                 .Where(x => x.Name.Contains(size))
+                .Where(x => x.Name.Contains(userId))
                 .ToList();
         }
 

@@ -2,7 +2,6 @@
 using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
 using Application.System.Commands.SeedSampleData;
-using Domain.Constants.Configuration;
 using Infrastructure.Persistence;
 using Infrastructure.Services.Blob;
 using Infrastructure.Services.Identity;
@@ -22,16 +21,17 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var storage = configuration.GetConnectionString("Storage");
             var container = configuration["ImagesContainer"];
-            var database = configuration.GetConnectionString(Database.ConnectionStringName);
             var jwt = configuration.GetSection("JWT");
 
-            services.AddDbContext<JAAADbContext>(options => options.UseSqlServer(database));
+            services.AddDbContext<JAAADbContext>(options => 
+            {
+                options.UseSqlServer(configuration.GetConnectionString("JAAADatabase"));
+            });
             services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>());
 
-            services.AddScoped<IBlobManagerService>(service => new BlobManagerService(storage, container));
-            services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(storage, container));
+            services.AddScoped<IBlobManagerService>(service => new BlobManagerService(configuration.GetValue<string>("AzureWebJobsStorage"), container));
+            services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(configuration.GetValue<string>("AzureWebJobsStorage"), container));
 
             services.AddScoped<IUserManager, UserManagerService>();
             services.AddAuthentication(options =>
@@ -56,7 +56,7 @@ namespace Infrastructure
                     ValidateAudience = true,
                     ValidateIssuer = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(MD5.HashData(Encoding.UTF8.GetBytes(jwt.GetValue<string>("Secret"))))
+                    IssuerSigningKey = new SymmetricSecurityKey(MD5.HashData(Encoding.UTF8.GetBytes(configuration.GetValue<string>("JWTSecret"))))
                 };
                 if (jwt.GetValue<bool>("AllowDangerousCertificate"))
                 {

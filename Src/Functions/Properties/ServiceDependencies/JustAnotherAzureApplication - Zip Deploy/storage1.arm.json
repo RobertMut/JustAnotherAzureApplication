@@ -53,7 +53,7 @@
                 "name": "Standard_LRS",
                 "tier": "Standard"
               },
-              "kind": "Storage",
+              "kind": "StorageV2",
               "name": "jaaastorage",
               "type": "Microsoft.Storage/storageAccounts",
               "location": "[parameters('resourceLocation')]",

@@ -1,5 +1,6 @@
-﻿using Application.Common.Interfaces.Identity;
+﻿using Application.Account.Commands.LoginCommand;
 using Application.Common.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,30 +11,27 @@ namespace API.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
-        private readonly IUserManager _userManager;
+        private readonly IMediator _mediator;
 
-        public AccountsController(IUserManager userManager)
+        public AccountsController(IMediator mediator)
         {
-            _userManager = userManager;
+            _mediator = mediator;
         }
         
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var user = await _userManager.GetUserByNameAsync(model.UserName);
-
-            if (model.UserName == user.Username && model.Password == user.Password)
+            var token = await _mediator.Send(new LoginCommand
             {
-                var token = await _userManager.GetToken(user);
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiriation = token.ValidTo
-                });
-            }
+                LoginModel = model
+            });
 
-            return Unauthorized();
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                expiriation = token.ValidTo
+            });
         }
     }
 }

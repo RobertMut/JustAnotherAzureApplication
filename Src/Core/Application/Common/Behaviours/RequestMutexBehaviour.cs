@@ -15,17 +15,24 @@ namespace Application.Common.Behaviours
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
-            string filename = request.GetType()
-                .GetProperty("Filename", BindingFlags.Public | BindingFlags.Instance)?
-                .GetValue(request).ToString() ?? "NoFileMutex";
-            _blobLeaseManager.SetBlobName(filename);
+            var requestType = request.GetType();
+            string mutexName = requestType.GetProperty("Filename", BindingFlags.Public | BindingFlags.Instance)?
+                .GetValue(request).ToString() 
+                ?? requestType.GetProperty("Guid", BindingFlags.Public | BindingFlags.Instance)?
+                .GetValue(request).ToString();
 
-            bool mutexExist = Mutex.TryOpenExisting(filename, out var mutex);
+            if (string.IsNullOrEmpty(mutexName))
+            {
+                return await next();
+            }
+            _blobLeaseManager.SetBlobName(mutexName);
+
+            bool mutexExist = Mutex.TryOpenExisting(mutexName, out var mutex);
             string leaseId = await _blobLeaseManager.GetLease(cancellationToken);
 
             if (!mutexExist)
             {
-                mutex = new Mutex(false, filename);
+                mutex = new Mutex(false, mutexName);
             }
 
             try

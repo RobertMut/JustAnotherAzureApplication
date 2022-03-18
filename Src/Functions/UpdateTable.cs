@@ -3,6 +3,8 @@ using Application.Common.Interfaces.Database;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using File = Domain.Entities.File;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Functions
 {
@@ -16,11 +18,11 @@ namespace Functions
         }
 
         [FunctionName("UpdateTable")]
-        public void Run([BlobTrigger("{name}", Connection = "StorageConnectionString")]string name, ILogger log)
+        public async Task Run([BlobTrigger("{name}", Connection = Startup.Storage)]string name, ILogger log)
         {
             string[] splittedFilename = name.Split("-");
-            string userId = splittedFilename[^2];
-            var file = _jaaaDbContext.Files.FindAsync(name);
+            string userId = splittedFilename[^7];
+            var file = await _jaaaDbContext.Files.FindAsync(name);
             if (file == null)
             {
                 _jaaaDbContext.Files.Add(new File
@@ -28,7 +30,7 @@ namespace Functions
                     Filename = name,
                     UserId = Guid.Parse(userId)
                 });
-                _jaaaDbContext.SaveChangesAsync();
+                await _jaaaDbContext.SaveChangesAsync();
                 log.LogInformation($"C# Blob trigger function Added blob\n Name:{name} \n UserId: {userId}");
             }
             else

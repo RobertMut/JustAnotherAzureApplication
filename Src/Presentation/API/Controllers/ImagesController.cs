@@ -1,4 +1,5 @@
-﻿using Application.Images.Commands.AddImage;
+﻿using Application.Common.Interfaces.Identity;
+using Application.Images.Commands.AddImage;
 using Application.Images.Commands.DeleteImage;
 using Application.Images.Commands.UpdateImage;
 using Application.Images.Queries.GetFile;
@@ -15,10 +16,12 @@ namespace API.Controllers
     public class ImagesController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICurrentUserService _currentUserService;
 
-        public ImagesController(IMediator mediator)
+        public ImagesController(IMediator mediator, ICurrentUserService currentUserService)
         {
             _mediator = mediator;
+            _currentUserService = currentUserService;
         }
 
         [HttpGet("{filename}/{id?}")]
@@ -27,7 +30,8 @@ namespace API.Controllers
             var file = await _mediator.Send(new GetFileQuery
             {
                 Filename = filename,
-                Id = id
+                Id = id,
+                UserId = _currentUserService.UserId,
             });
 
             return new FileContentResult(file.File.Content.ToArray(), file.File.Details.ContentType);
@@ -47,7 +51,8 @@ namespace API.Controllers
                 Width = width,
                 Height = height,
                 TargetType = targetType,
-                Version = version
+                Version = version,
+                UserId = _currentUserService.UserId
             });
 
             return Ok();
@@ -67,7 +72,8 @@ namespace API.Controllers
                 ContentType = file.ContentType,
                 TargetType = targetType,
                 Height = height,
-                Width = width
+                Width = width,
+                UserId = _currentUserService.UserId
             });
 
             return Ok();
@@ -85,7 +91,8 @@ namespace API.Controllers
             {
                 Filename = file,
                 Size = size,
-                DeleteMiniatures = deleteMiniatures
+                DeleteMiniatures = deleteMiniatures,
+                UserId = _currentUserService.UserId
             });
 
             return Ok();

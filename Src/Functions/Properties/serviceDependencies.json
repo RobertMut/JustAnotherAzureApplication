@@ -1,20 +1,16 @@
 {
   "dependencies": {
-    "appInsights1": {
-      "type": "appInsights",
-      "connectionId": "APPLICATIONINSIGHTS_CONNECTION_STRING"
-    },
-    "storage1": {
-      "type": "storage",
-      "connectionId": "AzureWebJobsStorage"
-    },
     "secrets1": {
       "type": "secrets",
       "connectionId": "VaultUri"
     },
-    "storage2": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "JAAADatabase"
+    },
+    "storage1": {
       "type": "storage",
-      "connectionId": "StorageConnectionString"
+      "connectionId": "AzureWebJobsStorage"
     }
   }
 }

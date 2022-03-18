@@ -36,7 +36,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat(parameters('resourceGroupName'), 'Deployment', uniqueString(concat('JustAnotherAzureApplication202203011553', subscription().subscriptionId)))]",
+      "name": "[concat(parameters('resourceGroupName'), 'Deployment', uniqueString(concat('JAAADb', subscription().subscriptionId)))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "apiVersion": "2019-10-01",
       "dependsOn": [
@@ -49,12 +49,26 @@
           "contentVersion": "1.0.0.0",
           "resources": [
             {
-              "name": "JustAnotherAzureApplication202203011553",
-              "type": "microsoft.insights/components",
+              "kind": "v12.0",
               "location": "[parameters('resourceLocation')]",
-              "kind": "web",
-              "properties": {},
-              "apiVersion": "2015-05-01"
+              "name": "jaaa",
+              "type": "Microsoft.Sql/servers",
+              "apiVersion": "2017-10-01-preview"
+            },
+            {
+              "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 5
+              },
+              "kind": "v12.0,user",
+              "location": "[parameters('resourceLocation')]",
+              "name": "jaaa/JAAADb",
+              "type": "Microsoft.Sql/servers/databases",
+              "apiVersion": "2017-10-01-preview",
+              "dependsOn": [
+                "jaaa"
+              ]
             }
           ]
         }
@@ -62,6 +76,6 @@
     }
   ],
   "metadata": {
-    "_dependencyType": "appInsights.azure"
+    "_dependencyType": "mssql.azure"
   }
 }
