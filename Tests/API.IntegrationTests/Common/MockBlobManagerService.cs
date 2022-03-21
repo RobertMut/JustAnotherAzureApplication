@@ -22,17 +22,17 @@ namespace API.IntegrationTests.Common
             var bytes = new byte[] { 00, 50, 00, 00, 40, 00, 03, 00, 00, 00, 00, 10 };
             _blobs = new Dictionary<string, BlobDownloadResult[]>()
             {
-                {"original-sample1.png", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "original-sample.png", "image/png", null, "0"),
+                {$"original_{Utils.DefaultId}_sample1.png", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), $"original_{Utils.DefaultId}_sample1.png", "image/png", null, "0"),
                 Utils.MakeFakeDownloadResult(new MemoryStream(bytes.Reverse().ToArray()),
-                                        "original-sample.png",
+                                        $"original_{Utils.DefaultId}_sample1.png",
                                         "image/png", null, "1")} },
-                {"original-sample2.png", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "original-sample2.png", "image/png", null, "0"),
+                {$"original_{Utils.DefaultId}_sample2.png", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), $"original_{Utils.DefaultId}_sample2.png", "image/png", null, "0"),
                 Utils.MakeFakeDownloadResult(new MemoryStream(bytes.Reverse().ToArray()),
-                                        "original-sample2.png",
+                                        $"original_{Utils.DefaultId}_sample2.png",
                                         "image/png", null, "1")} },
-                {"miniature-300x300-sample1.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-300x300-sample1.jpeg", "image/jpeg") }},
-                {"miniature-200x200-sample1.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-200x200-sample1.jpeg", "image/jpeg") }},
-                {"miniature-400x400-sample2.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-400x400-sample2.jpeg", "image/jpeg") }}
+                {$"miniature_300x300_{Utils.DefaultId}_sample1.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), $"miniature_300x300_{Utils.DefaultId}_sample1.jpeg", "image/jpeg") }},
+                {$"miniature_200x200_{Utils.DefaultId}_sample1.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), $"miniature_200x200_{Utils.DefaultId}_sample1.jpeg", "image/jpeg") }},
+                {$"miniature_400x400_{Utils.DefaultId}_sample2.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), $"miniature_400x400_{Utils.DefaultId}_sample2.jpeg", "image/jpeg") }}
             };
         }
 
@@ -101,11 +101,12 @@ namespace API.IntegrationTests.Common
             return HttpStatusCode.Accepted;
         }
 
-        public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct)
+        public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, string userId, CancellationToken ct)
         {
             var blobsNames = _blobs.Keys.Where(name => name.Contains(prefix))
                 .Where(x => x.Contains($"{Path.GetFileNameWithoutExtension(blobName)}."))
                 .Where(x => x.Contains(size))
+                .Where(x => x.Contains(userId))
                 .ToList();
             var blobs = new List<BlobItem>();
             foreach (var blob in blobsNames)

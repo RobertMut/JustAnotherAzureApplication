@@ -1,9 +1,12 @@
 ﻿using Azure.Storage.Blobs.Models;
+using Domain.Entities;
+using Infrastructure.Persistence;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using File = Domain.Entities.File;
 
 namespace API.IntegrationTests.Common
 {
@@ -11,6 +14,7 @@ namespace API.IntegrationTests.Common
     {
         public static IDictionary<string, BlobDownloadResult[]> Repository;
         public static byte[] SampleBytes = new byte[] { 00, 50, 00, 00, 40, 00, 03, 00, 00, 00, 00, 10 };
+        public static Guid DefaultId = Guid.NewGuid();
 
         public static MultipartFormDataContent CreateSampleFile(byte[] imageBytes, string contentType, string filename)
         {
@@ -38,6 +42,45 @@ namespace API.IntegrationTests.Common
 
                 return BlobsModelFactory.BlobDownloadResult(bytes, details);
             }
+        }
+
+        public static void InitializeDbForTests(JAAADbContext context)
+        {
+            context.Users.Add(
+                new User
+                {
+                    Id = Utils.DefaultId,
+                    Password = "12345",
+                    Username = "Default"
+                });
+            context.Files.AddRange(new[]{
+                new File()
+                {
+                    Filename = $"original_{Utils.DefaultId}_sample1.png",
+                    UserId = Utils.DefaultId
+                },
+                new File()
+                {
+                    Filename = $"original_{Utils.DefaultId}_sample2.png",
+                    UserId = Utils.DefaultId
+                },
+                new File()
+                {
+                    Filename = $"miniature_300x300_{Utils.DefaultId}_sample1.jpeg",
+                    UserId = Utils.DefaultId
+                },
+                new File()
+                {
+                    Filename = $"miniature_200x200_{Utils.DefaultId}_sample1.jpeg",
+                    UserId = Utils.DefaultId
+                },
+                new File()
+                {
+                    Filename = $"miniature_400x400_{Utils.DefaultId}_sample2.jpeg",
+                    UserId = Utils.DefaultId
+                },
+            });
+            context.SaveChanges();
         }
     }
 }

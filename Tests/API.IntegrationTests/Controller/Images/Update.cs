@@ -15,7 +15,7 @@ namespace API.IntegrationTests.Controller.Images
         public async Task SetUp()
         {
             _factory = new CustomWebApplicationFactory<ImagesController>();
-            _client = _factory.CreateClient(_factory.ClientOptions);
+            _client = await _factory.GetAuthenticatedClient();
         }
 
         [Test]

@@ -21,14 +21,10 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var container = configuration["ImagesContainer"];
             var jwt = configuration.GetSection("JWT");
+            var container = configuration["ImagesContainer"];
 
-            services.AddDbContext<JAAADbContext>(options => 
-            {
-                options.UseSqlServer(configuration.GetConnectionString("JAAADatabase"));
-            });
-            services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>());
+            services.DatabaseInitializer<JAAADbContext>(configuration);
 
             services.AddScoped<IBlobManagerService>(service => new BlobManagerService(configuration.GetValue<string>("AzureWebJobsStorage"), container));
             services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(configuration.GetValue<string>("AzureWebJobsStorage"), container));
@@ -67,14 +63,19 @@ namespace Infrastructure
                 }
             });
 
-            services.DatabaseInitializer<JAAADbContext>();
-            services.BlobContainerInitializer();
+
 
             return services;
         }
 
-        public async static Task<IServiceCollection> DatabaseInitializer<TContext>(this IServiceCollection services) where TContext : DbContext
+        public async static Task<IServiceCollection> DatabaseInitializer<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : DbContext
         {
+            services.AddDbContext<JAAADbContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("JAAADatabase"));
+            });
+            services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>());
+
             using (var service = services.BuildServiceProvider())
             {
                 var appContext = service.GetRequiredService<IJAAADbContext>();
@@ -88,16 +89,6 @@ namespace Infrastructure
                 {
                     await mediator.Send(new SeedSampleDataCommand());
                 }
-            }
-
-            return services;
-        }
-
-        public async static Task<IServiceCollection> BlobContainerInitializer(this IServiceCollection services)
-        {
-            using (var service = services.BuildServiceProvider())
-            {
-                
             }
 
             return services;
