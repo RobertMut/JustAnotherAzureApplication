@@ -1,55 +1,56 @@
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using System.Drawing;
 using Azure.Storage.Blobs.Specialized;
-using Application.Common.Interfaces.Blob;
 using Domain.Constants.Image;
-using Domain.Common.Helper.Enum;
-using Domain.Enums.Image;
-using Common.Images;
+using Application.Common.Interfaces.Database;
+using System.Linq;
+using System.IO;
+using File = Domain.Entities.File;
+using System;
 
 namespace Functions
 {
     public class Miniaturize
     {
-        private readonly IBlobManagerService _service;
-        private readonly ISupportedImageFormats _formats;
-        private const string ContainerStringSetting = "%ImagesContainer%/";
+        private readonly IJAAADbContext _jaaaDbContext;
+        private readonly ImageEditor _imageEditor;
 
-        public Miniaturize(IBlobManagerService service, ISupportedImageFormats formats)
+        public Miniaturize(IJAAADbContext jaaaDbContext, ImageEditor imageEditor)
         {
-            _service = service;
-            _formats = formats;
+            _jaaaDbContext = jaaaDbContext;
+            _imageEditor = imageEditor;
         }
 
         [FunctionName("Miniaturize")]
-        public async Task Run([BlobTrigger(ContainerStringSetting + Prefixes.OriginalImage + "{name}", Connection = Startup.Storage)] Stream myBlob,
-            [Blob(ContainerStringSetting + Prefixes.OriginalImage + "{name}", FileAccess.Read, Connection = Startup.Storage)] BlobBaseClient blob,
+        public async Task Run([BlobTrigger(Startup.ContainerStringSetting + Prefixes.OriginalImage + "{name}", Connection = Startup.Storage)] Stream myBlob,
+            [Blob(Startup.ContainerStringSetting + Prefixes.OriginalImage + "{name}", FileAccess.Read, Connection = Startup.Storage)] BlobBaseClient blob,
             string name, ILogger log)
         {
-            var metadata = blob.GetProperties().Value.Metadata;
-            var targetType = metadata[Metadata.TargetType];
-            int width = int.Parse(metadata[Metadata.TargetWidth]);
-            int height = int.Parse(metadata[Metadata.TargetHeight]);
-            var format = _formats.FileFormat[EnumHelper.GetEnumValueFromDescription<Format>(targetType)];
+            string[] splittedFilename = name.Split("_");
+            string userId = splittedFilename[^2];
+            string miniature = await _imageEditor.Resize(blob, myBlob, name);
+            var originalFile = _jaaaDbContext.Files.FirstOrDefault(x => x.Filename == $"{Prefixes.OriginalImage}{name}");
+            var miniatureFile = _jaaaDbContext.Files.FirstOrDefault(x => x.Filename == miniature);
 
-            using (var image = Image.FromStream(myBlob))
+            if (originalFile == null)
             {
-                var resizedImage = new Bitmap(image, width, height);
-                using (var memStream = new MemoryStream())
+                _jaaaDbContext.Files.Add(new File
                 {
-                    resizedImage.Save(memStream, format);
-                    memStream.Position = 0;
-                    var convertedFormatToString = new ImageFormatConverter().ConvertToString(format);
-
-                    await _service.AddAsync(memStream, $"{Prefixes.MiniatureImage}{width}x{height}-{Path.GetFileNameWithoutExtension(name)}.{convertedFormatToString}",
-                        $"{Prefixes.ImageFormat}{convertedFormatToString}", null, new CancellationToken());
-                }
+                    Filename = $"{Prefixes.OriginalImage}{name}",
+                    UserId = Guid.Parse(userId)
+                });
+            }
+            if (miniatureFile == null)
+            {
+                _jaaaDbContext.Files.Add(new File
+                {
+                    Filename = miniature,
+                    UserId = Guid.Parse(userId)
+                });
             }
 
+            await _jaaaDbContext.SaveChangesAsync();
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes\n");
         }
     }

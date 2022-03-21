@@ -1,7 +1,6 @@
-﻿using Application.Images.Commands.UpdateImage;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace Application.Images.Commands
+namespace Application.Images.Commands.UpdateImage
 {
     public class UpdateImageCommandValidator : AbstractValidator<UpdateImageCommand>
     {

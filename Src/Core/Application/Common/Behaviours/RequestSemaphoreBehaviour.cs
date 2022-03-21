@@ -4,11 +4,11 @@ using System.Reflection;
 
 namespace Application.Common.Behaviours
 {
-    public class RequestMutexBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+    public class RequestSemaphoreBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         private readonly IBlobLeaseManager _blobLeaseManager;
 
-        public RequestMutexBehaviour(IBlobLeaseManager blobLeaseManager)
+        public RequestSemaphoreBehaviour(IBlobLeaseManager blobLeaseManager)
         {
             _blobLeaseManager = blobLeaseManager;
         }
@@ -16,28 +16,28 @@ namespace Application.Common.Behaviours
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
             var requestType = request.GetType();
-            string mutexName = requestType.GetProperty("Filename", BindingFlags.Public | BindingFlags.Instance)?
+            string semaphoreName = requestType.GetProperty("Filename", BindingFlags.Public | BindingFlags.Instance)?
                 .GetValue(request).ToString() 
                 ?? requestType.GetProperty("Guid", BindingFlags.Public | BindingFlags.Instance)?
                 .GetValue(request).ToString();
 
-            if (string.IsNullOrEmpty(mutexName))
+            if (string.IsNullOrEmpty(semaphoreName))
             {
                 return await next();
             }
-            _blobLeaseManager.SetBlobName(mutexName);
+            _blobLeaseManager.SetBlobName(semaphoreName);
 
-            bool mutexExist = Mutex.TryOpenExisting(mutexName, out var mutex);
+            bool semaphoreExist = Semaphore.TryOpenExisting(semaphoreName, out var semaphore);
             string leaseId = await _blobLeaseManager.GetLease(cancellationToken);
 
-            if (!mutexExist)
+            if (!semaphoreExist)
             {
-                mutex = new Mutex(false, mutexName);
+                semaphore = new Semaphore(1, 1, semaphoreName);
             }
 
             try
             {
-                mutex.WaitOne();
+                semaphore.WaitOne();
 
                 return await next();
             } 
@@ -48,7 +48,7 @@ namespace Application.Common.Behaviours
                     _blobLeaseManager.ReleaseLease(leaseId, cancellationToken);
                 }
 
-                mutex.ReleaseMutex();
+                semaphore.Release();
             }
         }
     }

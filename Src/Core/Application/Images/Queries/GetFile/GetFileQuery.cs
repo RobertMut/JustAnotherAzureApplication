@@ -21,8 +21,8 @@ namespace Application.Images.Queries.GetFile
 
         public async Task<FileVm> Handle(GetFileQuery request, CancellationToken cancellationToken)
         {
-            string[] splittedFilename = request.Filename.Split("-");
-            var file = await _blobManagerService.DownloadAsync($"{splittedFilename[0]}-{splittedFilename[^2]}-{request.UserId}-{splittedFilename[^1]}", request.Id);
+            string[] splittedFilename = request.Filename.Split("_");
+            var file = await _blobManagerService.DownloadAsync($"{splittedFilename[0]}_{splittedFilename[^2]}_{request.UserId}_{splittedFilename[^1]}", request.Id);
 
             return new FileVm
             {

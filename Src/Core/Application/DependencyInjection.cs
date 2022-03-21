@@ -14,7 +14,7 @@ namespace Application
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehaviour<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestMutexBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestSemaphoreBehaviour<,>));
 
             return services;
         }

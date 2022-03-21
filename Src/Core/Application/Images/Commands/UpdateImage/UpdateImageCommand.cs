@@ -43,7 +43,7 @@ namespace Application.Images.Commands.UpdateImage
                         throw new OperationFailedException(HttpStatusCode.Created, statusCode, nameof(UpdateImageCommand));
                     }
                 }
-                var updateStatusCode = await _blobManagerService.UpdateAsync($"{Prefixes.OriginalImage}{request.UserId}-{request.Filename}",
+                var updateStatusCode = await _blobManagerService.UpdateAsync($"{Prefixes.OriginalImage}{request.UserId}_{request.Filename}",
                     metadata, cancellationToken);
                 if (updateStatusCode == HttpStatusCode.OK)
                 {

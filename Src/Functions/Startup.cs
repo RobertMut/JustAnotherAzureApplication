@@ -13,8 +13,9 @@ namespace Functions
 {
     public class Startup : FunctionsStartup
     {
-        public const string Storage = "StorageConnectionString";
+        public const string Storage = "AzureWebJobsStorage";
         public const string Database = "JAAADatabase";
+        public const string ContainerStringSetting = "%ImagesContainer%/";
 
         public override void Configure(IFunctionsHostBuilder builder)
         {
@@ -26,6 +27,7 @@ namespace Functions
             builder.Services.AddSingleton<IBlobManagerService>(service =>
                 new BlobManagerService(Environment.GetEnvironmentVariable(Storage), Environment.GetEnvironmentVariable("ImagesContainer")));
             builder.Services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
+            builder.Services.AddScoped<ImageEditor>();
         }
     }
 }

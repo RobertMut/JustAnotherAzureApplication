@@ -2,8 +2,8 @@
 {
     public class Prefixes
     {
-        public const string OriginalImage = "original-";
-        public const string MiniatureImage = "miniature-";
+        public const string OriginalImage = "original_";
+        public const string MiniatureImage = "miniature_";
         public const string ImageFormat = "image/";
     }
 }
