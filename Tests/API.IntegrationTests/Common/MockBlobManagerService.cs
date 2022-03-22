@@ -47,22 +47,17 @@ namespace API.IntegrationTests.Common
             return HttpStatusCode.Created;
         }
 
-        public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id = 0)
         {
             return _blobs[filename][id.GetValueOrDefault()];
-
         }
 
         public async Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
         {
             var blob = _blobs[filename][0];
-            string filenameWithoutExtension = Path.GetFileNameWithoutExtension(filename.Split("-")[1]);
-            string miniatureName = $"{Prefixes.MiniatureImage}{metadata[Metadata.TargetWidth]}x{metadata[Metadata.TargetHeight]}-{filenameWithoutExtension}.{metadata[Metadata.TargetType]}";
+            var splittedFilename = filename.Split("_");
+            string filenameWithoutExtension = Path.GetFileNameWithoutExtension(splittedFilename[^1]);
+            string miniatureName = $"{Prefixes.MiniatureImage}{metadata[Metadata.TargetWidth]}x{metadata[Metadata.TargetHeight]}_{splittedFilename[^2]}_{filenameWithoutExtension}.{metadata[Metadata.TargetType]}";
 
             AddNewBlobOrPrepend(blob.Content.ToStream(), miniatureName, $"image/{metadata[Metadata.TargetType]}");
 

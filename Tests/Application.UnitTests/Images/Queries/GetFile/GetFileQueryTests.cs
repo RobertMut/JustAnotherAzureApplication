@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces.Blob;
 using Application.Images.Queries.GetFile;
+using Application.UnitTests.Common.Mocks;
 using Azure.Storage.Blobs.Models;
 using MediatR;
 using Moq;
@@ -35,7 +36,8 @@ namespace Application.UnitTests.Images.Queries.GetFile
             var handler = new GetFileQueryHandler(_service.Object);
             var query = new GetFileQuery()
             {
-                Filename = "file.png"
+                Filename = "miniature_50x50_file.png",
+                UserId = JAAADbContextFactory.ProfileId.ToString()
             };
 
             Assert.DoesNotThrowAsync(async () =>

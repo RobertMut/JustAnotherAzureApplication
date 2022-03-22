@@ -1,6 +1,7 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Blob;
 using Application.Images.Commands.UpdateImage;
+using Application.UnitTests.Common.Mocks;
 using MediatR;
 using Moq;
 using NUnit.Framework;
@@ -39,6 +40,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 TargetType = Domain.Enums.Image.Format.png,
                 Version = 1,
                 Width = 1,
+                UserId = JAAADbContextFactory.ProfileId.ToString()
             };
 
             var responseMediator = await _mediator.Object.Send(command, CancellationToken.None);
@@ -63,6 +65,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 TargetType = Domain.Enums.Image.Format.png,
                 Version = 1,
                 Width = 1,
+                UserId = JAAADbContextFactory.ProfileId.ToString()
             };
 
             Assert.ThrowsAsync<OperationFailedException>(async () =>
@@ -85,6 +88,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 TargetType = Domain.Enums.Image.Format.png,
                 Version = 1,
                 Width = 1,
+                UserId = JAAADbContextFactory.ProfileId.ToString()
             };
 
             Assert.ThrowsAsync<OperationFailedException>(async () =>

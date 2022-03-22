@@ -1,6 +1,7 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Blob;
 using Application.Images.Commands.AddImage;
+using Application.UnitTests.Common.Mocks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -48,7 +49,8 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 ContentType = "image/jpeg",
                 File = new FormFile(_stream.Object, 0, _stream.Object.Length, "file", "sample.jpg"),
                 Filename = "sample.jpg",
-                TargetType = Domain.Enums.Image.Format.jpg
+                TargetType = Domain.Enums.Image.Format.jpg,
+                UserId = JAAADbContextFactory.ProfileId.ToString()
             };
 
             var responseMediator = await _mediator.Object.Send(command, CancellationToken.None);
@@ -71,7 +73,8 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 ContentType = "image/jpeg",
                 File = null,
                 Filename = "sample.jpg",
-                TargetType = Domain.Enums.Image.Format.png
+                TargetType = Domain.Enums.Image.Format.png,
+                UserId = JAAADbContextFactory.ProfileId.ToString()
             };
 
             Assert.ThrowsAsync<NullReferenceException>(async () =>
@@ -99,7 +102,8 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 ContentType = "image/jpeg",
                 File = new FormFile(stream.Object, 0, stream.Object.Length, "file", "broken.jpg"),
                 Filename = "sample.jpg",
-                TargetType = Domain.Enums.Image.Format.png
+                TargetType = Domain.Enums.Image.Format.png,
+                UserId = JAAADbContextFactory.ProfileId.ToString()
             };
 
             Assert.ThrowsAsync<OperationFailedException>(async () =>

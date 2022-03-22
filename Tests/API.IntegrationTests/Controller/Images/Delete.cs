@@ -37,11 +37,13 @@ namespace API.IntegrationTests.Controller.Images
         [Test]
         public async Task DeleteMiniaturesOnly()
         {
-            var response = await _client.DeleteAsync("/api/Images/sample2.png");
+            var response = await _client.DeleteAsync("/api/Images/sample2.png/True");
             response.EnsureSuccessStatusCode();
             var responseGetMiniature = await _client.GetAsync("/api/Images/miniature_400x400_sample2.jpeg");
+            var responseGetOtherOriginal = await _client.GetAsync("/api/Images/original_sample2.png");
 
             Assert.Throws<HttpRequestException>(() => responseGetMiniature.EnsureSuccessStatusCode());
+            responseGetOtherOriginal.EnsureSuccessStatusCode();
         }
 
         [Test]

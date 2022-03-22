@@ -2,11 +2,9 @@ using API.Filters;
 using API.Service;
 using Application;
 using Application.Common.Interfaces.Identity;
-using Azure.Identity;
 using FluentValidation.AspNetCore;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +13,7 @@ builder.Configuration.AddAzureKeyVault(builder.Configuration.GetValue<string>("K
 // Add services to the container.
 builder.Services.AddControllers(opt =>
 {
-    //opt.Filters.Add<ApiExceptionFilterAttribute>();
+    opt.Filters.Add<ApiExceptionFilterAttribute>();
 }).AddFluentValidation(x => x.AutomaticValidationEnabled = false);
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();

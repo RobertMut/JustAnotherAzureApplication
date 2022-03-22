@@ -36,7 +36,7 @@ namespace Application.Images.Commands.UpdateImage
                 };
                 if (request.Version != null)
                 {
-                    var statusCode = await _blobManagerService.PromoteBlobVersionAsync(Prefixes.OriginalImage+request.Filename,
+                    var statusCode = await _blobManagerService.PromoteBlobVersionAsync($"{Prefixes.OriginalImage}{request.UserId}_{request.Filename}",
                         request.Version.Value, cancellationToken);
                     if (statusCode != HttpStatusCode.Created)
                     {
