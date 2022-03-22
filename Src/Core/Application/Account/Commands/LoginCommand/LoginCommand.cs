@@ -1,6 +1,8 @@
 ﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
 using Application.Common.Models;
+using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,18 +15,18 @@ namespace Application.Account.Commands.LoginCommand
 
         public class LoginCommandHandler : IRequestHandler<LoginCommand, JwtSecurityToken>
         {
-            private readonly IUserManager _userManager;
-            private readonly TokenGenerator _tokenGenerator;
+            private readonly IRepository<User> _userRepository;
+            private readonly ITokenGenerator _tokenGenerator;
 
-            public LoginCommandHandler(IUserManager userManager, IConfiguration configuration)
+            public LoginCommandHandler(IRepository<User> userRepository, IConfiguration configuration, ITokenGenerator tokenGenerator)
             {
-                _userManager = userManager;
-                _tokenGenerator = new TokenGenerator(configuration);
+                _userRepository = userRepository;
+                _tokenGenerator = tokenGenerator;
             }
 
             public async Task<JwtSecurityToken> Handle(LoginCommand request, CancellationToken cancellationToken)
             {
-                var user = await _userManager.GetUserByNameAsync(request.LoginModel.UserName);
+                var user = await _userRepository.GetByNameAsync(request.LoginModel.UserName);
 
                 if (request.LoginModel.UserName == user.Username && request.LoginModel.Password == user.Password)
                 {

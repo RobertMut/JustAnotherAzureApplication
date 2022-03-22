@@ -36,14 +36,14 @@ namespace Application.Images.Commands.UpdateImage
                 };
                 if (request.Version != null)
                 {
-                    var statusCode = await _blobManagerService.PromoteBlobVersionAsync($"{Prefixes.OriginalImage}{request.UserId}_{request.Filename}",
+                    var statusCode = await _blobManagerService.PromoteBlobVersionAsync($"{Prefixes.OriginalImage}{request.UserId}{Name.Delimiter}{request.Filename}",
                         request.Version.Value, cancellationToken);
                     if (statusCode != HttpStatusCode.Created)
                     {
                         throw new OperationFailedException(HttpStatusCode.Created, statusCode, nameof(UpdateImageCommand));
                     }
                 }
-                var updateStatusCode = await _blobManagerService.UpdateAsync($"{Prefixes.OriginalImage}{request.UserId}_{request.Filename}",
+                var updateStatusCode = await _blobManagerService.UpdateAsync($"{Prefixes.OriginalImage}{request.UserId}{Name.Delimiter}{request.Filename}",
                     metadata, cancellationToken);
                 if (updateStatusCode == HttpStatusCode.OK)
                 {

@@ -2,18 +2,17 @@
 using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
 using Application.System.Commands.SeedSampleData;
+using Domain.Entities;
+using Infrastructure.Authentication;
 using Infrastructure.Persistence;
+using Infrastructure.Repositories;
 using Infrastructure.Services.Blob;
 using Infrastructure.Services.Identity;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
-using System.Text;
+using File = Domain.Entities.File;
 
 namespace Infrastructure
 {
@@ -29,39 +28,11 @@ namespace Infrastructure
             services.AddScoped<IBlobManagerService>(service => new BlobManagerService(configuration.GetValue<string>("AzureWebJobsStorage"), container));
             services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(configuration.GetValue<string>("AzureWebJobsStorage"), container));
 
-            services.AddScoped<IUserManager, UserManagerService>();
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                string validAudience = jwt.GetValue<string>("ValidAudience");
-                string validIssuer = jwt.GetValue<string>("ValidIssuer");
-                options.Audience = validAudience;
-                options.Authority = validIssuer;
-                options.ClaimsIssuer = validIssuer;
-                options.RequireHttpsMetadata = false;
-                options.Configuration = new OpenIdConnectConfiguration();
+            services.AddScoped<IRepository<User>, UserRepository>();
+            services.AddScoped<IRepository<File>, FileRepository>();
 
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidAudience = validAudience,
-                    ValidIssuer = validIssuer,
-                    ValidateLifetime = true,
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(MD5.HashData(Encoding.UTF8.GetBytes(configuration.GetValue<string>("JWTSecret"))))
-                };
-                if (jwt.GetValue<bool>("AllowDangerousCertificate"))
-                {
-                    options.BackchannelHttpHandler = new HttpClientHandler()
-                    {
-                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                    };
-                }
-            });
+            services.AddJwtBearerAuthentication(configuration);
+            services.AddScoped<ITokenGenerator, TokenGenerator>();
 
             return services;
         }

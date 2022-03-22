@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Common.Interfaces.Identity;
+using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -6,9 +7,9 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Application.Account.Commands.LoginCommand
+namespace Infrastructure.Services.Identity
 {
-    public class TokenGenerator
+    public class TokenGenerator : ITokenGenerator
     {
         private readonly IConfigurationSection _jwt;
         private readonly string _secret;

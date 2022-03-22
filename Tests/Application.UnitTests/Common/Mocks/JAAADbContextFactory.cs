@@ -23,12 +23,12 @@ namespace Application.UnitTests.Common.Mocks
             {
                 new File
                 {
-                    Filename = $"{Prefixes.OriginalImage}{ProfileId}_file.jpg",
+                    Filename = $"{Prefixes.OriginalImage}{ProfileId}{Name.Delimiter}file.jpg",
                     UserId = ProfileId
                 },
                 new File
                 {
-                    Filename = $"{Prefixes.MiniatureImage}_50x50_{ProfileId}_file.jpg",
+                    Filename = $"{Prefixes.MiniatureImage}{Name.Delimiter}50x50{Name.Delimiter}{ProfileId}{Name.Delimiter}file.jpg",
                     UserId = ProfileId
                 },
             });

@@ -34,9 +34,9 @@ namespace Application.UnitTests.Images.Commands.DeleteImage
                 {
                     return new BlobItem[]
                     {
-                        BlobsModelFactory.BlobItem("original-sample.jpg"),
-                        BlobsModelFactory.BlobItem("miniature-300x300-sample.Png"),
-                        BlobsModelFactory.BlobItem("miniature-200x200-sample.Tiff")
+                        BlobsModelFactory.BlobItem("original_sample.jpg"),
+                        BlobsModelFactory.BlobItem("miniature_300x300_sample.Png"),
+                        BlobsModelFactory.BlobItem("miniature_200x200_sample.Tiff")
                     }.AsEnumerable();
                 });
             _mediator.Setup(x => x.Send(It.IsAny<DeleteImageCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(Unit.Value);

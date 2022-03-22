@@ -40,7 +40,7 @@ namespace Application.Images.Commands.AddImage
 
                 using (var stream = request.File.OpenReadStream())
                 {
-                    var statusCode = await _service.AddAsync(stream, $"{Prefixes.OriginalImage}{request.UserId}_{request.Filename}", request.ContentType, metadata, cancellationToken);
+                    var statusCode = await _service.AddAsync(stream, $"{Prefixes.OriginalImage}{request.UserId}{Name.Delimiter}{request.Filename}", request.ContentType, metadata, cancellationToken);
                     if (statusCode == HttpStatusCode.Created)
                     {
                         return Unit.Value;

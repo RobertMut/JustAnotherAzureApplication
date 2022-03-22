@@ -2,8 +2,8 @@
 using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System.Net;
+using File = Domain.Entities.File;
 
 namespace Application.Images.Commands.DeleteImage
 {
@@ -17,12 +17,12 @@ namespace Application.Images.Commands.DeleteImage
         public class DeleteImageCommandHandler : IRequestHandler<DeleteImageCommand>
         {
             private readonly IBlobManagerService _blobManagerService;
-            private readonly IJAAADbContext _jaaaDbContext;
+            private readonly IRepository<File> _fileRepository;
 
-            public DeleteImageCommandHandler(IBlobManagerService blobManagerService, IJAAADbContext jaaaDbContext)
+            public DeleteImageCommandHandler(IBlobManagerService blobManagerService, IRepository<File> fileRepository)
             {
                 _blobManagerService = blobManagerService;
-                _jaaaDbContext = jaaaDbContext;
+                _fileRepository = fileRepository;
             }
 
             public async Task<Unit> Handle(DeleteImageCommand request, CancellationToken cancellationToken)
@@ -35,12 +35,11 @@ namespace Application.Images.Commands.DeleteImage
                 foreach (var blob in blobItems)
                 {
                     var statusCode = await _blobManagerService.DeleteBlobAsync(blob.Name, cancellationToken);
-                    var file = await _jaaaDbContext.Files.FirstOrDefaultAsync(f => f.Filename == blob.Name, cancellationToken);
+                    var file = await _fileRepository.GetByIdAsync(blob.Name, cancellationToken);
 
                     if(file != null)
                     {
-                        _jaaaDbContext.Files.Remove(file);
-                        await _jaaaDbContext.SaveChangesAsync();
+                        await _fileRepository.RemoveAsync(file.Filename, cancellationToken);
                     }
                     if (statusCode != HttpStatusCode.Accepted) throw new OperationFailedException(HttpStatusCode.Accepted,
                         statusCode, nameof(DeleteImageCommandHandler));
