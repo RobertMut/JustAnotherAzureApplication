@@ -25,7 +25,7 @@ namespace API.IntegrationTests.Common
                 var claims = new List<Claim>
                 {
                     new(ClaimTypes.Name, "TestUser"),
-                    new(ClaimTypes.NameIdentifier, "TestUser")
+                    new(ClaimTypes.NameIdentifier, Utils.DefaultId.ToString())
                 };
                 var identity = new ClaimsIdentity(claims, "Test");
                 var principal = new ClaimsPrincipal(identity);

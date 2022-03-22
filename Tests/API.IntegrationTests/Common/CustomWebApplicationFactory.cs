@@ -3,6 +3,7 @@ using Application.Common.Interfaces.Database;
 using Infrastructure.Persistence;
 using Infrastructure.Services.Blob;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -76,7 +77,7 @@ namespace API.IntegrationTests.Common
         {
             var client = this.CreateClient(this.ClientOptions);
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", "Test");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, "Test");
             return client;
         }
     }

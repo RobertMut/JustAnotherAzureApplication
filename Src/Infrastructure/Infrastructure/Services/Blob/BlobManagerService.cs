@@ -12,7 +12,11 @@ namespace Infrastructure.Services.Blob
         public BlobManagerService(string connectionString, string container)
         {
             _blobContainerClient = new BlobServiceClient(connectionString).GetBlobContainerClient(container);
-            _blobContainerClient.CreateIfNotExists(PublicAccessType.BlobContainer);
+
+            if (!_blobContainerClient.Exists())
+            {
+                _blobContainerClient.Create(PublicAccessType.BlobContainer);
+            }
         }
 
         public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType,

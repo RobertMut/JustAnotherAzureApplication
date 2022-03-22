@@ -26,7 +26,7 @@ namespace API.IntegrationTests.Controller.Images
             var fromPut = await _client.PutAsync("api/Images/", content);
             fromPut.EnsureSuccessStatusCode();
 
-            var fromGet = await _client.GetAsync("/api/Images/miniature-50x50-sample1.tiff");
+            var fromGet = await _client.GetAsync("/api/Images/miniature_50x50_sample1.tiff");
             fromGet.EnsureSuccessStatusCode();
 
             var bytes = await fromGet.Content.ReadAsByteArrayAsync();

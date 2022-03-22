@@ -23,8 +23,8 @@ namespace API.IntegrationTests.Common
             if (name == JwtBearerDefaults.AuthenticationScheme)
             {
                 var scheme = new AuthenticationScheme(
-                    "Test",
-                    "Test",
+                    JwtBearerDefaults.AuthenticationScheme,
+                    JwtBearerDefaults.AuthenticationScheme,
                     typeof(MockAuthenticationHandler)
                 );
                 return Task.FromResult(scheme);

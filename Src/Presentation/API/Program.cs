@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddAzureKeyVault(builder.Configuration.GetValue<string>("KeyVault"));
+
 // Add services to the container.
 builder.Services.AddControllers(opt =>
 {

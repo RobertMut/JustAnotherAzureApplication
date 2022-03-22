@@ -43,7 +43,7 @@ namespace Infrastructure
                 options.ClaimsIssuer = validIssuer;
                 options.RequireHttpsMetadata = false;
                 options.Configuration = new OpenIdConnectConfiguration();
-                //options.IncludeErrorDetails = true;
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidAudience = validAudience,
@@ -62,8 +62,6 @@ namespace Infrastructure
                     };
                 }
             });
-
-
 
             return services;
         }
