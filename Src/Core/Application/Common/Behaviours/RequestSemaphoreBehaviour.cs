@@ -16,15 +16,15 @@ namespace Application.Common.Behaviours
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
             var requestType = request.GetType();
-            string semaphoreName = requestType.GetProperty("Filename", BindingFlags.Public | BindingFlags.Instance)?
-                .GetValue(request).ToString() 
-                ?? requestType.GetProperty("Guid", BindingFlags.Public | BindingFlags.Instance)?
-                .GetValue(request).ToString();
+            string filename = requestType.GetProperty("Filename", BindingFlags.Public | BindingFlags.Instance)?.GetValue(request).ToString();
+            string userId = requestType.GetProperty("UserId", BindingFlags.Public | BindingFlags.Instance)?
+                    .GetValue(request).ToString();
 
-            if (string.IsNullOrEmpty(semaphoreName))
+            if (string.IsNullOrEmpty(filename) && string.IsNullOrEmpty(userId))
             {
                 return await next();
             }
+            string semaphoreName = $"{filename}{userId}";
             _blobLeaseManager.SetBlobName(semaphoreName);
 
             bool semaphoreExist = Semaphore.TryOpenExisting(semaphoreName, out var semaphore);

@@ -32,20 +32,17 @@ namespace Functions.Services
             var format = _formats.FileFormat[EnumHelper.GetEnumValueFromDescription<Format>(targetType)];
 
             using (var image = Image.FromStream(stream))
+            using (var memStream = new MemoryStream())
             {
                 var resizedImage = new Bitmap(image, width, height);
+                resizedImage.Save(memStream, format);
+                memStream.Position = 0;
+                var convertedFormatToString = new ImageFormatConverter().ConvertToString(format);
+                string miniatureName = $"{Prefixes.MiniatureImage}{width}x{height}_{Path.GetFileNameWithoutExtension(name)}.{convertedFormatToString}";
+                await _service.AddAsync(memStream, miniatureName,
+                    $"{Prefixes.ImageFormat}{convertedFormatToString}", null, new CancellationToken());
 
-                using (var memStream = new MemoryStream())
-                {
-                    resizedImage.Save(memStream, format);
-                    memStream.Position = 0;
-                    var convertedFormatToString = new ImageFormatConverter().ConvertToString(format);
-                    string miniatureName = $"{Prefixes.MiniatureImage}{width}x{height}_{Path.GetFileNameWithoutExtension(name)}.{convertedFormatToString}";
-                    await _service.AddAsync(memStream, miniatureName,
-                        $"{Prefixes.ImageFormat}{convertedFormatToString}", null, new CancellationToken());
-
-                    return miniatureName;
-                }
+                return miniatureName;
             }
         }
     }
