@@ -10,7 +10,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.UnitTests.Images.Commands.AddImage
+namespace Application.UnitTests.Images.Commands.UpdateImage
 {
     public class UpdateImageCommandTests
     {

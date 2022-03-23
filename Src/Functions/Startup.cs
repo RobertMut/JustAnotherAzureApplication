@@ -1,7 +1,11 @@
 ﻿using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
+using Application.Common.Interfaces.Image;
 using Common.Images;
+using Domain.Entities;
+using Functions.Services;
 using Infrastructure.Persistence;
+using Infrastructure.Repositories;
 using Infrastructure.Services.Blob;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +31,8 @@ namespace Functions
             builder.Services.AddSingleton<IBlobManagerService>(service =>
                 new BlobManagerService(Environment.GetEnvironmentVariable(Storage), Environment.GetEnvironmentVariable("ImagesContainer")));
             builder.Services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
-            builder.Services.AddScoped<ImageEditor>();
+            builder.Services.AddScoped<IRepository<File>, FileRepository>();
+            builder.Services.AddScoped<IImageEditor, ImageEditor>();
         }
     }
 }

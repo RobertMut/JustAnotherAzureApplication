@@ -38,12 +38,13 @@ namespace Application.Images.Commands.DeleteImage
                     var statusCode = await _blobManagerService.DeleteBlobAsync(blob.Name, cancellationToken);
                     var file = await _fileRepository.GetByNameAsync(blob.Name, cancellationToken);
 
-                    if(file != null)
+                    if (statusCode != HttpStatusCode.Accepted) throw new OperationFailedException(HttpStatusCode.Accepted,
+                        statusCode, nameof(DeleteImageCommandHandler));
+
+                    if (file != null)
                     {
                         await _fileRepository.RemoveAsync(file.Filename, cancellationToken);
                     }
-                    if (statusCode != HttpStatusCode.Accepted) throw new OperationFailedException(HttpStatusCode.Accepted,
-                        statusCode, nameof(DeleteImageCommandHandler));
                 }
 
                 return Unit.Value;

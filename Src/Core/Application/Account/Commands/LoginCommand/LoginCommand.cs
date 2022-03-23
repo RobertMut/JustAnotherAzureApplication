@@ -1,7 +1,7 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
-using Application.Common.Models;
+using Application.Common.Models.Login;
 using Domain.Entities;
 using MediatR;
 using System.IdentityModel.Tokens.Jwt;

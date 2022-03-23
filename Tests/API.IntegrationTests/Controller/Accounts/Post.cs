@@ -1,6 +1,6 @@
 ﻿using API.Controllers;
 using API.IntegrationTests.Common;
-using Application.Common.Models;
+using Application.Common.Models.Login;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Net.Http;

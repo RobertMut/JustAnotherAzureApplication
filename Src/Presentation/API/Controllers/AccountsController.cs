@@ -1,5 +1,5 @@
 ﻿using Application.Account.Commands.LoginCommand;
-using Application.Common.Models;
+using Application.Common.Models.Login;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

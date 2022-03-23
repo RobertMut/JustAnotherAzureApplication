@@ -4,21 +4,20 @@ using Microsoft.Extensions.Logging;
 using Azure.Storage.Blobs.Specialized;
 using Domain.Constants.Image;
 using Application.Common.Interfaces.Database;
-using System.Linq;
 using System.IO;
 using File = Domain.Entities.File;
-using System;
+using Application.Common.Interfaces.Image;
 
 namespace Functions
 {
     public class Miniaturize
     {
-        private readonly IJAAADbContext _jaaaDbContext;
-        private readonly ImageEditor _imageEditor;
+        private readonly IRepository<File> _fileRepository;
+        private readonly IImageEditor _imageEditor;
 
-        public Miniaturize(IJAAADbContext jaaaDbContext, ImageEditor imageEditor)
+        public Miniaturize(IRepository<File> fileRepository, IImageEditor imageEditor)
         {
-            _jaaaDbContext = jaaaDbContext;
+            _fileRepository = fileRepository;
             _imageEditor = imageEditor;
         }
 
@@ -27,30 +26,21 @@ namespace Functions
             [Blob(Startup.ContainerStringSetting + Prefixes.OriginalImage + "{name}", FileAccess.Read, Connection = Startup.Storage)] BlobBaseClient blob,
             string name, ILogger log)
         {
-            string[] splittedFilename = name.Split("_");
+            string[] splittedFilename = name.Split(Name.Delimiter);
             string userId = splittedFilename[^2];
             string miniature = await _imageEditor.Resize(blob, myBlob, name);
-            var originalFile = _jaaaDbContext.Files.FirstOrDefault(x => x.Filename == $"{Prefixes.OriginalImage}{name}");
-            var miniatureFile = _jaaaDbContext.Files.FirstOrDefault(x => x.Filename == miniature);
+            var originalFile = await _fileRepository.GetByNameAsync($"{Prefixes.OriginalImage}{name}");
+            var miniatureFile = await _fileRepository.GetByNameAsync(miniature);
 
             if (originalFile == null)
             {
-                _jaaaDbContext.Files.Add(new File
-                {
-                    Filename = $"{Prefixes.OriginalImage}{name}",
-                    UserId = Guid.Parse(userId)
-                });
+                await _fileRepository.AddAsync(new[] { $"{Prefixes.OriginalImage}{name}", userId });
             }
             if (miniatureFile == null)
             {
-                _jaaaDbContext.Files.Add(new File
-                {
-                    Filename = miniature,
-                    UserId = Guid.Parse(userId)
-                });
+                await _fileRepository.AddAsync(new[] { miniature, userId });
             }
 
-            await _jaaaDbContext.SaveChangesAsync();
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes\n");
         }
     }

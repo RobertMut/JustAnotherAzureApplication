@@ -1,21 +1,18 @@
 ﻿using Application.Common.Interfaces.Blob;
+using Application.Common.Interfaces.Image;
 using Azure.Storage.Blobs.Specialized;
 using Common.Images;
 using Domain.Common.Helper.Enum;
 using Domain.Constants.Image;
 using Domain.Enums.Image;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Functions
+namespace Functions.Services
 {
-    public class ImageEditor
+    public class ImageEditor : IImageEditor
     {
         private readonly IBlobManagerService _service;
         private readonly ISupportedImageFormats _formats;
