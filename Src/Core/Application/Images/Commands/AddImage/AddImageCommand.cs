@@ -42,7 +42,6 @@ namespace Application.Images.Commands.AddImage
 
                 using (var stream = request.File.OpenReadStream())
                 {
-
                     var statusCode = await _service.AddAsync(stream, filename, request.ContentType, metadata, cancellationToken);
                     if (statusCode == HttpStatusCode.Created)
                     {
