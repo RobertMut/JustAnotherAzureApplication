@@ -32,14 +32,15 @@ namespace API.IntegrationTests.Common
                 services.Remove(GetDescriptor<BlobManagerService>(services));
                 services.Remove(GetDescriptor<DbContextOptions<JAAADbContext>>(services));
 
-                services.AddScoped<IJAAADbContext, JAAADbContext>();
-                services.AddSingleton<IBlobManagerService, MockBlobManagerService>();
-                services.AddTransient<IAuthenticationSchemeProvider, MockSchemeProvider>();
                 services.AddDbContext<JAAADbContext>(options =>
                 {
                     options.UseInMemoryDatabase("InMemoryDbForTesting");
 
-                }, ServiceLifetime.Singleton);
+                });
+                services.AddScoped<IJAAADbContext, JAAADbContext>();
+
+                services.AddSingleton<IBlobManagerService, MockBlobManagerService>();
+                services.AddTransient<IAuthenticationSchemeProvider, MockSchemeProvider>();
 
                 var sp = services.BuildServiceProvider();
                 using (var scope = sp.CreateScope())

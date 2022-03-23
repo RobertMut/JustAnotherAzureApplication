@@ -1,6 +1,7 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
+using Domain.Constants.Image;
 using MediatR;
 using System.Net;
 using File = Domain.Entities.File;
@@ -27,7 +28,7 @@ namespace Application.Images.Commands.DeleteImage
 
             public async Task<Unit> Handle(DeleteImageCommand request, CancellationToken cancellationToken)
             {
-                var filename = request.Filename.Split('_');
+                var filename = request.Filename.Split(Name.Delimiter);
 
                 string prefix = request.DeleteMiniatures.HasValue && request.DeleteMiniatures.Value ? "miniature" : "";
                 string size = request.Size == "any" || string.IsNullOrEmpty(request.Size) ? "" : request.Size;
@@ -35,7 +36,7 @@ namespace Application.Images.Commands.DeleteImage
                 foreach (var blob in blobItems)
                 {
                     var statusCode = await _blobManagerService.DeleteBlobAsync(blob.Name, cancellationToken);
-                    var file = await _fileRepository.GetByIdAsync(blob.Name, cancellationToken);
+                    var file = await _fileRepository.GetByNameAsync(blob.Name, cancellationToken);
 
                     if(file != null)
                     {

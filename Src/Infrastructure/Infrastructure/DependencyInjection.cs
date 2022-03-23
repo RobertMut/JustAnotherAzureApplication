@@ -1,14 +1,12 @@
 ﻿using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
-using Application.System.Commands.SeedSampleData;
 using Domain.Entities;
 using Infrastructure.Authentication;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Infrastructure.Services.Blob;
 using Infrastructure.Services.Identity;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +21,12 @@ namespace Infrastructure
             var jwt = configuration.GetSection("JWT");
             var container = configuration["ImagesContainer"];
 
-            services.DatabaseInitializer<JAAADbContext>(configuration);
+            services.AddDbContext<JAAADbContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("JAAADatabase"));
+            });
+            services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>())
+                .InitDatabase();
 
             services.AddScoped<IBlobManagerService>(service => new BlobManagerService(configuration.GetValue<string>("AzureWebJobsStorage"), container));
             services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(configuration.GetValue<string>("AzureWebJobsStorage"), container));
@@ -37,30 +40,24 @@ namespace Infrastructure
             return services;
         }
 
-        public async static Task<IServiceCollection> DatabaseInitializer<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : DbContext
+        public static async Task InitDatabase(this IServiceCollection services)
         {
-            services.AddDbContext<JAAADbContext>(options =>
-            {
-                options.UseSqlServer(configuration.GetConnectionString("JAAADatabase"));
-            });
-            services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>());
-
             using (var service = services.BuildServiceProvider())
+            using (var serviceScope = service.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var appContext = service.GetRequiredService<IJAAADbContext>();
-                var dbContext = service.GetRequiredService<TContext>();
-                var mediator = service.GetRequiredService<IMediator>();
+                var db = service.GetService<IJAAADbContext>();
+                db.Database.EnsureCreated();
 
-                dbContext.Database.Migrate();
-
-                var user = await appContext.Users.FirstOrDefaultAsync(u => u.Username == "Default");
+                var user = await db.Users.FirstOrDefaultAsync(u => u.Username == "Default");
                 if (user == null)
                 {
-                    await mediator.Send(new SeedSampleDataCommand());
+                    db.Users.Add(new User
+                    {
+                        Username = "Default",
+                        Password = "12345"
+                    });
                 }
             }
-
-            return services;
         }
     }
 }

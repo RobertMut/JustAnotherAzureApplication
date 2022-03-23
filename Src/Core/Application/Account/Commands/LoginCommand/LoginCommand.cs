@@ -4,7 +4,6 @@ using Application.Common.Interfaces.Identity;
 using Application.Common.Models;
 using Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace Application.Account.Commands.LoginCommand
@@ -18,7 +17,7 @@ namespace Application.Account.Commands.LoginCommand
             private readonly IRepository<User> _userRepository;
             private readonly ITokenGenerator _tokenGenerator;
 
-            public LoginCommandHandler(IRepository<User> userRepository, IConfiguration configuration, ITokenGenerator tokenGenerator)
+            public LoginCommandHandler(IRepository<User> userRepository, ITokenGenerator tokenGenerator)
             {
                 _userRepository = userRepository;
                 _tokenGenerator = tokenGenerator;

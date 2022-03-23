@@ -52,7 +52,7 @@ namespace Infrastructure.Repositories
             var user = await _dbContext.Users.SingleAsync(x => x.Id == entity.Id, cancellationToken: cancellationToken);
 
             user = entity;
-            _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

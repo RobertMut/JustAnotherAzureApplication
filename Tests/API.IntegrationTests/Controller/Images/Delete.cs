@@ -22,15 +22,13 @@ namespace API.IntegrationTests.Controller.Images
         [Test]
         public async Task DeleteImageWithMiniatures()
         {
-            var response = await _client.DeleteAsync("/api/Images/sample1.png");
+            var response = await _client.DeleteAsync("/api/Images/sample3.png");
             response.EnsureSuccessStatusCode();
-            var responseGetFirstMiniature = await _client.GetAsync("/api/Images/miniature_300x300_sample1.jpeg");
-            var responseGetSecondMiniature = await _client.GetAsync("/api/Images/miniature_200x200_sample1.jpeg");
+            var responseGetFirstMiniature = await _client.GetAsync("/api/Images/miniature_300x300_sample3.jpeg");
 
             Assert.Throws<HttpRequestException>(() => 
             {
                 responseGetFirstMiniature.EnsureSuccessStatusCode();
-                responseGetSecondMiniature.EnsureSuccessStatusCode();
             });
         }
 

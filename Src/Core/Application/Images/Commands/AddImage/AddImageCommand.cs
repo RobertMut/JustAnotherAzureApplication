@@ -1,6 +1,7 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Blob;
 using Domain.Common.Helper.Enum;
+using Domain.Common.Helper.Filename;
 using Domain.Constants.Image;
 using Domain.Enums.Image;
 using MediatR;
@@ -37,10 +38,12 @@ namespace Application.Images.Commands.AddImage
                     { Metadata.TargetWidth, request.Width.ToString() },
                     { Metadata.TargetHeight, request.Height.ToString() },
                 };
+                string filename = NameHelper.GenerateOriginal(request.UserId, request.Filename);
 
                 using (var stream = request.File.OpenReadStream())
                 {
-                    var statusCode = await _service.AddAsync(stream, $"{Prefixes.OriginalImage}{request.UserId}{Name.Delimiter}{request.Filename}", request.ContentType, metadata, cancellationToken);
+
+                    var statusCode = await _service.AddAsync(stream, filename, request.ContentType, metadata, cancellationToken);
                     if (statusCode == HttpStatusCode.Created)
                     {
                         return Unit.Value;

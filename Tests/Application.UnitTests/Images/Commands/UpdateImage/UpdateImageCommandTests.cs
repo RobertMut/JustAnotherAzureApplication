@@ -1,10 +1,10 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Blob;
 using Application.Images.Commands.UpdateImage;
-using Application.UnitTests.Common.Mocks;
 using MediatR;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
@@ -16,10 +16,12 @@ namespace Application.UnitTests.Images.Commands.AddImage
     {
         private Mock<IMediator> _mediator;
         private Mock<IBlobManagerService> _service;
+        private Guid _userId;
 
         [SetUp]
         public async Task SetUp()
         {
+            _userId = Guid.NewGuid();
             _mediator = new Mock<IMediator>();
             _mediator.Setup(x => x.Send(It.IsAny<UpdateImageCommand>(), It.IsAny<CancellationToken>())).Returns(Unit.Task);
             _service = new Mock<IBlobManagerService>();
@@ -40,7 +42,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 TargetType = Domain.Enums.Image.Format.png,
                 Version = 1,
                 Width = 1,
-                UserId = JAAADbContextFactory.ProfileId.ToString()
+                UserId = _userId.ToString()
             };
 
             var responseMediator = await _mediator.Object.Send(command, CancellationToken.None);
@@ -65,7 +67,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 TargetType = Domain.Enums.Image.Format.png,
                 Version = 1,
                 Width = 1,
-                UserId = JAAADbContextFactory.ProfileId.ToString()
+                UserId = _userId.ToString()
             };
 
             Assert.ThrowsAsync<OperationFailedException>(async () =>
@@ -88,7 +90,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 TargetType = Domain.Enums.Image.Format.png,
                 Version = 1,
                 Width = 1,
-                UserId = JAAADbContextFactory.ProfileId.ToString()
+                UserId = _userId.ToString()
             };
 
             Assert.ThrowsAsync<OperationFailedException>(async () =>

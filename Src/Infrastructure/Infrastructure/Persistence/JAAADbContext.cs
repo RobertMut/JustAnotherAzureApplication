@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Database;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using File = Domain.Entities.File;
 
 namespace Infrastructure.Persistence
@@ -19,6 +20,7 @@ namespace Infrastructure.Persistence
             modelBuilder.Entity<User>().HasKey(u => u.Id);
             modelBuilder.Entity<File>().HasKey(f => f.Filename);
             modelBuilder.Entity<File>().HasOne(u => u.User).WithMany(f => f.Files).HasForeignKey(uid => uid.UserId);
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -26,5 +28,7 @@ namespace Infrastructure.Persistence
         {
             return base.SaveChangesAsync(cancellationToken);
         }
+
+        public override DatabaseFacade Database => base.Database;
     }
 }

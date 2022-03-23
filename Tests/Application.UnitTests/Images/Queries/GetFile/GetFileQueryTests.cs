@@ -1,10 +1,10 @@
 ﻿using Application.Common.Interfaces.Blob;
 using Application.Images.Queries.GetFile;
-using Application.UnitTests.Common.Mocks;
 using Azure.Storage.Blobs.Models;
 using MediatR;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,13 +14,14 @@ namespace Application.UnitTests.Images.Queries.GetFile
     {
         private Mock<IBlobManagerService> _service;
         private Mock<IMediator> _mediator;
-
+        private Guid _userId;
         [SetUp]
         public async Task SetUp()
         {
             var blob = new Mock<BlobDownloadResult>();
             _service = new Mock<IBlobManagerService>();
             _mediator = new Mock<IMediator>();
+            _userId = Guid.NewGuid();
 
             _service.Setup(x => x.DownloadAsync(It.IsAny<string>(), It.IsAny<int>()))
                 .ReturnsAsync(blob.Object);
@@ -37,7 +38,7 @@ namespace Application.UnitTests.Images.Queries.GetFile
             var query = new GetFileQuery()
             {
                 Filename = "miniature_50x50_file.png",
-                UserId = JAAADbContextFactory.ProfileId.ToString()
+                UserId = _userId.ToString()
             };
 
             Assert.DoesNotThrowAsync(async () =>

@@ -1,7 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Blob;
 using Application.Images.Commands.AddImage;
-using Application.UnitTests.Common.Mocks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -20,13 +19,14 @@ namespace Application.UnitTests.Images.Commands.AddImage
         private Mock<IMediator> _mediator;
         private Mock<Stream> _stream;
         private Mock<IBlobManagerService> _service;
-
+        private Guid _userId;
         [SetUp]
         public async Task SetUp()
         {
             _mediator = new Mock<IMediator>();
             _service = new Mock<IBlobManagerService>();
             _stream = new Mock<Stream>();
+            _userId = Guid.NewGuid();
 
             _mediator.Setup(x => x.Send(It.IsAny<AddImageCommand>(), It.IsAny<CancellationToken>())).Returns(Unit.Task);
             _stream.Setup(x => x.Write(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>()))
@@ -50,7 +50,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 File = new FormFile(_stream.Object, 0, _stream.Object.Length, "file", "sample.jpg"),
                 Filename = "sample.jpg",
                 TargetType = Domain.Enums.Image.Format.jpg,
-                UserId = JAAADbContextFactory.ProfileId.ToString()
+                UserId = _userId.ToString()
             };
 
             var responseMediator = await _mediator.Object.Send(command, CancellationToken.None);
@@ -74,7 +74,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 File = null,
                 Filename = "sample.jpg",
                 TargetType = Domain.Enums.Image.Format.png,
-                UserId = JAAADbContextFactory.ProfileId.ToString()
+                UserId = _userId.ToString()
             };
 
             Assert.ThrowsAsync<NullReferenceException>(async () =>
@@ -103,7 +103,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 File = new FormFile(stream.Object, 0, stream.Object.Length, "file", "broken.jpg"),
                 Filename = "sample.jpg",
                 TargetType = Domain.Enums.Image.Format.png,
-                UserId = JAAADbContextFactory.ProfileId.ToString()
+                UserId = _userId.ToString()
             };
 
             Assert.ThrowsAsync<OperationFailedException>(async () =>
