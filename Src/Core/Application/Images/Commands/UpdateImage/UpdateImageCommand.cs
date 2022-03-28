@@ -29,6 +29,7 @@ namespace Application.Images.Commands.UpdateImage
 
             public async Task<Unit> Handle(UpdateImageCommand request, CancellationToken cancellationToken)
             {
+                request.Filename = request.Filename.Replace(char.Parse(Name.Delimiter), '-');
                 var metadata = new Dictionary<string, string>
                 {
                     { Metadata.TargetType, EnumHelper.GetDescriptionFromEnumValue(request.TargetType) },

@@ -59,9 +59,8 @@ namespace Infrastructure.Services.Blob
         {
             return _blobContainerClient.GetBlobs(BlobTraits.All, BlobStates.None, prefix, ct)
                 .Where(x => x.Name.Contains($"_{Path.GetFileNameWithoutExtension(blobName)}."))
-                .Where(x => x.Name.Contains($"_{size}_"))
-                .Where(x => x.Name.Contains(userId))
-                .ToList();
+                .Where(x => x.Name.Contains(size ?? $"_{size}_"))
+                .Where(x => x.Name.Contains(userId)).ToList();
         }
 
         /// <summary>

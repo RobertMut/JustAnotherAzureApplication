@@ -28,6 +28,7 @@ namespace Application.Images.Commands.DeleteImage
 
             public async Task<Unit> Handle(DeleteImageCommand request, CancellationToken cancellationToken)
             {
+                request.Filename = request.Filename.Replace(char.Parse(Name.Delimiter), '-');
                 var filename = request.Filename.Split(Name.Delimiter);
 
                 string prefix = request.DeleteMiniatures.HasValue && request.DeleteMiniatures.Value ? Prefixes.MiniatureImage : string.Empty;
