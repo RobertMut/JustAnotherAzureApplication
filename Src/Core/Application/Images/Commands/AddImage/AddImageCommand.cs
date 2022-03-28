@@ -31,6 +31,7 @@ namespace Application.Images.Commands.AddImage
 
             public async Task<Unit> Handle(AddImageCommand request, CancellationToken cancellationToken)
             {
+
                 var metadata = new Dictionary<string, string>
                 {
                     { Metadata.OriginalFile, request.Filename },
@@ -39,6 +40,13 @@ namespace Application.Images.Commands.AddImage
                     { Metadata.TargetHeight, request.Height.ToString() },
                 };
                 request.Filename = request.Filename.Replace(char.Parse(Name.Delimiter), '-');
+                var existingBlobs = await _service.GetBlobsInfoByName(Prefixes.OriginalImage, null, $"{request.Filename}", request.UserId, cancellationToken);
+
+                if (existingBlobs.Count() > 0)
+                {
+                    request.Filename = $"new-{request.Filename}";
+                }
+                
                 string filename = NameHelper.GenerateOriginal(request.UserId, request.Filename);
 
                 using (var stream = request.File.OpenReadStream())
