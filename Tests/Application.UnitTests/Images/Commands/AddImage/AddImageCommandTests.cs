@@ -20,6 +20,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
         private Mock<Stream> _stream;
         private Mock<IBlobManagerService> _service;
         private Guid _userId;
+
         [SetUp]
         public async Task SetUp()
         {
