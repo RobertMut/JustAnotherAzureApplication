@@ -7,17 +7,18 @@ using Application.Common.Interfaces.Database;
 using System.IO;
 using File = Domain.Entities.File;
 using Application.Common.Interfaces.Image;
+using System;
 
 namespace Functions
 {
     public class Miniaturize
     {
-        private readonly IRepository<File> _fileRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IImageEditor _imageEditor;
 
-        public Miniaturize(IRepository<File> fileRepository, IImageEditor imageEditor)
+        public Miniaturize(IUnitOfWork unitOfWork, IImageEditor imageEditor)
         {
-            _fileRepository = fileRepository;
+            _unitOfWork = unitOfWork;
             _imageEditor = imageEditor;
         }
 
@@ -29,16 +30,25 @@ namespace Functions
             string[] splittedFilename = name.Split(Name.Delimiter);
             string userId = splittedFilename[^2];
             string miniature = await _imageEditor.Resize(blob, myBlob, splittedFilename[^1], userId);
-            var originalFile = await _fileRepository.GetByNameAsync($"{Prefixes.OriginalImage}{name}");
-            var miniatureFile = await _fileRepository.GetByNameAsync(miniature);
+            string originalFileName = $"{Prefixes.OriginalImage}{name}";
+            var originalFile = await _unitOfWork.FileRepository.GetObjectBy(x => x.Filename == originalFileName);
+            var miniatureFile = await _unitOfWork.FileRepository.GetObjectBy(x => x.Filename == miniature);
 
             if (originalFile == null)
             {
-                await _fileRepository.AddAsync(new[] { $"{Prefixes.OriginalImage}{name}", userId });
+                await _unitOfWork.FileRepository.InsertAsync(new File
+                {
+                    Filename = originalFileName,
+                    UserId = Guid.Parse(userId)
+                });
             }
             if (miniatureFile == null)
             {
-                await _fileRepository.AddAsync(new[] { miniature, userId });
+                await _unitOfWork.FileRepository.InsertAsync(new File
+                {
+                    Filename = miniature,
+                    UserId = Guid.Parse(userId)
+                });
             }
 
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes\n");

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Blob;
+using Application.Common.Models.File;
 using Application.Images.Queries.GetFile;
 using Azure.Storage.Blobs.Models;
 using MediatR;

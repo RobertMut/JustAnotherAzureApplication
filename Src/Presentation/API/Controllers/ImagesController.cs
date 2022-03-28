@@ -65,7 +65,7 @@ namespace API.Controllers
             [FromForm] int height,
             [FromForm] int width)
         {
-            await _mediator.Send(new AddImageCommand
+            string filename = await _mediator.Send(new AddImageCommand
             {
                 File = file,
                 Filename = file.FileName,
@@ -76,9 +76,9 @@ namespace API.Controllers
                 UserId = _currentUserService.UserId
             });
 
-            return Ok();
+            return Ok(filename);
         }
-        
+
         [HttpDelete]
         [Route("{file}")]
         [Route("{file}/{deleteMiniatures:bool?}")]

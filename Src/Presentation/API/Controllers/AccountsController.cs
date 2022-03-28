@@ -33,5 +33,12 @@ namespace API.Controllers
                 expiriation = token.ValidTo
             });
         }
+
+        [Authorize]
+        [HttpPost("register")]
+        public async Task<IActionResult> Register()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Application.Common.Helpers.Exception;
 using Application.Common.Interfaces.Blob;
+using Common;
 using Domain.Common.Helper.Enum;
 using Domain.Common.Helper.Filename;
 using Domain.Constants.Image;
@@ -10,7 +11,7 @@ using System.Net;
 
 namespace Application.Images.Commands.AddImage
 {
-    public class AddImageCommand : IRequest
+    public class AddImageCommand : IRequest<string>
     {
         public IFormFile File { get; set; }
         public string Filename { get; set; }
@@ -20,16 +21,18 @@ namespace Application.Images.Commands.AddImage
         public int Height { get; set; }
         public string UserId { get; set; }
 
-        public class AddImageCommandHandler : IRequestHandler<AddImageCommand>
+        public class AddImageCommandHandler : IRequestHandler<AddImageCommand, string>
         {
+            private readonly IDateTime _dateTime;
             private readonly IBlobManagerService _service;
 
-            public AddImageCommandHandler(IBlobManagerService service)
+            public AddImageCommandHandler(IBlobManagerService service, IDateTime dateTime)
             {
+                _dateTime = dateTime;
                 _service = service;
             }
 
-            public async Task<Unit> Handle(AddImageCommand request, CancellationToken cancellationToken)
+            public async Task<string> Handle(AddImageCommand request, CancellationToken cancellationToken)
             {
 
                 var metadata = new Dictionary<string, string>
@@ -44,7 +47,7 @@ namespace Application.Images.Commands.AddImage
 
                 if (existingBlobs.Count() > 0)
                 {
-                    request.Filename = $"new-{request.Filename}";
+                    request.Filename = $"{_dateTime.Now.ToString("yyyyMMddHHmmssffff")}-{request.Filename}";
                 }
                 
                 string filename = NameHelper.GenerateOriginal(request.UserId, request.Filename);
@@ -56,7 +59,7 @@ namespace Application.Images.Commands.AddImage
                     StatusCode.Check(HttpStatusCode.Created, statusCode, this);
                 }
 
-                return Unit.Value;
+                return request.Filename;
             }
         }
     }

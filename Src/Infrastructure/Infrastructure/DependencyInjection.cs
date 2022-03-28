@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
+using Common;
 using Domain.Entities;
 using Infrastructure.Authentication;
 using Infrastructure.Persistence;
@@ -31,8 +32,8 @@ namespace Infrastructure
             services.AddScoped<IBlobManagerService>(service => new BlobManagerService(configuration.GetValue<string>("AzureWebJobsStorage"), container));
             services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(configuration.GetValue<string>("AzureWebJobsStorage"), container));
 
-            services.AddScoped<IRepository<User>, UserRepository>();
-            services.AddScoped<IRepository<File>, FileRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IDateTime, MachineTime>();
 
             services.AddJwtBearerAuthentication(configuration);
             services.AddScoped<ITokenGenerator, TokenGenerator>();

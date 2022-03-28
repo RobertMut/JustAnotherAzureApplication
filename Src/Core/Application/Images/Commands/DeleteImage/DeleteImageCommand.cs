@@ -18,12 +18,12 @@ namespace Application.Images.Commands.DeleteImage
         public class DeleteImageCommandHandler : IRequestHandler<DeleteImageCommand>
         {
             private readonly IBlobManagerService _blobManagerService;
-            private readonly IRepository<File> _fileRepository;
+            private readonly IUnitOfWork _unitOfWork;
 
-            public DeleteImageCommandHandler(IBlobManagerService blobManagerService, IRepository<File> fileRepository)
+            public DeleteImageCommandHandler(IBlobManagerService blobManagerService, IUnitOfWork unitOfWork)
             {
                 _blobManagerService = blobManagerService;
-                _fileRepository = fileRepository;
+                _unitOfWork = unitOfWork;
             }
 
             public async Task<Unit> Handle(DeleteImageCommand request, CancellationToken cancellationToken)
@@ -40,10 +40,10 @@ namespace Application.Images.Commands.DeleteImage
                     
                     StatusCode.Check(HttpStatusCode.Accepted, statusCode, this);
 
-                    var file = await _fileRepository.GetByNameAsync(blob.Name, cancellationToken);
+                    var file = await _unitOfWork.FileRepository.GetObjectBy(x => x.Filename == blob.Name, cancellationToken: cancellationToken);
                     if (file != null)
                     {
-                        await _fileRepository.RemoveAsync(file.Filename, cancellationToken);
+                        await _unitOfWork.FileRepository.Delete(file);
                     }
                 }
 

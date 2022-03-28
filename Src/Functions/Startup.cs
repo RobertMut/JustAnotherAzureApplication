@@ -31,7 +31,7 @@ namespace Functions
             builder.Services.AddSingleton<IBlobManagerService>(service =>
                 new BlobManagerService(Environment.GetEnvironmentVariable(Storage), Environment.GetEnvironmentVariable("ImagesContainer")));
             builder.Services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
-            builder.Services.AddScoped<IRepository<File>, FileRepository>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IImageEditor, ImageEditor>();
         }
     }

@@ -14,18 +14,18 @@ namespace Application.Account.Commands.LoginCommand
 
         public class LoginCommandHandler : IRequestHandler<LoginCommand, JwtSecurityToken>
         {
-            private readonly IRepository<User> _userRepository;
+            private readonly IUnitOfWork _unitOfWork;
             private readonly ITokenGenerator _tokenGenerator;
 
-            public LoginCommandHandler(IRepository<User> userRepository, ITokenGenerator tokenGenerator)
+            public LoginCommandHandler(IUnitOfWork unitOfWork, ITokenGenerator tokenGenerator)
             {
-                _userRepository = userRepository;
+                _unitOfWork = unitOfWork;
                 _tokenGenerator = tokenGenerator;
             }
 
             public async Task<JwtSecurityToken> Handle(LoginCommand request, CancellationToken cancellationToken)
             {
-                var user = await _userRepository.GetByNameAsync(request.LoginModel.UserName);
+                var user = await _unitOfWork.UserRepository.GetObjectBy(x => x.Username == request.LoginModel.UserName, cancellationToken);
 
                 if (request.LoginModel.UserName == user.Username && request.LoginModel.Password == user.Password)
                 {

@@ -1,6 +1,6 @@
 ﻿using Azure.Storage.Blobs.Models;
 
-namespace Application.Images.Queries.GetFile
+namespace Application.Common.Models.File
 {
     public class FileVm
     {
