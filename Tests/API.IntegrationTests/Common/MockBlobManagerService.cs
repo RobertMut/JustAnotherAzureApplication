@@ -55,7 +55,7 @@ namespace API.IntegrationTests.Common
         public async Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
         {
             var blob = _blobs[filename][0];
-            var splittedFilename = filename.Split("_");
+            var splittedFilename = filename.Split(Name.Delimiter);
             string filenameWithoutExtension = Path.GetFileNameWithoutExtension(splittedFilename[^1]);
             string miniatureName = NameHelper.GenerateMiniature(splittedFilename[^2], $"{metadata[Metadata.TargetWidth]}x{metadata[Metadata.TargetHeight]}", $"{filenameWithoutExtension}.{metadata[Metadata.TargetType]}");
             AddNewBlobOrPrepend(blob.Content.ToStream(), miniatureName, $"image/{metadata[Metadata.TargetType]}");

@@ -1,4 +1,4 @@
-﻿using Application.Common.Exceptions;
+﻿using Application.Common.Helpers.Exception;
 using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Domain.Constants.Image;
@@ -30,17 +30,16 @@ namespace Application.Images.Commands.DeleteImage
             {
                 var filename = request.Filename.Split(Name.Delimiter);
 
-                string prefix = request.DeleteMiniatures.HasValue && request.DeleteMiniatures.Value ? "miniature" : "";
+                string prefix = request.DeleteMiniatures.HasValue && request.DeleteMiniatures.Value ? Prefixes.MiniatureImage : string.Empty;
                 string size = request.Size == "any" || string.IsNullOrEmpty(request.Size) ? "" : request.Size;
                 var blobItems = await _blobManagerService.GetBlobsInfoByName(prefix, size, filename[^1], request.UserId, cancellationToken);
                 foreach (var blob in blobItems)
                 {
                     var statusCode = await _blobManagerService.DeleteBlobAsync(blob.Name, cancellationToken);
+                    
+                    StatusCode.Check(HttpStatusCode.Accepted, statusCode, this);
+
                     var file = await _fileRepository.GetByNameAsync(blob.Name, cancellationToken);
-
-                    if (statusCode != HttpStatusCode.Accepted) throw new OperationFailedException(HttpStatusCode.Accepted,
-                        statusCode, nameof(DeleteImageCommandHandler));
-
                     if (file != null)
                     {
                         await _fileRepository.RemoveAsync(file.Filename, cancellationToken);

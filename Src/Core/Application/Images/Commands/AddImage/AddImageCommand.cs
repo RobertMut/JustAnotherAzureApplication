@@ -1,4 +1,4 @@
-﻿using Application.Common.Exceptions;
+﻿using Application.Common.Helpers.Exception;
 using Application.Common.Interfaces.Blob;
 using Domain.Common.Helper.Enum;
 using Domain.Common.Helper.Filename;
@@ -38,17 +38,17 @@ namespace Application.Images.Commands.AddImage
                     { Metadata.TargetWidth, request.Width.ToString() },
                     { Metadata.TargetHeight, request.Height.ToString() },
                 };
+                request.Filename = request.Filename.Replace(char.Parse(Name.Delimiter), '-');
                 string filename = NameHelper.GenerateOriginal(request.UserId, request.Filename);
 
                 using (var stream = request.File.OpenReadStream())
                 {
                     var statusCode = await _service.AddAsync(stream, filename, request.ContentType, metadata, cancellationToken);
-                    if (statusCode == HttpStatusCode.Created)
-                    {
-                        return Unit.Value;
-                    }
-                    throw new OperationFailedException(HttpStatusCode.Created, statusCode, nameof(AddImageCommandHandler));
+
+                    StatusCode.Check(HttpStatusCode.Created, statusCode, this);
                 }
+
+                return Unit.Value;
             }
         }
     }

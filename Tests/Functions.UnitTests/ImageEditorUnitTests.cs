@@ -60,20 +60,18 @@ namespace Functions.UnitTests
         {
             using (var bitmap = new Bitmap(100, 100))
             using (var graphics = Graphics.FromImage(bitmap))
+            using (var memoryStream = new MemoryStream())
             {
                 graphics.Clear(Color.Green);
-                using (var memoryStream = new MemoryStream())
-                {
-                    bitmap.Save(memoryStream, ImageFormat.Png);
-                    memoryStream.Position = 0;
-                    var baseClient = new MockBlobBaseClient(memoryStream.Length, target, metadata);
+                bitmap.Save(memoryStream, ImageFormat.Png);
+                memoryStream.Position = 0;
+                var baseClient = new MockBlobBaseClient(memoryStream.Length, target, metadata);
 
-                    Assert.DoesNotThrowAsync(async () =>
-                    {
-                        string miniatureName = await _editor.Resize(baseClient, memoryStream, _originalFilename);
-                        Assert.False(string.IsNullOrEmpty(miniatureName));
-                    });
-                }
+                Assert.DoesNotThrowAsync(async () =>
+                {
+                    string miniatureName = await _editor.Resize(baseClient, memoryStream, _originalFilename, Guid.NewGuid().ToString());
+                    Assert.False(string.IsNullOrEmpty(miniatureName));
+                });
             }
         }
     }

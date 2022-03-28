@@ -28,7 +28,7 @@ namespace Functions
         {
             string[] splittedFilename = name.Split(Name.Delimiter);
             string userId = splittedFilename[^2];
-            string miniature = await _imageEditor.Resize(blob, myBlob, name);
+            string miniature = await _imageEditor.Resize(blob, myBlob, splittedFilename[^1], userId);
             var originalFile = await _fileRepository.GetByNameAsync($"{Prefixes.OriginalImage}{name}");
             var miniatureFile = await _fileRepository.GetByNameAsync(miniature);
 

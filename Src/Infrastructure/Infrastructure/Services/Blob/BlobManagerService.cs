@@ -58,8 +58,8 @@ namespace Infrastructure.Services.Blob
         public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, string userId, CancellationToken ct)
         {
             return _blobContainerClient.GetBlobs(BlobTraits.All, BlobStates.None, prefix, ct)
-                .Where(x => x.Name.Contains($"{Path.GetFileNameWithoutExtension(blobName)}."))
-                .Where(x => x.Name.Contains(size))
+                .Where(x => x.Name.Contains($"_{Path.GetFileNameWithoutExtension(blobName)}."))
+                .Where(x => x.Name.Contains($"_{size}_"))
                 .Where(x => x.Name.Contains(userId))
                 .ToList();
         }

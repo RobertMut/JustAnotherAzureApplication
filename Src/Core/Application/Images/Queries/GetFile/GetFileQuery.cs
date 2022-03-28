@@ -24,26 +24,22 @@ namespace Application.Images.Queries.GetFile
         public async Task<FileVm> Handle(GetFileQuery request, CancellationToken cancellationToken)
         {
             string[] splittedFilename = request.Filename.Split(Name.Delimiter);
- 
-            if (splittedFilename[0] == Prefixes.OriginalImage.TrimEnd(Name.Delimiter)) {
-                string filename = NameHelper.GenerateOriginal(request.UserId, splittedFilename[^1]);
-                var file = await _blobManagerService.DownloadAsync(filename , request.Id);
-                
-                return new FileVm
-                {
-                    File = file
-                };
+            string filename = string.Empty;
+
+            if (splittedFilename[0] == Prefixes.OriginalImage.TrimEnd(char.Parse(Name.Delimiter))) {
+                filename = NameHelper.GenerateOriginal(request.UserId, splittedFilename[^1]);
             } 
             else
             {
-                string filename = NameHelper.GenerateMiniature(request.UserId, splittedFilename[^2], splittedFilename[^1]);
-                var file = await _blobManagerService.DownloadAsync(filename, request.Id);
-
-                return new FileVm
-                {
-                    File = file
-                };
+                filename = NameHelper.GenerateMiniature(request.UserId, splittedFilename[^2], splittedFilename[^1]);
             }
+
+            var file = await _blobManagerService.DownloadAsync(filename, request.Id);
+
+            return new FileVm
+            {
+                File = file
+            };
         }
     }
 }

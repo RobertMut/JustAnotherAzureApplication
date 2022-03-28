@@ -1,13 +1,9 @@
 using Application.Common.Interfaces.Database;
 using Azure.Storage.Blobs.Specialized;
-using Domain.Constants.Image;
 using Functions.UnitTests.Common;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +32,7 @@ namespace Functions.UnitTests
             _fileRepository = new Mock<IRepository<File>>();
             _imageEditor = new Mock<IImageEditor>();
 
-            _imageEditor.Setup(x => x.Resize(It.IsAny<BlobBaseClient>(), It.IsAny<Stream>(), It.IsAny<string>())).ReturnsAsync(_miniatureFile);
+            _imageEditor.Setup(x => x.Resize(It.IsAny<BlobBaseClient>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_miniatureFile);
             _fileRepository.Setup(x => x.GetByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync((string name, CancellationToken cancellationToken) =>
             {
                 return new File

@@ -3,6 +3,7 @@ using Application.Common.Interfaces.Image;
 using Azure.Storage.Blobs.Specialized;
 using Common.Images;
 using Domain.Common.Helper.Enum;
+using Domain.Common.Helper.Filename;
 using Domain.Constants.Image;
 using Domain.Enums.Image;
 using System.Drawing;
@@ -23,10 +24,10 @@ namespace Functions.Services
             _service = service;
         }
 
-        public async Task<string> Resize(BlobBaseClient blob, Stream stream, string name)
+        public async Task<string> Resize(BlobBaseClient blob, Stream stream, string filename, string userId)
         {
             var metadata = blob.GetProperties().Value.Metadata;
-            var targetType = metadata[Metadata.TargetType];
+            string targetType = metadata[Metadata.TargetType];
             int width = int.Parse(metadata[Metadata.TargetWidth]);
             int height = int.Parse(metadata[Metadata.TargetHeight]);
             var format = _formats.FileFormat[EnumHelper.GetEnumValueFromDescription<Format>(targetType)];
@@ -38,7 +39,7 @@ namespace Functions.Services
                 resizedImage.Save(memStream, format);
                 memStream.Position = 0;
                 var convertedFormatToString = new ImageFormatConverter().ConvertToString(format);
-                string miniatureName = $"{Prefixes.MiniatureImage}{width}x{height}_{Path.GetFileNameWithoutExtension(name)}.{convertedFormatToString}";
+                string miniatureName = NameHelper.GenerateMiniature(userId, $"{width}x{height}", $"{Path.GetFileNameWithoutExtension(filename)}.{convertedFormatToString}");
                 await _service.AddAsync(memStream, miniatureName,
                     $"{Prefixes.ImageFormat}{convertedFormatToString}", null, new CancellationToken());
 

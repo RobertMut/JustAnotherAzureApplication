@@ -1,4 +1,4 @@
-﻿using Application.Common.Exceptions;
+﻿using Application.Common.Helpers.Exception;
 using Application.Common.Interfaces.Blob;
 using Domain.Common.Helper.Enum;
 using Domain.Common.Helper.Filename;
@@ -40,18 +40,14 @@ namespace Application.Images.Commands.UpdateImage
                 if (request.Version != null)
                 {
                     var statusCode = await _blobManagerService.PromoteBlobVersionAsync(filename, request.Version.Value, cancellationToken);
-                    if (statusCode != HttpStatusCode.Created)
-                    {
-                        throw new OperationFailedException(HttpStatusCode.Created, statusCode, nameof(UpdateImageCommand));
-                    }
+
+                    StatusCode.Check(HttpStatusCode.Created, statusCode, this);
                 }
 
                 var updateStatusCode = await _blobManagerService.UpdateAsync(filename, metadata, cancellationToken);
-                if (updateStatusCode == HttpStatusCode.OK)
-                {
-                    return Unit.Value;
-                }
-                throw new OperationFailedException(HttpStatusCode.OK, updateStatusCode, nameof(UpdateImageCommand));
+                StatusCode.Check(HttpStatusCode.OK, updateStatusCode, this);
+
+                return Unit.Value;
             }
         }
     }

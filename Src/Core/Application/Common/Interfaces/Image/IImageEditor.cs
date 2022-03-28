@@ -4,6 +4,6 @@ namespace Application.Common.Interfaces.Image
 {
     public interface IImageEditor
     {
-        Task<string> Resize(BlobBaseClient blob, Stream stream, string name);
+        Task<string> Resize(BlobBaseClient blob, Stream stream, string filename, string userId);
     }
 }
