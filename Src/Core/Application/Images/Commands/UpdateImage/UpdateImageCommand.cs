@@ -1,6 +1,7 @@
-﻿using Application.Common.Exceptions;
+﻿using Application.Common.Helpers.Exception;
 using Application.Common.Interfaces.Blob;
 using Domain.Common.Helper.Enum;
+using Domain.Common.Helper.Filename;
 using Domain.Constants.Image;
 using Domain.Enums.Image;
 using MediatR;
@@ -15,6 +16,7 @@ namespace Application.Images.Commands.UpdateImage
         public int Height { get; set; }
         public Format TargetType { get; set; }
         public int? Version { get; set; }
+        public string UserId { get; set; }
 
         public class UpdateImageCommandHandler : IRequestHandler<UpdateImageCommand>
         {
@@ -27,28 +29,26 @@ namespace Application.Images.Commands.UpdateImage
 
             public async Task<Unit> Handle(UpdateImageCommand request, CancellationToken cancellationToken)
             {
+                request.Filename = request.Filename.Replace(char.Parse(Name.Delimiter), '-');
                 var metadata = new Dictionary<string, string>
                 {
                     { Metadata.TargetType, EnumHelper.GetDescriptionFromEnumValue(request.TargetType) },
                     { Metadata.TargetWidth, request.Width.ToString() },
                     { Metadata.TargetHeight, request.Height.ToString() },
                 };
+                string filename = NameHelper.GenerateOriginal(request.UserId, request.Filename);
+
                 if (request.Version != null)
                 {
-                    var statusCode = await _blobManagerService.PromoteBlobVersionAsync(Prefixes.OriginalImage+request.Filename,
-                        request.Version.Value, cancellationToken);
-                    if (statusCode != HttpStatusCode.Created)
-                    {
-                        throw new OperationFailedException(HttpStatusCode.Created, statusCode, nameof(UpdateImageCommand));
-                    }
+                    var statusCode = await _blobManagerService.PromoteBlobVersionAsync(filename, request.Version.Value, cancellationToken);
+
+                    StatusCode.Check(HttpStatusCode.Created, statusCode, this);
                 }
-                var updateStatusCode = await _blobManagerService.UpdateAsync(Prefixes.OriginalImage+request.Filename,
-                    metadata, cancellationToken);
-                if (updateStatusCode == HttpStatusCode.OK)
-                {
-                    return Unit.Value;
-                }
-                throw new OperationFailedException(HttpStatusCode.OK, updateStatusCode, nameof(UpdateImageCommand));
+
+                var updateStatusCode = await _blobManagerService.UpdateAsync(filename, metadata, cancellationToken);
+                StatusCode.Check(HttpStatusCode.OK, updateStatusCode, this);
+
+                return Unit.Value;
             }
         }
     }

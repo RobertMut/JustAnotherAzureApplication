@@ -1,8 +1,7 @@
-﻿using Application.Images.Commands.AddImage;
-using Domain.Constants.Image;
+﻿using Domain.Constants.Image;
 using FluentValidation;
 
-namespace Application.Images.Commands
+namespace Application.Images.Commands.AddImage
 {
     public class AddImageCommandValidator : AbstractValidator<AddImageCommand>
     {

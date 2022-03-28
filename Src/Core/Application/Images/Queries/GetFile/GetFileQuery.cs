@@ -1,4 +1,6 @@
 ﻿using Application.Common.Interfaces.Blob;
+using Domain.Common.Helper.Filename;
+using Domain.Constants.Image;
 using MediatR;
 
 namespace Application.Images.Queries.GetFile
@@ -7,6 +9,7 @@ namespace Application.Images.Queries.GetFile
     {
         public string Filename { get; set; }
         public int? Id { get; set; }
+        public string UserId { get; set; }
     }
 
     public class GetFileQueryHandler : IRequestHandler<GetFileQuery, FileVm>
@@ -20,7 +23,18 @@ namespace Application.Images.Queries.GetFile
 
         public async Task<FileVm> Handle(GetFileQuery request, CancellationToken cancellationToken)
         {
-            var file = await _blobManagerService.DownloadAsync(request.Filename, request.Id);
+            string[] splittedFilename = request.Filename.Split(Name.Delimiter);
+            string filename = string.Empty;
+
+            if (splittedFilename[0] == Prefixes.OriginalImage.TrimEnd(char.Parse(Name.Delimiter))) {
+                filename = NameHelper.GenerateOriginal(request.UserId, splittedFilename[^1]);
+            } 
+            else
+            {
+                filename = NameHelper.GenerateMiniature(request.UserId, splittedFilename[^2], splittedFilename[^1]);
+            }
+
+            var file = await _blobManagerService.DownloadAsync(filename, request.Id);
 
             return new FileVm
             {

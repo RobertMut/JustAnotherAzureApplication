@@ -7,7 +7,7 @@ namespace Domain.Enums.Image
     {
         [EnumMember(Value = "png")]
         png,
-        [EnumMember(Value = "jpg")]
+        [EnumMember(Value = "jpeg")]
         jpeg,
         [EnumMember(Value = "jpg")]
         jpg,

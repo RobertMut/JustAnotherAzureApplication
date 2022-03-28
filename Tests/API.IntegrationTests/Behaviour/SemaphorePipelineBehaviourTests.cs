@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace API.IntegrationTests.Behaviour
 {
-    public class MutexPipelineBehaviourTests
+    public class SemaphorePipelineBehaviourTests
     {
         private CustomWebApplicationFactory<ImagesController> _factory;
         private HttpClient _client;
@@ -15,15 +15,15 @@ namespace API.IntegrationTests.Behaviour
         public async Task SetUp()
         {
             _factory = new CustomWebApplicationFactory<ImagesController>();
-            _client = _factory.CreateClient(_factory.ClientOptions);
+            _client = await _factory.GetAuthenticatedClient();
         }
 
         [Test]
         public async Task ParallelGetMutexBehaviourDoesNotThrow()
         {
-            var firstGet = _client.GetAsync("/api/Images/miniature-300x300-sample1.jpeg");
-            var secondGet = _client.GetAsync("/api/Images/miniature-300x300-sample1.jpeg");
-            var thirdGet = _client.GetAsync("/api/Images/miniature-300x300-sample1.jpeg");
+            var firstGet = _client.GetAsync("/api/Images/miniature_300x300_sample1.jpeg");
+            var secondGet = _client.GetAsync("/api/Images/miniature_300x300_sample1.jpeg");
+            var thirdGet = _client.GetAsync("/api/Images/miniature_300x300_sample1.jpeg");
 
             var responses = await Task.WhenAll(firstGet, secondGet, thirdGet);
 

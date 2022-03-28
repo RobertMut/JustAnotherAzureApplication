@@ -4,7 +4,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
 using System.Net;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services.Blob
 {
     public class BlobLeaseManager : IBlobLeaseManager
     {
@@ -28,13 +28,13 @@ namespace Infrastructure.Services
                 var lease = await leaseClient.AcquireAsync(TimeSpan.FromSeconds(15), null, cancellationToken);
 
                 return lease.Value.LeaseId;
-            } 
+            }
             catch (RequestFailedException storageException)
             {
-                if (storageException.Status == (int) HttpStatusCode.NotFound)
+                if (storageException.Status == (int)HttpStatusCode.NotFound)
                 {
                     return string.Empty;
-                } 
+                }
                 else
                 {
                     throw storageException;

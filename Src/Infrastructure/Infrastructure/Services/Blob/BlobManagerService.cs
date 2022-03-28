@@ -3,15 +3,20 @@ using Azure.Storage.Blobs.Models;
 using Application.Common.Interfaces.Blob;
 using System.Net;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services.Blob
 {
-    public class BlobManagerService : IBlobManagerService 
+    public class BlobManagerService : IBlobManagerService
     {
         private readonly BlobContainerClient _blobContainerClient;
 
         public BlobManagerService(string connectionString, string container)
         {
             _blobContainerClient = new BlobServiceClient(connectionString).GetBlobContainerClient(container);
+
+            if (!_blobContainerClient.Exists())
+            {
+                _blobContainerClient.Create(PublicAccessType.BlobContainer);
+            }
         }
 
         public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType,
@@ -50,12 +55,12 @@ namespace Infrastructure.Services
             return await client.WithVersion(versions[id.Value].VersionId).DownloadContentAsync();
         }
 
-        public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct)
+        public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, string userId, CancellationToken ct)
         {
             return _blobContainerClient.GetBlobs(BlobTraits.All, BlobStates.None, prefix, ct)
-                .Where(x => x.Name.Contains($"{Path.GetFileNameWithoutExtension(blobName)}."))
-                .Where(x => x.Name.Contains(size))
-                .ToList();
+                .Where(x => x.Name.Contains($"_{Path.GetFileNameWithoutExtension(blobName)}."))
+                .Where(x => x.Name.Contains(string.IsNullOrWhiteSpace(size) ? string.Empty : $"_{size}_"))
+                .Where(x => x.Name.Contains(userId)).ToList();
         }
 
         /// <summary>

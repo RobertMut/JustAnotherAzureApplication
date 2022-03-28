@@ -16,13 +16,13 @@ namespace API.IntegrationTests.Controller.Images
         public async Task SetUp()
         {
             _factory = new CustomWebApplicationFactory<ImagesController>();
-            _client = _factory.CreateClient(_factory.ClientOptions);
+            _client = await _factory.GetAuthenticatedClient();
         }
 
         [Test]
         public async Task GetImage()
         {
-            var response = await _client.GetAsync("/api/Images/miniature-300x300-sample1.jpeg");
+            var response = await _client.GetAsync("/api/Images/miniature_300x300_sample1.jpeg");
 
             response.EnsureSuccessStatusCode();
             Assert.AreEqual(response.Content.Headers.ContentType, MediaTypeHeaderValue.Parse("image/jpeg"));
@@ -33,7 +33,7 @@ namespace API.IntegrationTests.Controller.Images
         [Test]
         public async Task GetUnknown()
         {
-            var response = await _client.GetAsync("/api/Images/miniature-unknown.tiff");
+            var response = await _client.GetAsync("/api/Images/miniature_unknown.tiff");
 
             Assert.False(response.IsSuccessStatusCode);
         }

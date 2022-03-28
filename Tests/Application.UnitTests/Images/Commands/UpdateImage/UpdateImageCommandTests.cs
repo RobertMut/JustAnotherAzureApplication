@@ -4,21 +4,24 @@ using Application.Images.Commands.UpdateImage;
 using MediatR;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.UnitTests.Images.Commands.AddImage
+namespace Application.UnitTests.Images.Commands.UpdateImage
 {
     public class UpdateImageCommandTests
     {
         private Mock<IMediator> _mediator;
         private Mock<IBlobManagerService> _service;
+        private Guid _userId;
 
         [SetUp]
         public async Task SetUp()
         {
+            _userId = Guid.NewGuid();
             _mediator = new Mock<IMediator>();
             _mediator.Setup(x => x.Send(It.IsAny<UpdateImageCommand>(), It.IsAny<CancellationToken>())).Returns(Unit.Task);
             _service = new Mock<IBlobManagerService>();
@@ -39,6 +42,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 TargetType = Domain.Enums.Image.Format.png,
                 Version = 1,
                 Width = 1,
+                UserId = _userId.ToString()
             };
 
             var responseMediator = await _mediator.Object.Send(command, CancellationToken.None);
@@ -63,6 +67,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 TargetType = Domain.Enums.Image.Format.png,
                 Version = 1,
                 Width = 1,
+                UserId = _userId.ToString()
             };
 
             Assert.ThrowsAsync<OperationFailedException>(async () =>
@@ -85,6 +90,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 TargetType = Domain.Enums.Image.Format.png,
                 Version = 1,
                 Width = 1,
+                UserId = _userId.ToString()
             };
 
             Assert.ThrowsAsync<OperationFailedException>(async () =>

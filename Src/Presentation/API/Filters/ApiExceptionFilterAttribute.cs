@@ -16,8 +16,27 @@ namespace API.Filters
                 { typeof(NullReferenceException), HandleUnknownException },
                 { typeof(ArgumentException), HandleUnknownException },
                 { typeof(OperationFailedException), HandleUnknownException },
-                { typeof(ValidationException), HandleValidationException }
+                { typeof(ValidationException), HandleValidationException },
+                { typeof(UnauthorizedException), HandleUnauthorizedException }
             };
+        }
+
+        private void HandleUnauthorizedException(ExceptionContext obj)
+        {
+            var details = new ProblemDetails
+            {
+                Status = StatusCodes.Status401Unauthorized,
+                Title = "Unauthorized",
+                Type = $"{Rfc7231}#section-3.1",
+                Detail = obj.Exception.Message
+            };
+
+            obj.Result = new ObjectResult(details)
+            {
+                StatusCode = StatusCodes.Status401Unauthorized
+            };
+
+            obj.ExceptionHandled = true;
         }
 
         public override void OnException(ExceptionContext context)

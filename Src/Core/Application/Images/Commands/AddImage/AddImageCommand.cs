@@ -1,6 +1,7 @@
-﻿using Application.Common.Exceptions;
+﻿using Application.Common.Helpers.Exception;
 using Application.Common.Interfaces.Blob;
 using Domain.Common.Helper.Enum;
+using Domain.Common.Helper.Filename;
 using Domain.Constants.Image;
 using Domain.Enums.Image;
 using MediatR;
@@ -17,6 +18,7 @@ namespace Application.Images.Commands.AddImage
         public Format? TargetType { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public string UserId { get; set; }
 
         public class AddImageCommandHandler : IRequestHandler<AddImageCommand>
         {
@@ -29,6 +31,7 @@ namespace Application.Images.Commands.AddImage
 
             public async Task<Unit> Handle(AddImageCommand request, CancellationToken cancellationToken)
             {
+
                 var metadata = new Dictionary<string, string>
                 {
                     { Metadata.OriginalFile, request.Filename },
@@ -36,16 +39,24 @@ namespace Application.Images.Commands.AddImage
                     { Metadata.TargetWidth, request.Width.ToString() },
                     { Metadata.TargetHeight, request.Height.ToString() },
                 };
+                request.Filename = request.Filename.Replace(char.Parse(Name.Delimiter), '-');
+                var existingBlobs = await _service.GetBlobsInfoByName(Prefixes.OriginalImage, null, $"{request.Filename}", request.UserId, cancellationToken);
+
+                if (existingBlobs.Count() > 0)
+                {
+                    request.Filename = $"new-{request.Filename}";
+                }
+                
+                string filename = NameHelper.GenerateOriginal(request.UserId, request.Filename);
 
                 using (var stream = request.File.OpenReadStream())
                 {
-                    var statusCode = await _service.AddAsync(stream, Prefixes.OriginalImage + request.Filename, request.ContentType, metadata, cancellationToken);
-                    if (statusCode == HttpStatusCode.Created)
-                    {
-                        return Unit.Value;
-                    }
-                    throw new OperationFailedException(HttpStatusCode.Created, statusCode, nameof(AddImageCommandHandler));
+                    var statusCode = await _service.AddAsync(stream, filename, request.ContentType, metadata, cancellationToken);
+
+                    StatusCode.Check(HttpStatusCode.Created, statusCode, this);
                 }
+
+                return Unit.Value;
             }
         }
     }

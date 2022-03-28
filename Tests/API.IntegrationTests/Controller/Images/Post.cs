@@ -17,13 +17,13 @@ namespace API.IntegrationTests.Controller.Images
         {
             _sample = new byte[] { 00, 00, 00, 00, 11, 22, 33 };
             _factory = new CustomWebApplicationFactory<ImagesController>();
-            _client = _factory.CreateClient(_factory.ClientOptions);
+            _client = await _factory.GetAuthenticatedClient();
         }
 
         [Test]
         public async Task PostNewImage()
         {
-            var content = Utils.CreateSampleFile(_sample, "image/jpeg", "test.jpeg");
+            var content = Utils.CreateSampleFile(_sample, "image/jpeg", "test1.jpeg");
             content.Add(new StringContent("100"), "width");
             content.Add(new StringContent("100"), "height");
             content.Add(new StringContent("tiff"), "targetType");
@@ -36,7 +36,7 @@ namespace API.IntegrationTests.Controller.Images
         [Test]
         public async Task ThrowValidationFailed()
         {
-            var content = Utils.CreateSampleFile(_sample, "image/png", "test.png");
+            var content = Utils.CreateSampleFile(_sample, "image/png", "test2.png");
             content.Add(new StringContent("0"), "width");
             content.Add(new StringContent("0"), "height");
             content.Add(new StringContent("jpeg"), "targetType");
@@ -52,7 +52,7 @@ namespace API.IntegrationTests.Controller.Images
             var content = new MultipartFormDataContent();
             content.Add(new StringContent("100"), "width");
             content.Add(new StringContent("100"), "height");
-            content.Add(new StringContent("test"), "file", "file");
+            content.Add(new StringContent("test3"), "file", "file");
 
             var response = await _client.PostAsync("api/Images/", content);
 

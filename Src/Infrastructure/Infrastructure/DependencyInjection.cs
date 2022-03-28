@@ -1,8 +1,16 @@
 ﻿using Application.Common.Interfaces.Blob;
-using Azure.Storage.Blobs;
-using Infrastructure.Services;
+using Application.Common.Interfaces.Database;
+using Application.Common.Interfaces.Identity;
+using Domain.Entities;
+using Infrastructure.Authentication;
+using Infrastructure.Persistence;
+using Infrastructure.Repositories;
+using Infrastructure.Services.Blob;
+using Infrastructure.Services.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using File = Domain.Entities.File;
 
 namespace Infrastructure
 {
@@ -10,13 +18,46 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var storage = configuration.GetConnectionString("Storage");
+            var jwt = configuration.GetSection("JWT");
             var container = configuration["ImagesContainer"];
 
-            services.AddScoped<IBlobManagerService>(service => new BlobManagerService(storage, container));
-            services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(storage, container));
+            services.AddDbContext<JAAADbContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("JAAADatabase"));
+            });
+            services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>())
+                .InitDatabase();
+
+            services.AddScoped<IBlobManagerService>(service => new BlobManagerService(configuration.GetValue<string>("AzureWebJobsStorage"), container));
+            services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(configuration.GetValue<string>("AzureWebJobsStorage"), container));
+
+            services.AddScoped<IRepository<User>, UserRepository>();
+            services.AddScoped<IRepository<File>, FileRepository>();
+
+            services.AddJwtBearerAuthentication(configuration);
+            services.AddScoped<ITokenGenerator, TokenGenerator>();
 
             return services;
+        }
+
+        public static async Task InitDatabase(this IServiceCollection services)
+        {
+            using (var service = services.BuildServiceProvider())
+            using (var serviceScope = service.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var db = service.GetService<IJAAADbContext>();
+                db.Database.EnsureCreated();
+
+                var user = await db.Users.FirstOrDefaultAsync(u => u.Username == "Default");
+                if (user == null)
+                {
+                    db.Users.Add(new User
+                    {
+                        Username = "Default",
+                        Password = "12345"
+                    });
+                }
+            }
         }
     }
 }

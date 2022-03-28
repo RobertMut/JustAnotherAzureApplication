@@ -1,12 +1,12 @@
 ﻿using Application.Common.Interfaces.Blob;
 using Azure.Storage.Blobs.Models;
+using Domain.Common.Helper.Filename;
 using Domain.Constants.Image;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,52 +18,46 @@ namespace API.IntegrationTests.Common
         public static int FileLenght;
         public MockBlobManagerService()
         {
-
             var bytes = new byte[] { 00, 50, 00, 00, 40, 00, 03, 00, 00, 00, 00, 10 };
             _blobs = new Dictionary<string, BlobDownloadResult[]>()
             {
-                {"original-sample1.png", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "original-sample.png", "image/png", null, "0"),
+                { Utils.FileNames["sample1"], new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), Utils.FileNames["sample1"], "image/png", null, "0"),
                 Utils.MakeFakeDownloadResult(new MemoryStream(bytes.Reverse().ToArray()),
-                                        "original-sample.png",
-                                        "image/png", null, "1")} },
-                {"original-sample2.png", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "original-sample2.png", "image/png", null, "0"),
+                                        Utils.FileNames["sample1"],
+                                        "image/png", null, "1") } },
+                { Utils.FileNames["sample2"], new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), Utils.FileNames["sample2"], "image/png", null, "0"),
                 Utils.MakeFakeDownloadResult(new MemoryStream(bytes.Reverse().ToArray()),
-                                        "original-sample2.png",
-                                        "image/png", null, "1")} },
-                {"miniature-300x300-sample1.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-300x300-sample1.jpeg", "image/jpeg") }},
-                {"miniature-200x200-sample1.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-200x200-sample1.jpeg", "image/jpeg") }},
-                {"miniature-400x400-sample2.jpeg", new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), "miniature-400x400-sample2.jpeg", "image/jpeg") }}
+                                        Utils.FileNames["sample2"],
+                                        "image/png", null, "1") } },
+                { Utils.FileNames["miniature1sample1"], new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), Utils.FileNames["miniature1sample1"], "image/jpeg") } },
+                { Utils.FileNames["miniature2sample1"], new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), Utils.FileNames["miniature2sample1"], "image/jpeg") } },
+                { Utils.FileNames["miniature1sample2"], new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), Utils.FileNames["miniature1sample2"], "image/jpeg") } },
+                { Utils.FileNames["sample3"], new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), Utils.FileNames["sample3"], "image/jpeg") } },
+                { Utils.FileNames["miniature1sample3"], new [] {Utils.MakeFakeDownloadResult(new MemoryStream(bytes), Utils.FileNames["miniature1sample3"], "image/jpeg") } },
             };
         }
 
         public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType, IDictionary<string, string> metadata, CancellationToken ct)
         {
-            string splitFilename = filename.Split("-")[1];
-            string miniatureName = $"{Prefixes.MiniatureImage}{metadata[Metadata.TargetWidth]}x{metadata[Metadata.TargetHeight]}-{splitFilename}";
+            string[] splitFilename = filename.Split(Name.Delimiter);
+            string miniatureName = NameHelper.GenerateMiniature(splitFilename[^2], $"{metadata[Metadata.TargetWidth]}x{metadata[Metadata.TargetHeight]}", splitFilename[^1]);
 
             AddNewBlobOrPrepend(fileStream, filename, contentType, metadata);
             AddNewBlobOrPrepend(fileStream, miniatureName, contentType);
-
             return HttpStatusCode.Created;
-        }
-
-        public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType, CancellationToken ct)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<BlobDownloadResult> DownloadAsync(string filename, int? id = 0)
         {
             return _blobs[filename][id.GetValueOrDefault()];
-
         }
 
         public async Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
         {
             var blob = _blobs[filename][0];
-            string filenameWithoutExtension = Path.GetFileNameWithoutExtension(filename.Split("-")[1]);
-            string miniatureName = $"{Prefixes.MiniatureImage}{metadata[Metadata.TargetWidth]}x{metadata[Metadata.TargetHeight]}-{filenameWithoutExtension}.{metadata[Metadata.TargetType]}";
-
+            var splittedFilename = filename.Split(Name.Delimiter);
+            string filenameWithoutExtension = Path.GetFileNameWithoutExtension(splittedFilename[^1]);
+            string miniatureName = NameHelper.GenerateMiniature(splittedFilename[^2], $"{metadata[Metadata.TargetWidth]}x{metadata[Metadata.TargetHeight]}", $"{filenameWithoutExtension}.{metadata[Metadata.TargetType]}");
             AddNewBlobOrPrepend(blob.Content.ToStream(), miniatureName, $"image/{metadata[Metadata.TargetType]}");
 
             return HttpStatusCode.OK;
@@ -80,7 +74,6 @@ namespace API.IntegrationTests.Common
 
         private void AddNewBlobOrPrepend(Stream fileStream, string filename, string contentType, IDictionary<string, string> metadata = null)
         {
-
             if (_blobs.ContainsKey(filename))
             {
                 var blob = Utils.MakeFakeDownloadResult(fileStream, filename, contentType, metadata);
@@ -101,11 +94,12 @@ namespace API.IntegrationTests.Common
             return HttpStatusCode.Accepted;
         }
 
-        public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, CancellationToken ct)
+        public async Task<IEnumerable<BlobItem>> GetBlobsInfoByName(string prefix, string size, string blobName, string userId, CancellationToken ct)
         {
             var blobsNames = _blobs.Keys.Where(name => name.Contains(prefix))
                 .Where(x => x.Contains($"{Path.GetFileNameWithoutExtension(blobName)}."))
                 .Where(x => x.Contains(size))
+                .Where(x => x.Contains(userId))
                 .ToList();
             var blobs = new List<BlobItem>();
             foreach (var blob in blobsNames)
