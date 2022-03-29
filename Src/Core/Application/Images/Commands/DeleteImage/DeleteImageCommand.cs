@@ -4,6 +4,8 @@ using Application.Common.Interfaces.Database;
 using Domain.Constants.Image;
 using MediatR;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using File = Domain.Entities.File;
 
 namespace Application.Images.Commands.DeleteImage
@@ -28,22 +30,28 @@ namespace Application.Images.Commands.DeleteImage
 
             public async Task<Unit> Handle(DeleteImageCommand request, CancellationToken cancellationToken)
             {
-                request.Filename = request.Filename.Replace(char.Parse(Name.Delimiter), '-');
-                var filename = request.Filename.Split(Name.Delimiter);
+                var file = (await _unitOfWork.FileRepository.GetAsync(x => x.OriginalName == request.Filename && x.UserId == Guid.Parse(request.UserId))).FirstOrDefault();
+                if (file == null)
+                {
+                    throw new FileNotFoundException(request.Filename);
+                }
 
+                string[] filename = file.Filename.Split(Name.Delimiter);
                 string prefix = request.DeleteMiniatures.HasValue && request.DeleteMiniatures.Value ? Prefixes.MiniatureImage : string.Empty;
                 string size = request.Size == "any" || string.IsNullOrEmpty(request.Size) ? "" : request.Size;
                 var blobItems = await _blobManagerService.GetBlobsInfoByName(prefix, size, filename[^1], request.UserId, cancellationToken);
+
                 foreach (var blob in blobItems)
                 {
                     var statusCode = await _blobManagerService.DeleteBlobAsync(blob.Name, cancellationToken);
                     
                     StatusCode.Check(HttpStatusCode.Accepted, statusCode, this);
 
-                    var file = await _unitOfWork.FileRepository.GetObjectBy(x => x.Filename == blob.Name, cancellationToken: cancellationToken);
-                    if (file != null)
+                    var fileToDelete = await _unitOfWork.FileRepository.GetObjectBy(x => x.Filename == blob.Name, cancellationToken: cancellationToken);
+                    if (fileToDelete != null)
                     {
-                        await _unitOfWork.FileRepository.Delete(file);
+                        await _unitOfWork.FileRepository.Delete(fileToDelete);
+                        await _unitOfWork.Save(cancellationToken);
                     }
                 }
 

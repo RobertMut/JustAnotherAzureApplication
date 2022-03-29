@@ -1,12 +1,11 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
-using Application.Common.Models.Login;
-using Domain.Entities;
+using Application.Common.Models.Account;
 using MediatR;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace Application.Account.Commands.LoginCommand
+namespace Application.Account.Commands.Login
 {
     public class LoginCommand : IRequest<JwtSecurityToken>
     {

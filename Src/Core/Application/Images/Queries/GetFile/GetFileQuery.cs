@@ -16,12 +16,10 @@ namespace Application.Images.Queries.GetFile
 
     public class GetFileQueryHandler : IRequestHandler<GetFileQuery, FileVm>
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IBlobManagerService _blobManagerService;
 
-        public GetFileQueryHandler(IBlobManagerService blobManagerService, IUnitOfWork unitOfWork)
+        public GetFileQueryHandler(IBlobManagerService blobManagerService)
         {
-            _unitOfWork = unitOfWork;
             _blobManagerService = blobManagerService;
         }
 

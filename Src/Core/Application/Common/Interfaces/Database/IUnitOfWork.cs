@@ -1,4 +1,4 @@
-﻿using Application.Common.Virtuals.Repository;
+﻿using Application.Common.Virtuals;
 using Domain.Entities;
 using File = Domain.Entities.File;
 
@@ -13,5 +13,8 @@ namespace Application.Common.Interfaces.Database
         Repository<GroupShare> GroupShareRepository { get; }
         Repository<UserShare> UserShareRepository { get; }
         Repository<GroupUser> GroupUserRepository { get; }
+
+        void Dispose();
+        Task Save(CancellationToken cancellationToken = default);
     }
 }

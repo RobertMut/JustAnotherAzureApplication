@@ -25,6 +25,7 @@ namespace Application.Groups.Commands.UpdateGroup
                     Description = request.Description,
                     Name = request.Name
                 });
+                await _unitOfWork.Save(cancellationToken);
 
                 return Unit.Value;
             }

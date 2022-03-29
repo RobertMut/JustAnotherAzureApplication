@@ -1,16 +1,11 @@
 ﻿using Application.Common.Interfaces.Database;
-using Application.Common.Virtuals.Repository;
+using Application.Common.Virtuals;
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using File = Domain.Entities.File;
 
 namespace Infrastructure.Repositories
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private IJAAADbContext _dbContext;
         private Repository<File> _fileRepository;
@@ -20,6 +15,7 @@ namespace Infrastructure.Repositories
         private Repository<GroupShare> _groupShareRepository;
         private Repository<UserShare> _userShareRepository;
         private Repository<GroupUser> _groupUserRepository;
+        private bool disposedValue = false;
 
         public UnitOfWork(IJAAADbContext dbContext)
         {
@@ -109,6 +105,29 @@ namespace Infrastructure.Repositories
 
                 return _groupUserRepository;
             }
+        }
+
+        public async virtual Task Save(CancellationToken cancellationToken = default)
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _dbContext.DisposeAsync();
+                }
+            }
+            disposedValue = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

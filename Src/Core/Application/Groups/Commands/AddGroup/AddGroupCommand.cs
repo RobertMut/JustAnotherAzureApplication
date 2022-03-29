@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Database;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces.Database;
 using Domain.Entities;
 using MediatR;
 
@@ -20,13 +21,18 @@ namespace Application.Groups.Commands.AddGroup
 
             public async Task<string> Handle(AddGroupCommand request, CancellationToken cancellationToken)
             {
-                var group = await _unitOfWork.GroupRepository.InsertAsync(new Group
+                var group = await _unitOfWork.GroupRepository.GetObjectBy(x => x.Name == request.Name, cancellationToken: cancellationToken);
+                
+                if (group is not null) throw new DuplicatedException(group.Name);
+
+                var newGroup = await _unitOfWork.GroupRepository.InsertAsync(new Group
                 {
                     Description = request.Description,
                     Name = request.Name
                 }, cancellationToken);
+                await _unitOfWork.Save(cancellationToken);
 
-                return group.Id.ToString();
+                return newGroup.Id.ToString();
             }
         }
     }

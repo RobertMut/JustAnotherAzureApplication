@@ -6,6 +6,7 @@ using Domain.Common.Helper.Enum;
 using Domain.Common.Helper.Filename;
 using Domain.Constants.Image;
 using Domain.Enums.Image;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading;
@@ -41,7 +42,10 @@ namespace Functions.Services
                 var convertedFormatToString = new ImageFormatConverter().ConvertToString(format);
                 string miniatureName = NameHelper.GenerateMiniature(userId, $"{width}x{height}", $"{Path.GetFileNameWithoutExtension(filename)}.{convertedFormatToString}");
                 await _service.AddAsync(memStream, miniatureName,
-                    $"{Prefixes.ImageFormat}{convertedFormatToString}", null, new CancellationToken());
+                    $"{Prefixes.ImageFormat}{convertedFormatToString}", new Dictionary<string, string>()
+                    {
+                        { Metadata.OriginalFile, filename }
+                    }, new CancellationToken());
 
                 return miniatureName;
             }

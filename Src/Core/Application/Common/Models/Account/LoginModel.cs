@@ -1,4 +1,4 @@
-﻿namespace Application.Common.Models.Login
+﻿namespace Application.Common.Models.Account
 {
     public class LoginModel
     {

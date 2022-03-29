@@ -4,13 +4,13 @@
       "type": "secrets",
       "connectionId": "VaultUri"
     },
-    "mssql1": {
-      "type": "mssql",
-      "connectionId": "JAAADatabase"
-    },
     "storage1": {
       "type": "storage",
       "connectionId": "AzureWebJobsStorage"
+    },
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "JAAADatabase"
     }
   }
 }

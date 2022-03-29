@@ -28,6 +28,7 @@ namespace Application.UserShares.Commands.AddUserShare
                     UserId = Guid.Parse(request.UserId),
                     PermissionId = (int)request.PermissionId
                 }, cancellationToken);
+                await _unitOfWork.Save(cancellationToken);
 
                 return userShare.UserId.ToString();
             }

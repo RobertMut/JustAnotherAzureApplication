@@ -28,27 +28,19 @@ namespace Functions
             string name, ILogger log)
         {
             string[] splittedFilename = name.Split(Name.Delimiter);
-            string userId = splittedFilename[^2];
+            string userId = splittedFilename[0];
             string miniature = await _imageEditor.Resize(blob, myBlob, splittedFilename[^1], userId);
-            string originalFileName = $"{Prefixes.OriginalImage}{name}";
-            var originalFile = await _unitOfWork.FileRepository.GetObjectBy(x => x.Filename == originalFileName);
             var miniatureFile = await _unitOfWork.FileRepository.GetObjectBy(x => x.Filename == miniature);
 
-            if (originalFile == null)
-            {
-                await _unitOfWork.FileRepository.InsertAsync(new File
-                {
-                    Filename = originalFileName,
-                    UserId = Guid.Parse(userId)
-                });
-            }
             if (miniatureFile == null)
             {
                 await _unitOfWork.FileRepository.InsertAsync(new File
                 {
                     Filename = miniature,
+                    OriginalName = blob.GetProperties().Value.Metadata[Metadata.OriginalFile],
                     UserId = Guid.Parse(userId)
                 });
+                await _unitOfWork.Save();
             }
 
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes\n");

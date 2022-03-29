@@ -7,7 +7,6 @@ namespace Application.UserShares.Commands.DeleteUserShare
         public DeleteUserShareCommandValidator()
         {
             RuleFor(x => x.UserId).NotNull();
-            RuleFor(x => x.Permission).NotNull();
             RuleFor(x => x.Filename).NotEmpty();
         }
     }

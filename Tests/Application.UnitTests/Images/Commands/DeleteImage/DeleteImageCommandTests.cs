@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,17 +21,17 @@ namespace Application.UnitTests.Images.Commands.DeleteImage
     {
         private Mock<IBlobManagerService> _service;
         private Mock<IMediator> _mediator;
-        private Mock<IRepository<File>> _fileRepository;
+        private Mock<IUnitOfWork> _unitOfWork;
         private Guid _userId;
         [SetUp]
         public async Task SetUp()
         {
-            _fileRepository = new Mock<IRepository<File>>();
+            _unitOfWork = new Mock<IUnitOfWork>();
             _service = new Mock<IBlobManagerService>();
             _mediator = new Mock<IMediator>();
             _userId = Guid.NewGuid();
 
-            _fileRepository.Setup(x => x.GetByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync((string name, CancellationToken cancellationToken) =>
+            _unitOfWork.Setup(x => x.FileRepository.GetObjectBy(It.IsAny<Expression<Func<File, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync((string name, CancellationToken cancellationToken) =>
             {
                 return new File()
                 {
@@ -38,7 +39,7 @@ namespace Application.UnitTests.Images.Commands.DeleteImage
                     UserId = _userId
                 };
             });
-            _fileRepository.Setup(x => x.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()));
+            _unitOfWork.Setup(x => x.FileRepository.Delete(It.IsAny<File>()));
             _service.Setup(x => x.GetBlobsInfoByName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() =>
                 {
@@ -58,7 +59,7 @@ namespace Application.UnitTests.Images.Commands.DeleteImage
         {
             _service.Setup(x => x.DeleteBlobAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.Accepted);
 
-            var handler = new DeleteImageCommand.DeleteImageCommandHandler(_service.Object, _fileRepository.Object);
+            var handler = new DeleteImageCommand.DeleteImageCommandHandler(_service.Object, _unitOfWork.Object);
             var command = new DeleteImageCommand()
             {
                 Filename = "sample.jpeg",
@@ -77,7 +78,7 @@ namespace Application.UnitTests.Images.Commands.DeleteImage
         {
             _service.Setup(x => x.DeleteBlobAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.InternalServerError);
 
-            var handler = new DeleteImageCommand.DeleteImageCommandHandler(_service.Object, _fileRepository.Object);
+            var handler = new DeleteImageCommand.DeleteImageCommandHandler(_service.Object, _unitOfWork.Object);
             var command = new DeleteImageCommand()
             {
                 Filename = "sample.jpeg",

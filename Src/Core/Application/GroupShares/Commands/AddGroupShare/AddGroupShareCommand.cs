@@ -28,6 +28,7 @@ namespace Application.GroupShares.Commands.AddGroupShare
                     GroupId = Guid.Parse(request.GroupId),
                     PermissionId = (int)request.PermissionId
                 }, cancellationToken);
+                await _unitOfWork.Save(cancellationToken);
 
                 return groupShare.GroupId.ToString();
             }

@@ -22,7 +22,8 @@ namespace Application.Groups.Commands.DeleteGroup
                 var group = await _unitOfWork.GroupRepository.GetObjectBy(x => x.Id == Guid.Parse(request.GroupId), cancellationToken: cancellationToken);
                 
                 await _unitOfWork.GroupRepository.Delete(group);
-                
+                await _unitOfWork.Save(cancellationToken);
+
                 return Unit.Value;
             }
         }

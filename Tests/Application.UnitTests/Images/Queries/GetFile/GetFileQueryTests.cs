@@ -8,6 +8,7 @@ using NUnit.Framework;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Interfaces.Database;
 
 namespace Application.UnitTests.Images.Queries.GetFile
 {

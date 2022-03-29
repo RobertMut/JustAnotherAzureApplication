@@ -15,18 +15,15 @@ namespace Application.Images.Queries.GetUserFiles
     public class GetUserFilesQueryHandler : IRequestHandler<GetUserFilesQuery, UserFilesListVm>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IBlobManagerService _blobManagerService;
 
-        public GetUserFilesQueryHandler(IBlobManagerService blobManagerService, IUnitOfWork unitOfWork)
+        public GetUserFilesQueryHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _blobManagerService = blobManagerService;
         }
 
         public async Task<UserFilesListVm> Handle(GetUserFilesQuery request, CancellationToken cancellationToken)
         {
-            var userFiles = await _unitOfWork.FileRepository.GetAsync(x => x.Filename.Contains(request.UserId), cancellationToken: cancellationToken);
-            var userBlobs = await _blobManagerService.GetBlobsInfoByName(string.Empty, string.Empty, string.Empty, request.UserId, ct: cancellationToken);
+            var userFiles = await _unitOfWork.FileRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId), cancellationToken: cancellationToken);
             var userGroups = await _unitOfWork.GroupUserRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId));
             List<GroupShare> groupShares = new List<GroupShare>();
 
@@ -41,7 +38,7 @@ namespace Application.Images.Queries.GetUserFiles
                              Filename = userFile.Filename,
                              IsOwned = true,
                              Permission = null,
-                             OriginalName = userBlobs.FirstOrDefault(x => x.Name == userFile.Filename).Metadata[Metadata.OriginalFile],
+                             OriginalName = userFile.OriginalName,
                          }).Concat(from userShared in await _unitOfWork.UserShareRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId))
                                    select new FileDto
                                    {

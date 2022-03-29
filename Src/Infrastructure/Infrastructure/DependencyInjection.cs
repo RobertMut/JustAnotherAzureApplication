@@ -1,7 +1,6 @@
 ﻿using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
-using Common;
 using Domain.Entities;
 using Infrastructure.Authentication;
 using Infrastructure.Persistence;
@@ -11,7 +10,6 @@ using Infrastructure.Services.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using File = Domain.Entities.File;
 
 namespace Infrastructure
 {
@@ -28,12 +26,11 @@ namespace Infrastructure
             });
             services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>())
                 .InitDatabase();
-
+            
             services.AddScoped<IBlobManagerService>(service => new BlobManagerService(configuration.GetValue<string>("AzureWebJobsStorage"), container));
             services.AddScoped<IBlobLeaseManager>(service => new BlobLeaseManager(configuration.GetValue<string>("AzureWebJobsStorage"), container));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IDateTime, MachineTime>();
 
             services.AddJwtBearerAuthentication(configuration);
             services.AddScoped<ITokenGenerator, TokenGenerator>();
@@ -47,16 +44,61 @@ namespace Infrastructure
             using (var serviceScope = service.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var db = service.GetService<IJAAADbContext>();
-                db.Database.EnsureCreated();
+                await db.Database.MigrateAsync();
 
-                var user = await db.Users.FirstOrDefaultAsync(u => u.Username == "Default");
-                if (user == null)
+                var group = await db.Groups.FirstOrDefaultAsync(g => g.Name == "Everyone");
+
+                if (group == null)
                 {
                     db.Users.Add(new User
                     {
                         Username = "Default",
                         Password = "12345"
                     });
+
+                    db.Groups.Add(new Group
+                    {
+                        Name = "Everyone",
+                        Description = "Everyone"
+                    });
+
+                    db.Permissions.AddRange(new[]
+                    {
+                        new Permission
+                        {
+                            Id = 0,
+                            Name = "Full",
+                            Delete = true,
+                            Read = true,
+                            Write = true
+                        },
+                        new Permission
+                        {
+                            Id = 1,
+                            Name = "ReadWrite",
+                            Delete = false,
+                            Read = true,
+                            Write = true
+                        },
+                        new Permission
+                        {
+                            Id = 2,
+                            Name = "Read",
+                            Delete = false,
+                            Read = true,
+                            Write = false,
+                        },
+                        new Permission
+                        {
+                            Id = 3,
+                            Name = "Write",
+                            Delete = false,
+                            Read = false,
+                            Write = true
+                        }
+                    });
+
+                    await db.SaveChangesAsync();
                 }
             }
         }

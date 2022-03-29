@@ -1,5 +1,6 @@
-﻿using Application.Account.Commands.LoginCommand;
-using Application.Common.Models.Login;
+﻿using Application.Account.Commands.Login;
+using Application.Account.Commands.Register;
+using Application.Common.Models.Account;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ namespace API.Controllers
             var token = await _mediator.Send(new LoginCommand
             {
                 LoginModel = model
-            });
+            }, new CancellationToken());
 
             return Ok(new
             {
@@ -36,9 +37,14 @@ namespace API.Controllers
 
         [Authorize]
         [HttpPost("register")]
-        public async Task<IActionResult> Register()
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            throw new NotImplementedException();
+            await _mediator.Send(new RegisterCommand
+            {
+                RegisterModel = model
+            }, new CancellationToken());
+
+            return Ok();
         }
     }
 }

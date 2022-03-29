@@ -27,6 +27,10 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<string>("Filename")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("OriginalName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -93,10 +97,7 @@ namespace Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.Permission", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<bool>("Delete")
                         .HasColumnType("bit");
@@ -171,19 +172,19 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Entities.File", "File")
                         .WithMany("GroupShares")
                         .HasForeignKey("Filename")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Group", "Group")
                         .WithMany("GroupShares")
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Permission", "Permission")
                         .WithMany("GroupShares")
                         .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("File");
@@ -198,13 +199,13 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Entities.Group", "Group")
                         .WithMany("GroupUsers")
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("GroupUsers")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Group");
@@ -223,7 +224,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasOne("Domain.Entities.Permission", "Permission")
                         .WithMany("UserShares")
                         .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", "User")

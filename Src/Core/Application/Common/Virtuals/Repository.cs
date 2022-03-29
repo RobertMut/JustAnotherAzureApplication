@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Application.Common.Virtuals.Repository
+namespace Application.Common.Virtuals
 {
     public class Repository<TEntity> where TEntity : class
     {
@@ -12,6 +12,7 @@ namespace Application.Common.Virtuals.Repository
         public Repository(IJAAADbContext dbContext)
         {
             _dbContext = dbContext;
+            _dbSet = dbContext.Set<TEntity>();
         }
 
         public async virtual Task Delete(TEntity entity)
@@ -47,14 +48,14 @@ namespace Application.Common.Virtuals.Repository
 
         public async virtual Task<TEntity> GetObjectBy(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.Where(filter).FirstOrDefaultAsync(cancellationToken);
+            return await _dbSet.AsQueryable().Where(filter).FirstOrDefaultAsync(cancellationToken);
 
         }
 
         public async virtual Task<TEntity> InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             var entry = await _dbSet.AddAsync(entity, cancellationToken);
-
+            
             return entry.Entity;
         }
 

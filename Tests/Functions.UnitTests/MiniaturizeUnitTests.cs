@@ -11,13 +11,14 @@ using File = Domain.Entities.File;
 using System;
 using Domain.Common.Helper.Filename;
 using Application.Common.Interfaces.Image;
+using System.Linq.Expressions;
 
 namespace Functions.UnitTests
 {
     public class MiniaturizeUnitTests
     {
         private Miniaturize _miniaturize;
-        private Mock<IRepository<File>> _fileRepository;
+        private Mock<IUnitOfWork> _unitOfWork;
         private Mock<IImageEditor> _imageEditor;
         private Guid _userId;
         private string _originalFile;
@@ -29,21 +30,21 @@ namespace Functions.UnitTests
             _userId = Guid.NewGuid();
             _originalFile = NameHelper.GenerateOriginal(_userId.ToString(), "file.png");
             _miniatureFile = NameHelper.GenerateMiniature(_userId.ToString(), "30x30", "file.Jpeg");
-            _fileRepository = new Mock<IRepository<File>>();
+            _unitOfWork = new Mock<IUnitOfWork>();
             _imageEditor = new Mock<IImageEditor>();
 
             _imageEditor.Setup(x => x.Resize(It.IsAny<BlobBaseClient>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_miniatureFile);
-            _fileRepository.Setup(x => x.GetByNameAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync((string name, CancellationToken cancellationToken) =>
+            _unitOfWork.Setup(x => x.FileRepository.GetObjectBy(It.IsAny<Expression<Func<File, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync((Expression<Func<File, bool>> predicate) =>
             {
                 return new File
                 {
-                    Filename = name,
+                    Filename = _originalFile,
                     UserId = _userId
                 };
             });
-            _fileRepository.Setup(x => x.AddAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()));
+            _unitOfWork.Setup(x => x.FileRepository.InsertAsync(It.IsAny<File>(), It.IsAny<CancellationToken>()));
 
-            _miniaturize = new Miniaturize(_fileRepository.Object, _imageEditor.Object);
+            _miniaturize = new Miniaturize(_unitOfWork.Object, _imageEditor.Object);
         }
 
         [Test]

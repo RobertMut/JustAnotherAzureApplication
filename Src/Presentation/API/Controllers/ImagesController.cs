@@ -3,6 +3,7 @@ using Application.Images.Commands.AddImage;
 using Application.Images.Commands.DeleteImage;
 using Application.Images.Commands.UpdateImage;
 using Application.Images.Queries.GetFile;
+using Application.Images.Queries.GetUserFiles;
 using Domain.Enums.Image;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +23,17 @@ namespace API.Controllers
         {
             _mediator = mediator;
             _currentUserService = currentUserService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserImages()
+        {
+            var files = await _mediator.Send(new GetUserFilesQuery
+            {
+                UserId = _currentUserService.UserId
+            });
+
+            return Ok(files);
         }
 
         [HttpGet("{filename}/{id?}")]

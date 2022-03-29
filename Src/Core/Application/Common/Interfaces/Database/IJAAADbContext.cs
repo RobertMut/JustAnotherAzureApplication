@@ -2,24 +2,26 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using File = Domain.Entities.File;
 
 namespace Application.Common.Interfaces.Database
 {
     public interface IJAAADbContext
     {
         DbSet<User> Users { get; set; }
-
-        DbSet<File> Files { get; set; }
-
-        DatabaseFacade Database { get; }
+        DbSet<Domain.Entities.File> Files { get; set; }
+        DbSet<Group> Groups { get; set; }
         DbSet<Permission> Permissions { get; set; }
         DbSet<UserShare> UserShares { get; set; }
         DbSet<GroupShare> GroupShares { get; set; }
         DbSet<GroupUser> GroupUsers { get; set; }
-        DbSet<Group> Groups { get; set; }
+        DatabaseFacade Database { get; }
 
-        EntityEntry Entry(object entity);
+        ValueTask DisposeAsync();
+        EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
+
     }
 }
