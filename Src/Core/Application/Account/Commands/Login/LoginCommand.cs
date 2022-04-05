@@ -26,6 +26,8 @@ namespace Application.Account.Commands.Login
             {
                 var user = await _unitOfWork.UserRepository.GetObjectBy(x => x.Username == request.LoginModel.UserName, cancellationToken);
 
+                if (user == null) throw new UserNotFoundException(request.LoginModel.UserName);
+
                 if (request.LoginModel.UserName == user.Username && request.LoginModel.Password == user.Password)
                 {
                     var token = await _tokenGenerator.GetToken(user);

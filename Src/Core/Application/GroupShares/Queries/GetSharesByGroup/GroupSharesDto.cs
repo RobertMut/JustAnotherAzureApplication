@@ -1,11 +1,12 @@
-﻿using AutoMapper;
+﻿using Application.Common.Mappings;
+using AutoMapper;
 using Domain.Common.Helper.Enum;
 using Domain.Entities;
 using Domain.Enums.Image;
 
 namespace Application.GroupShares.Queries.GetSharesByGroup
 {
-    public class GroupSharesDto
+    public class GroupSharesDto : IMapFrom<GroupShare>
     {
         public string Filename { get; set; }
         public string Permissions { get; set; }

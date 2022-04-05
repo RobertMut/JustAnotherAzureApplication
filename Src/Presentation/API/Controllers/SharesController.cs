@@ -41,7 +41,7 @@ namespace API.Controllers
                 GroupId = groupId
             }, new CancellationToken());
 
-            return Ok(shares);
+            return Ok(shares);  
         }
 
         [HttpPost("/Users")]

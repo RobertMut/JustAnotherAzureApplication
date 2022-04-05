@@ -18,13 +18,13 @@ namespace API.IntegrationTests.Common
         public static Guid DefaultId = Guid.NewGuid();
         public static IDictionary<string, string> FileNames = new Dictionary<string, string>()
         {
-            { "sample1", NameHelper.GenerateOriginal(DefaultId.ToString(), "sample1.png") },
-            { "miniature1sample1",  NameHelper.GenerateMiniature(DefaultId.ToString(), "300x300", "sample1.jpeg") },
-            { "miniature2sample1", NameHelper.GenerateMiniature(DefaultId.ToString(), "200x200", "sample1.jpeg") },
-            { "sample2", NameHelper.GenerateOriginal(DefaultId.ToString(), "sample2.png") },
-            { "miniature1sample2", NameHelper.GenerateMiniature(DefaultId.ToString(), "400x400", "sample2.jpeg") },
-            { "sample3", NameHelper.GenerateOriginal(DefaultId.ToString(), "sample3.png") },
-            { "miniature1sample3", NameHelper.GenerateMiniature(DefaultId.ToString(), "300x300", "sample3.jpeg") }
+            { "sample1", NameHelper.GenerateOriginal(DefaultId.ToString(), NameHelper.GenerateHashedFilename("sample1.png")) },
+            { "miniature1sample1",  NameHelper.GenerateMiniature(DefaultId.ToString(), "300x300", NameHelper.GenerateHashedFilename("sample1.jpeg")) },
+            { "miniature2sample1", NameHelper.GenerateMiniature(DefaultId.ToString(), "200x200", NameHelper.GenerateHashedFilename("sample1.jpeg")) },
+            { "sample2", NameHelper.GenerateOriginal(DefaultId.ToString(), NameHelper.GenerateHashedFilename("sample2.png")) },
+            { "miniature1sample2", NameHelper.GenerateMiniature(DefaultId.ToString(), "400x400", NameHelper.GenerateHashedFilename("sample2.jpeg")) },
+            { "sample3", NameHelper.GenerateOriginal(DefaultId.ToString(), NameHelper.GenerateHashedFilename("sample3.png")) },
+            { "miniature1sample3", NameHelper.GenerateMiniature(DefaultId.ToString(), "300x300", NameHelper.GenerateHashedFilename("sample3.jpeg")) }
         };
 
         public static MultipartFormDataContent CreateSampleFile(byte[] imageBytes, string contentType, string filename)
@@ -68,36 +68,43 @@ namespace API.IntegrationTests.Common
                 new File()
                 {
                     Filename = FileNames["sample1"],
+                    OriginalName = "sample1.png",
                     UserId = DefaultId
                 },
                 new File()
                 {
                     Filename = FileNames["sample2"],
+                    OriginalName = "sample2.png",
                     UserId = DefaultId
                 },
                 new File()
                 {
                     Filename = FileNames["sample3"],
+                    OriginalName = "sample3.png",
                     UserId = DefaultId
                 },
                 new File()
                 {
                     Filename = FileNames["miniature1sample1"],
+                    OriginalName = NameHelper.GenerateHashedFilename("sample1.jpeg"),
                     UserId = DefaultId
                 },
                 new File()
                 {
                     Filename = FileNames["miniature2sample1"],
+                    OriginalName = NameHelper.GenerateHashedFilename("sample1.jpeg"),
                     UserId = DefaultId
                 },
                 new File()
                 {
                     Filename = FileNames["miniature1sample2"],
+                    OriginalName = NameHelper.GenerateHashedFilename("sample2.jpeg"),
                     UserId = DefaultId
                 },
                 new File()
                 {
                     Filename = FileNames["miniature1sample3"],
+                    OriginalName = NameHelper.GenerateHashedFilename("sample3.jpeg"),
                     UserId = DefaultId
                 },
             });

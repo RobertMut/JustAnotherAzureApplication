@@ -4,9 +4,6 @@ using Application.Common.Interfaces.Database;
 using Domain.Constants.Image;
 using MediatR;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
-using File = Domain.Entities.File;
 
 namespace Application.Images.Commands.DeleteImage
 {
@@ -30,16 +27,16 @@ namespace Application.Images.Commands.DeleteImage
 
             public async Task<Unit> Handle(DeleteImageCommand request, CancellationToken cancellationToken)
             {
-                var file = (await _unitOfWork.FileRepository.GetAsync(x => x.OriginalName == request.Filename && x.UserId == Guid.Parse(request.UserId))).FirstOrDefault();
+                var file = await _unitOfWork.FileRepository.GetObjectBy(x => x.OriginalName == request.Filename && x.UserId == Guid.Parse(request.UserId));
                 if (file == null)
                 {
                     throw new FileNotFoundException(request.Filename);
                 }
 
-                string[] filename = file.Filename.Split(Name.Delimiter);
+                string filename = file.Filename.Split(Name.Delimiter)[^1];
                 string prefix = request.DeleteMiniatures.HasValue && request.DeleteMiniatures.Value ? Prefixes.MiniatureImage : string.Empty;
                 string size = request.Size == "any" || string.IsNullOrEmpty(request.Size) ? "" : request.Size;
-                var blobItems = await _blobManagerService.GetBlobsInfoByName(prefix, size, filename[^1], request.UserId, cancellationToken);
+                var blobItems = await _blobManagerService.GetBlobsInfoByName(prefix, size, filename, request.UserId, cancellationToken);
 
                 foreach (var blob in blobItems)
                 {

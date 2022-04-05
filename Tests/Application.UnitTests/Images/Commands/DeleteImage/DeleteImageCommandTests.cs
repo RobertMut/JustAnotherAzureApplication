@@ -2,6 +2,7 @@
 using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Application.Images.Commands.DeleteImage;
+using Application.UnitTests.Common.Fakes;
 using Azure.Storage.Blobs.Models;
 using Domain.Entities;
 using MediatR;
@@ -17,37 +18,27 @@ using System.Threading.Tasks;
 namespace Application.UnitTests.Images.Commands.DeleteImage
 {
     [TestFixture]
-    public class DeleteImageCommandTests
+    public class DeleteGroupShareCommandTests
     {
         private Mock<IBlobManagerService> _service;
         private Mock<IMediator> _mediator;
-        private Mock<IUnitOfWork> _unitOfWork;
-        private Guid _userId;
+        private IUnitOfWork _unitOfWork;
+
         [SetUp]
         public async Task SetUp()
         {
-            _unitOfWork = new Mock<IUnitOfWork>();
+            _unitOfWork = new FakeUnitOfWork();
             _service = new Mock<IBlobManagerService>();
             _mediator = new Mock<IMediator>();
-            _userId = Guid.NewGuid();
 
-            _unitOfWork.Setup(x => x.FileRepository.GetObjectBy(It.IsAny<Expression<Func<File, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync((string name, CancellationToken cancellationToken) =>
-            {
-                return new File()
-                {
-                    Filename = name,
-                    UserId = _userId
-                };
-            });
-            _unitOfWork.Setup(x => x.FileRepository.Delete(It.IsAny<File>()));
             _service.Setup(x => x.GetBlobsInfoByName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() =>
                 {
                     return new BlobItem[]
                     {
-                        BlobsModelFactory.BlobItem("original_sample.jpg"),
-                        BlobsModelFactory.BlobItem("miniature_300x300_sample.Png"),
-                        BlobsModelFactory.BlobItem("miniature_200x200_sample.Tiff")
+                        BlobsModelFactory.BlobItem("original_test.png"),
+                        BlobsModelFactory.BlobItem("miniature_300x300_test.Png"),
+                        BlobsModelFactory.BlobItem("miniature_200x200_test.Tiff")
                     }.AsEnumerable();
                 });
             _mediator.Setup(x => x.Send(It.IsAny<DeleteImageCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(Unit.Value);
@@ -59,11 +50,13 @@ namespace Application.UnitTests.Images.Commands.DeleteImage
         {
             _service.Setup(x => x.DeleteBlobAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.Accepted);
 
-            var handler = new DeleteImageCommand.DeleteImageCommandHandler(_service.Object, _unitOfWork.Object);
+            var handler = new DeleteImageCommand.DeleteImageCommandHandler(_service.Object, _unitOfWork);
             var command = new DeleteImageCommand()
             {
-                Filename = "sample.jpeg",
-                UserId = _userId.ToString()
+                Filename = "test.png",
+                DeleteMiniatures = true,
+                Size = "any",
+                UserId = DbSets.UserId.ToString()
             };
             var responseMediator = await _mediator.Object.Send(command, CancellationToken.None);
             var response = await handler.Handle(command, CancellationToken.None);
@@ -78,11 +71,11 @@ namespace Application.UnitTests.Images.Commands.DeleteImage
         {
             _service.Setup(x => x.DeleteBlobAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.InternalServerError);
 
-            var handler = new DeleteImageCommand.DeleteImageCommandHandler(_service.Object, _unitOfWork.Object);
+            var handler = new DeleteImageCommand.DeleteImageCommandHandler(_service.Object, _unitOfWork);
             var command = new DeleteImageCommand()
             {
-                Filename = "sample.jpeg",
-                UserId = _userId.ToString()
+                Filename = "test.png",
+                UserId = DbSets.UserId.ToString()
             };
 
             Assert.ThrowsAsync<OperationFailedException>(async () =>

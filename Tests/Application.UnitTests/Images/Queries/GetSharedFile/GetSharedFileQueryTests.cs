@@ -2,22 +2,19 @@
 using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Application.Common.Models.File;
-using Application.Images.Queries.GetFile;
+using Application.Images.Queries.GetSharedFile;
 using Application.UnitTests.Common.Fakes;
 using Azure.Storage.Blobs.Models;
-using MediatR;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.UnitTests.Images.Queries.GetFile
+namespace Application.UnitTests.Images.Queries.GetSharedFile
 {
-    public class GetFileQueryTests
+    public class GetSharedFileQueryTests
     {
         private Mock<IBlobManagerService> _service;
-        private Mock<IMediator> _mediator;
         private IUnitOfWork _unitOfWork;
 
         [SetUp]
@@ -25,54 +22,49 @@ namespace Application.UnitTests.Images.Queries.GetFile
         {
             var blob = new Mock<BlobDownloadResult>();
             _service = new Mock<IBlobManagerService>();
-            _mediator = new Mock<IMediator>();
             _unitOfWork = new FakeUnitOfWork();
 
             _service.Setup(x => x.DownloadAsync(It.IsAny<string>(), It.IsAny<int>()))
                 .ReturnsAsync(blob.Object);
-            _mediator.Setup(x => x.Send(It.IsAny<GetFileQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new FileVm()
-            {
-                File = blob.Object
-            });
         }
 
         [Test]
-        public async Task GetFile()
+        public async Task GetSharedFile()
         {
-            var handler = new GetFileQueryHandler(_service.Object, _unitOfWork);
-            var query = new GetFileQuery()
+            var handler = new GetSharedFileQueryHandler(_service.Object, _unitOfWork);
+            var query = new GetSharedFileQuery()
             {
                 Filename = "miniature_300x300_test.Png",
-                UserId = DbSets.UserId.ToString()
+                UserId = DbSets.UserId.ToString(),
+                OtherUserId = DbSets.SecondUserId.ToString(),
+                GroupId = DbSets.GroupId.ToString()
             };
 
             Assert.DoesNotThrowAsync(async () =>
             {
                 var responseFromHandler = await handler.Handle(query, CancellationToken.None);
-                var response = await _mediator.Object.Send(query, CancellationToken.None);
 
                 Assert.IsInstanceOf<FileVm>(responseFromHandler);
-                Assert.IsInstanceOf<FileVm>(response);
             });
         }
 
         [Test]
-        public async Task GetOtherUserFileThrowsFileNotFoundException()
+        public async Task GetSharedFileNotFound()
         {
-            var handler = new GetFileQueryHandler(_service.Object, _unitOfWork);
-            var query = new GetFileQuery()
+            var handler = new GetSharedFileQueryHandler(_service.Object, _unitOfWork);
+            var query = new GetSharedFileQuery()
             {
                 Filename = "miniature_300x300_notshared.Png",
-                UserId = DbSets.UserId.ToString()
+                UserId = DbSets.UserId.ToString(),
+                OtherUserId = DbSets.SecondUserId.ToString(),
+                GroupId = DbSets.GroupId.ToString()
             };
 
-            Assert.ThrowsAsync<FileNotFoundException>(async () =>
+            Assert.ThrowsAsync<ShareNotFoundException>(async () =>
             {
                 var responseFromHandler = await handler.Handle(query, CancellationToken.None);
-                var response = await _mediator.Object.Send(query, CancellationToken.None);
 
                 Assert.IsInstanceOf<FileVm>(responseFromHandler);
-                Assert.IsInstanceOf<FileVm>(response);
             });
         }
     }

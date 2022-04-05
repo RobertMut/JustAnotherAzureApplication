@@ -2,7 +2,7 @@
 using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Application.Images.Commands.AddImage;
-using Domain.Common.Helper.Filename;
+using Application.UnitTests.Common.Fakes;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -11,11 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using File = Domain.Entities.File;
 
 namespace Application.UnitTests.Images.Commands.AddImage
 {
@@ -24,7 +21,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
         private Mock<IMediator> _mediator;
         private Mock<Stream> _stream;
         private Mock<IBlobManagerService> _service;
-        private Mock<IUnitOfWork> _unitOfWork;
+        private IUnitOfWork _unitOfWork;
         private Guid _userId;
 
         [SetUp]
@@ -34,19 +31,8 @@ namespace Application.UnitTests.Images.Commands.AddImage
             _service = new Mock<IBlobManagerService>();
             _stream = new Mock<Stream>();
             _userId = Guid.NewGuid();
-            _unitOfWork = new Mock<IUnitOfWork>();
+            _unitOfWork = new FakeUnitOfWork();
 
-            _unitOfWork.Setup(x => x.FileRepository.InsertAsync(It.IsAny<File>(), It.IsAny<CancellationToken>()));
-            _mediator.Setup(x => x.Send(It.IsAny<AddImageCommand>(), It.IsAny<CancellationToken>())).Returns((AddImageCommand request) =>
-            {
-                var filename = BitConverter.ToString(MD5.HashData(Encoding.UTF8.GetBytes(request.Filename)));
-                return NameHelper.GenerateOriginal(request.UserId, filename);
-            });
-            _stream.Setup(x => x.Write(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Callback((byte[] buffer, int offset, int size) =>
-                {
-                    Array.Copy(new byte[] { 00, 00, 00, 00, 00, 00 }, buffer, 6);
-                });
         }
 
         [Test]
@@ -56,7 +42,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                  It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.Created);
             _mediator.Verify(x => x.Send(It.IsAny<AddImageCommand>(), It.IsAny<CancellationToken>()), Times.Never);
 
-            var handler = new AddImageCommand.AddImageCommandHandler(_service.Object, _unitOfWork.Object);
+            var handler = new AddImageCommand.AddImageCommandHandler(_service.Object, _unitOfWork);
             var command = new AddImageCommand()
             {
                 ContentType = "image/jpeg",
@@ -69,9 +55,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
             var responseMediator = await _mediator.Object.Send(command, CancellationToken.None);
             var response = await handler.Handle(command, CancellationToken.None);
 
-            Assert.IsInstanceOf(typeof(Unit), response);
-            Assert.IsInstanceOf(typeof(Unit), responseMediator);
-            Assert.That(responseMediator, Is.Not.Null);
+            Assert.IsInstanceOf(typeof(string), response);
         }
 
         [Test]
@@ -80,7 +64,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
             _service.Setup(x => x.AddAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>(),
                 It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.InternalServerError);
 
-            var handler = new AddImageCommand.AddImageCommandHandler(_service.Object, _unitOfWork.Object);
+            var handler = new AddImageCommand.AddImageCommandHandler(_service.Object, _unitOfWork);
             var command = new AddImageCommand()
             {
                 ContentType = "image/jpeg",
@@ -109,7 +93,7 @@ namespace Application.UnitTests.Images.Commands.AddImage
                 }
                 );
 
-            var handler = new AddImageCommand.AddImageCommandHandler(_service.Object, _unitOfWork.Object);
+            var handler = new AddImageCommand.AddImageCommandHandler(_service.Object, _unitOfWork);
             var command = new AddImageCommand()
             {
                 ContentType = "image/jpeg",

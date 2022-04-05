@@ -6,8 +6,6 @@ using Domain.Constants.Image;
 using Domain.Enums.Image;
 using MediatR;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Application.Images.Commands.UpdateImage
 {
@@ -31,13 +29,16 @@ namespace Application.Images.Commands.UpdateImage
 
             public async Task<Unit> Handle(UpdateImageCommand request, CancellationToken cancellationToken)
             {
-                request.Filename = NameHelper.GenerateHashedFilename(request.Filename);
+                
                 var metadata = new Dictionary<string, string>
                 {
                     { Metadata.TargetType, EnumHelper.GetDescriptionFromEnumValue(request.TargetType) },
                     { Metadata.TargetWidth, request.Width.ToString() },
                     { Metadata.TargetHeight, request.Height.ToString() },
+                    { Metadata.OriginalFile, request.Filename }
                 };
+
+                request.Filename = NameHelper.GenerateHashedFilename(request.Filename);
                 string filename = NameHelper.GenerateOriginal(request.UserId, request.Filename);
 
                 if (request.Version != null)
