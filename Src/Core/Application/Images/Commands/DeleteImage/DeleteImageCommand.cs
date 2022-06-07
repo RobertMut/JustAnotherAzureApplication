@@ -7,24 +7,58 @@ using System.Net;
 
 namespace Application.Images.Commands.DeleteImage
 {
+    /// <summary>
+    /// Class DeleteImageCommand
+    /// </summary>
     public class DeleteImageCommand : IRequest
     {
+        /// <summary>
+        /// Filename to be deleted
+        /// </summary>
         public string Filename { get; set; }
+        /// <summary>
+        /// Determines if miniatures should be deleted or not
+        /// </summary>
         public bool? DeleteMiniatures { get; set; }
+        /// <summary>
+        /// Size to be deleted
+        /// </summary>
         public string? Size { get; set; }
+        /// <summary>
+        /// UserId
+        /// </summary>
         public string UserId { get; set; }
 
+        /// <summary>
+        /// Class DeleteImageComamndHandler
+        /// </summary>
         public class DeleteImageCommandHandler : IRequestHandler<DeleteImageCommand>
         {
             private readonly IBlobManagerService _blobManagerService;
             private readonly IUnitOfWork _unitOfWork;
 
+            /// <summary>
+            /// Initializes new instance of <see cref="DeleteImageCommandHandler" /> class.
+            /// </summary>
+            /// <param name="blobManagerService">The blob manager service</param>
+            /// <param name="unitOfWork">The <see cref="IUnitOfWork"/></param>
             public DeleteImageCommandHandler(IBlobManagerService blobManagerService, IUnitOfWork unitOfWork)
             {
                 _blobManagerService = blobManagerService;
                 _unitOfWork = unitOfWork;
             }
 
+            /// <summary>
+            /// Deletes image
+            /// </summary>
+            /// <param name="request">
+            /// <see cref="DeleteImageCommand"/>
+            /// </param>
+            /// <param name="cancellationToken">
+            /// <see cref="CancellationToken"/>
+            /// </param>
+            /// <returns></returns>
+            /// <exception cref="FileNotFoundException">If file does not exists</exception>
             public async Task<Unit> Handle(DeleteImageCommand request, CancellationToken cancellationToken)
             {
                 var file = await _unitOfWork.FileRepository.GetObjectBy(x => x.OriginalName == request.Filename && x.UserId == Guid.Parse(request.UserId));

@@ -11,14 +11,12 @@ namespace API.IntegrationTests.Controller.Accounts
 {
     public class Post
     {
-        private CustomWebApplicationFactory<AccountsController> _factory;
         private HttpClient _client;
 
         [SetUp]
         public async Task SetUp()
         {
-            _factory = new CustomWebApplicationFactory<AccountsController>();
-            _client = await _factory.GetAuthenticatedClient();
+            _client = GlobalSetupFixture.AuthenticatedHttpClient;
         }
 
         [Test]

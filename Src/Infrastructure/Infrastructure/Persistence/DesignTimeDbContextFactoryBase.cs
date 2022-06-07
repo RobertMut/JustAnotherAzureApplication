@@ -4,10 +4,19 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 namespace Infrastructure.Persistence
 {
+    /// <summary>
+    /// Abstract Class DesignTimeDbContextFactoryBase
+    /// </summary>
+    /// <typeparam name="TContext">DbContext</typeparam>
     public abstract class DesignTimeDbContextFactoryBase<TContext> : IDesignTimeDbContextFactory<TContext> where TContext : DbContext
     {
         private const string AspNetCoreEvironment = "ASPNETCORE_ENVIRONMENT";
 
+        /// <summary>
+        /// Create DbContext
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns>Context</returns>
         public TContext CreateDbContext(string[] args)
         {
             var basePath = Directory.GetCurrentDirectory() + String.Format("{0}..{0}API", Path.DirectorySeparatorChar);
@@ -17,6 +26,12 @@ namespace Infrastructure.Persistence
 
         protected abstract TContext CreateNewInstance(DbContextOptions<TContext> options);
 
+        /// <summary>
+        /// Creates instance based on conenction string
+        /// </summary>
+        /// <param name="basePath">current directory</param>
+        /// <param name="environmentName">Environment name</param>
+        /// <returns>Dbcontext</returns>
         private TContext Create(string basePath, string environmentName)
         {
             var configuration = new ConfigurationBuilder()
@@ -32,6 +47,12 @@ namespace Infrastructure.Persistence
             return Create(connectionString);
         }
 
+        /// <summary>
+        /// Gets instance of dbcontext from connection string
+        /// </summary>
+        /// <param name="connectionString">Connection string</param>
+        /// <returns>DbContext</returns>
+        /// <exception cref="ArgumentException">If connection string is null or empty</exception>
         private TContext Create(string connectionString)
         {
             if (string.IsNullOrEmpty(connectionString))

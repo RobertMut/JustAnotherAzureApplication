@@ -7,22 +7,46 @@ using File = Domain.Entities.File;
 
 namespace Infrastructure.Persistence
 {
+    /// <summary>
+    /// Class JAAADbContext
+    /// </summary>
     public class JAAADbContext : DbContext, IJAAADbContext
     {
         public JAAADbContext(DbContextOptions options) : base(options)
         {
         }
 
+        /// <summary>
+        /// Users dbset
+        /// </summary>
         public DbSet<User> Users { get; set; }
+        /// <summary>
+        /// Files dbset
+        /// </summary>
         public DbSet<File> Files { get; set; }
+        /// <summary>
+        /// Group dbset
+        /// </summary>
         public DbSet<Group> Groups { get; set; }
+        /// <summary>
+        /// Permissions dbset
+        /// </summary>
         public DbSet<Permission> Permissions { get; set; }
+        /// <summary>
+        /// User shares dbset
+        /// </summary>
         public DbSet<UserShare> UserShares { get; set; }
+        /// <summary>
+        /// Group shares dbset
+        /// </summary>
         public DbSet<GroupShare> GroupShares { get; set; }
+        /// <summary>
+        /// Group users junction dbset
+        /// </summary>
         public DbSet<GroupUser> GroupUsers { get; set; }
-
+        
         public override DatabaseFacade Database => base.Database;
-
+        
         public override ValueTask DisposeAsync()
         {
             return base.DisposeAsync();
@@ -43,6 +67,10 @@ namespace Infrastructure.Persistence
             return base.Set<TEntity>();
         }
 
+        /// <summary>
+        /// Sets entities relations and behaviour
+        /// </summary>
+        /// <param name="modelBuilder"><see cref="ModelBuilder"/></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasKey(u => u.Id);

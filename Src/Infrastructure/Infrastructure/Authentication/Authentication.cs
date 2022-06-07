@@ -8,8 +8,17 @@ using System.Text;
 
 namespace Infrastructure.Authentication
 {
+    /// <summary>
+    /// Class Authentication
+    /// </summary>
     public static class Authentication
     {
+        /// <summary>
+        /// Adds JWT Bearer Authentication
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <param name="configuration"><see cref="IConfiguration"/></param>
+        /// <returns><see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddJwtBearerAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var jwt = configuration.GetSection("JWT");

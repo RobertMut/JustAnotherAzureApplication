@@ -11,17 +11,32 @@ using System;
 
 namespace Functions
 {
+    /// <summary>
+    /// Class Miniaturize
+    /// </summary>
     public class Miniaturize
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IImageEditor _imageEditor;
 
+        /// <summary>
+        /// Initializes new instance of <see cref="Miniaturize" /> class.
+        /// </summary>
+        /// <param name="unitOfWork">The <see cref="IUnitOfWork"/></param>
+        /// <param name="imageEditor">The <see cref="IImageEditor"/></param>
         public Miniaturize(IUnitOfWork unitOfWork, IImageEditor imageEditor)
         {
             _unitOfWork = unitOfWork;
             _imageEditor = imageEditor;
         }
 
+        /// <summary>
+        /// Runs Miniaturize azure function
+        /// </summary>
+        /// <param name="myBlob">Blob stream</param>
+        /// <param name="blob">Blob client</param>
+        /// <param name="name">Blob name</param>
+        /// <param name="log"><see cref="ILogger"/></param>
         [FunctionName("Miniaturize")]
         public async Task Run([BlobTrigger(Startup.ContainerStringSetting + Prefixes.OriginalImage + "{name}", Connection = Startup.Storage)] Stream myBlob,
             [Blob(Startup.ContainerStringSetting + Prefixes.OriginalImage + "{name}", FileAccess.Read, Connection = Startup.Storage)] BlobBaseClient blob,

@@ -9,8 +9,18 @@ using System.Threading.Tasks;
 
 namespace API.IntegrationTests.Common
 {
+    /// <summary>
+    /// Class MockAuthenticationHandler
+    /// </summary>
     public class MockAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        /// <summary>
+        /// Initializes new instance of <see cref="MockAuthenticationHandler" /> class.
+        /// </summary>
+        /// <param name="options">Authentication scheme options</param>
+        /// <param name="logger"><see cref="ILoggerFactory"/></param>
+        /// <param name="encoder">Url encoder</param>
+        /// <param name="clock">System Clock</param>
         public MockAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
                                          ILoggerFactory logger,
                                          UrlEncoder encoder,
@@ -18,6 +28,10 @@ namespace API.IntegrationTests.Common
         {
         }
 
+        /// <summary>
+        /// Handles Authentication
+        /// </summary>
+        /// <returns>Authentication Result</returns>
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (Request.Headers.ContainsKey(HeaderNames.Authorization))

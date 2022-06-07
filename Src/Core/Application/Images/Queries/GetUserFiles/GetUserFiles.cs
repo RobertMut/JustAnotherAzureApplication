@@ -7,20 +7,41 @@ using MediatR;
 
 namespace Application.Images.Queries.GetUserFiles
 {
+    /// <summary>
+    /// Class GetUserFilesQuery
+    /// </summary>
     public class GetUserFilesQuery : IRequest<UserFilesListVm>
     {
+        /// <summary>
+        /// UserId
+        /// </summary>
         public string UserId { get; set; }
     }
 
+    /// <summary>
+    /// Class GetUserFilesQueryHandler
+    /// </summary>
     public class GetUserFilesQueryHandler : IRequestHandler<GetUserFilesQuery, UserFilesListVm>
     {
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>
+        /// Initializes new instance of <see cref="GetUserFilesQueryHandler" /> class.
+        /// </summary>
+        /// <param name="unitOfWork">The <see cref="IUnitOfWork"/></param>
         public GetUserFilesQueryHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// Gets user files
+        /// </summary>
+        /// <param name="request">UserId</param>
+        /// <param name="cancellationToken">
+        /// <see cref="CancellationToken"/>
+        /// </param>
+        /// <returns>User files list</returns>
         public async Task<UserFilesListVm> Handle(GetUserFilesQuery request, CancellationToken cancellationToken)
         {
             var userFiles = await _unitOfWork.FileRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId), cancellationToken: cancellationToken);

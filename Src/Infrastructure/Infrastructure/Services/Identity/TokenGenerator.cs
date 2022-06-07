@@ -9,17 +9,29 @@ using System.Text;
 
 namespace Infrastructure.Services.Identity
 {
+    /// <summary>
+    /// Class TokenGenerator
+    /// </summary>
     public class TokenGenerator : ITokenGenerator
     {
         private readonly IConfigurationSection _jwt;
         private readonly string _secret;
 
+        /// <summary>
+        /// Initializes new instance of <see cref="TokenGenerator" /> class.
+        /// </summary>
+        /// <param name="configuration"><see cref="IConfiguration"/></param>
         public TokenGenerator(IConfiguration configuration)
         {
             _jwt = configuration.GetSection("JWT");
             _secret = configuration.GetValue<string>("JWTSecret");
         }
 
+        /// <summary>
+        /// Generates token for user
+        /// </summary>
+        /// <param name="user">User entity</param>
+        /// <returns>Security token</returns>
         public async Task<JwtSecurityToken> GetToken(User user)
         {
             var secret = MD5.HashData(Encoding.UTF8.GetBytes(_secret));

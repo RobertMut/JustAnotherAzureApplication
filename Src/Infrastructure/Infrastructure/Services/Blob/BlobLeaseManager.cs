@@ -6,11 +6,19 @@ using System.Net;
 
 namespace Infrastructure.Services.Blob
 {
+    /// <summary>
+    /// Class BlobLeaseManager
+    /// </summary>
     public class BlobLeaseManager : IBlobLeaseManager
     {
         private readonly BlobContainerClient _blobContainerClient;
         private PageBlobClient _pageBlobClient;
 
+        /// <summary>
+        /// Initializes new instance of <see cref="BlobLeaseManager" /> class.
+        /// </summary>
+        /// <param name="connectionString">Connection string</param>
+        /// <param name="container">Blob container</param>
         public BlobLeaseManager(string connectionString, string container)
         {
             var blobClientOptions = new BlobClientOptions();
@@ -20,6 +28,12 @@ namespace Infrastructure.Services.Blob
             _blobContainerClient = new BlobServiceClient(connectionString, blobClientOptions).GetBlobContainerClient(container);
         }
 
+        /// <summary>
+        /// Get current lease
+        /// </summary>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+        /// <returns>Lease id</returns>
+        /// <exception cref="RequestFailedException">When error occured while getting lease</exception>
         public async Task<string> GetLease(CancellationToken cancellationToken)
         {
             try
@@ -42,6 +56,11 @@ namespace Infrastructure.Services.Blob
             }
         }
 
+        /// <summary>
+        /// Releases lease
+        /// </summary>
+        /// <param name="leaseId">Lease id</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         public async Task ReleaseLease(string leaseId, CancellationToken cancellationToken)
         {
             var leaseClient = _pageBlobClient.GetBlobLeaseClient(leaseId);
@@ -49,6 +68,12 @@ namespace Infrastructure.Services.Blob
             await leaseClient.ReleaseAsync(cancellationToken: cancellationToken);
         }
 
+        /// <summary>
+        /// Renews lease
+        /// </summary>
+        /// <param name="leaseId">Current lease id</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
+        /// <returns></returns>
         public async Task<bool> RenewLeaseAsync(string leaseId, CancellationToken cancellationToken)
         {
             var leaseClient = _pageBlobClient.GetBlobLeaseClient(leaseId);
@@ -58,6 +83,11 @@ namespace Infrastructure.Services.Blob
             return true;
         }
 
+        /// <summary>
+        /// Set blob client to specific blob name
+        /// </summary>
+        /// <param name="blobName">Blob name</param>
+        /// <returns><see cref="IBlobLeaseManager"/></returns>
         public IBlobLeaseManager SetBlobName(string blobName)
         {
             _pageBlobClient = _blobContainerClient.GetPageBlobClient(blobName);

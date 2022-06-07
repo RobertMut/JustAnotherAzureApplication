@@ -4,15 +4,31 @@ using System.Reflection;
 
 namespace Application.Common.Behaviours
 {
+    /// <summary>
+    /// Class RequestSemaphoreBehaviour
+    /// </summary>
+    /// <typeparam name="TRequest">Request with filename</typeparam>
+    /// <typeparam name="TResponse">Expected response type</typeparam>
     public class RequestSemaphoreBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         private readonly IBlobLeaseManager _blobLeaseManager;
 
+        /// <summary>
+        /// Initializes new instance of <see cref="RequestSemaphoreBehaviour{TRequest,TResponse}" /> class.
+        /// </summary>
+        /// <param name="blobLeaseManager">The lease manager</param>
         public RequestSemaphoreBehaviour(IBlobLeaseManager blobLeaseManager)
         {
             _blobLeaseManager = blobLeaseManager;
         }
 
+        /// <summary>
+        /// Requests semaphore to file and locks it
+        /// </summary>
+        /// <param name="request">Request with filename</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <param name="next">Request handler</param>
+        /// <returns>Response</returns>
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
             var requestType = request.GetType();

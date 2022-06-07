@@ -6,8 +6,16 @@ using System.Reflection;
 
 namespace Application
 {
+    /// <summary>
+    /// Class DependencyInjection
+    /// </summary>
     public static class DependencyInjection
     {
+        /// <summary>
+        /// Adds application dependency injection
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <returns><see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());

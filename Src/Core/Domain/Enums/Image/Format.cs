@@ -2,6 +2,9 @@
 
 namespace Domain.Enums.Image
 {
+    /// <summary>
+    /// Enum Format
+    /// </summary>
     [DataContract]
     public enum Format
     {

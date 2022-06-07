@@ -15,27 +15,69 @@ using File = Domain.Entities.File;
 
 namespace Application.Images.Commands.AddImage
 {
+    /// <summary>
+    /// Class AddImageCommand
+    /// </summary>
     public class AddImageCommand : IRequest<string>
     {
+        /// <summary>
+        /// File
+        /// </summary>
         public IFormFile File { get; set; }
+        /// <summary>
+        /// Filename
+        /// </summary>
         public string Filename { get; set; }
+        /// <summary>
+        /// File content type
+        /// </summary>
         public string ContentType { get; set; }
+        /// <summary>
+        /// File target type
+        /// </summary>
         public Format? TargetType { get; set; }
+        /// <summary>
+        /// Target width
+        /// </summary>
         public int Width { get; set; }
+        /// <summary>
+        /// Target height
+        /// </summary>
         public int Height { get; set; }
+        /// <summary>
+        /// UserId
+        /// </summary>
         public string UserId { get; set; }
 
+        /// <summary>
+        /// Class AddImageCommandHandler
+        /// </summary>
         public class AddImageCommandHandler : IRequestHandler<AddImageCommand, string>
         {
             private readonly IUnitOfWork _unitOfWork;
             private readonly IBlobManagerService _service;
 
+            /// <summary>
+            /// Initializes new instance of <see cref="AddImageCommandHandler" /> class.
+            /// </summary>
+            /// <param name="service">The BlobManagerService</param>
+            /// <param name="unitOfWork">The <see cref="IUnitOfWork"/></param>
             public AddImageCommandHandler(IBlobManagerService service, IUnitOfWork unitOfWork)
             {
                 _unitOfWork = unitOfWork;
                 _service = service;
             }
 
+            /// <summary>
+            /// Adds image with metadata
+            /// </summary>
+            /// <param name="request">
+            /// <see cref="AddImageCommand"/>
+            /// </param>
+            /// <param name="cancellationToken">
+            /// <see cref="CancellationToken"/>
+            /// </param>
+            /// <returns>Image name</returns>
             public async Task<string> Handle(AddImageCommand request, CancellationToken cancellationToken)
             {
 

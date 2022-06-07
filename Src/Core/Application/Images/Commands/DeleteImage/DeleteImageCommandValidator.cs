@@ -3,11 +3,13 @@ using System.Text.RegularExpressions;
 
 namespace Application.Images.Commands.DeleteImage
 {
+    /// <summary>
+    /// Class DeleteImageCommandValidator
+    /// </summary>
     public class DeleteImageCommandValidator : AbstractValidator<DeleteImageCommand>
     {
         /// <summary>
-        /// Checks if filename not empty.
-        /// Checks if size is "any" or empty or matches image size pattern like 100x100
+        /// Initializes new instance of <see cref="DeleteImageCommandValidator" /> class.
         /// </summary>
         public DeleteImageCommandValidator()
         {

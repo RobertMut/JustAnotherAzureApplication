@@ -3,8 +3,14 @@ using FluentValidation;
 
 namespace Application.Images.Commands.AddImage
 {
+    /// <summary>
+    /// Class AddImageComamndValidator
+    /// </summary>
     public class AddImageCommandValidator : AbstractValidator<AddImageCommand>
     {
+        /// <summary>
+        /// Initializes new instance of <see cref="AddImageCommandValidator" /> class.
+        /// </summary>
         public AddImageCommandValidator()
         {
             RuleFor(x => x.File).NotNull();

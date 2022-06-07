@@ -5,8 +5,14 @@ using System.Drawing.Imaging;
 
 namespace Functions
 {
+    /// <summary>
+    /// Class FunctionImageFormats
+    /// </summary>
     public class FunctionImageFormats : ISupportedImageFormats
     {
+        /// <summary>
+        /// Supported Image formats
+        /// </summary>
         public IDictionary<Format, ImageFormat> FileFormat => new Dictionary<Format, ImageFormat>
         {
             {Format.png, ImageFormat.Png },

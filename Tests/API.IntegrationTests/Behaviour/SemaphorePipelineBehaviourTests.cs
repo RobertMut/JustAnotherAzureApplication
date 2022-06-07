@@ -6,11 +6,17 @@ using System.Threading.Tasks;
 
 namespace API.IntegrationTests.Behaviour
 {
+    /// <summary>
+    /// Class SemaphorePipelineBehaviourTests
+    /// </summary>
     public class SemaphorePipelineBehaviourTests
     {
         private CustomWebApplicationFactory<ImagesController> _factory;
         private HttpClient _client;
 
+        /// <summary>
+        /// Setup
+        /// </summary>
         [SetUp]
         public async Task SetUp()
         {
@@ -18,6 +24,9 @@ namespace API.IntegrationTests.Behaviour
             _client = await _factory.GetAuthenticatedClient();
         }
 
+        /// <summary>
+        /// Does not throw on multiple calls to same file at the same time
+        /// </summary>
         [Test]
         public async Task ParallelGetMutexBehaviourDoesNotThrow()
         {

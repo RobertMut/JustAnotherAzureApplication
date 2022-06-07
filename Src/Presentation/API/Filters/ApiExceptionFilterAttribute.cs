@@ -4,11 +4,17 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.Filters
 {
+    /// <summary>
+    /// Class ApiExceptionFilterAttribute
+    /// </summary>
     public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     {
         private readonly IDictionary<Type, Action<ExceptionContext>> _exceptionHandlers;
         private const string Rfc7231 = "https://tools.ietf.org/html/rfc7231";
 
+        /// <summary>
+        /// Initializes new instance of <see cref="ApiExceptionFilterAttribute" /> class.
+        /// </summary>
         public ApiExceptionFilterAttribute()
         {
             _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
@@ -21,6 +27,10 @@ namespace API.Filters
             };
         }
 
+        /// <summary>
+        /// Unauthorized exception
+        /// </summary>
+        /// <param name="obj"><see cref="ExceptionContext"/></param>
         private void HandleUnauthorizedException(ExceptionContext obj)
         {
             var details = new ProblemDetails
@@ -38,13 +48,21 @@ namespace API.Filters
 
             obj.ExceptionHandled = true;
         }
-
+        
+        /// <summary>
+        /// Handle exception when exception occurs
+        /// </summary>
+        /// <param name="context"><see cref="ExceptionContext"/></param>
         public override void OnException(ExceptionContext context)
         {
             HandleException(context);
             base.OnException(context);
         }
 
+        /// <summary>
+        /// Exception handler
+        /// </summary>
+        /// <param name="context"><see cref="ExceptionContext"/></param>
         private void HandleException(ExceptionContext context)
         {
             Type type = context.Exception.GetType();
@@ -62,6 +80,10 @@ namespace API.Filters
             HandleUnknownException(context);
         }
 
+        /// <summary>
+        /// Invalid model state exception
+        /// </summary>
+        /// <param name="context"><see cref="ExceptionContext"/></param>
         private void HandleInvalidModelStateException(ExceptionContext context)
         {
             var details = new ValidationProblemDetails(context.ModelState)
@@ -73,6 +95,10 @@ namespace API.Filters
             context.ExceptionHandled = true;
         }
 
+        /// <summary>
+        /// Validation exception
+        /// </summary>
+        /// <param name="obj"><see cref="ExceptionContext"/></param>
         private void HandleValidationException(ExceptionContext obj)
         {
             var detail = new ValidationProblemDetails(obj.ModelState)
@@ -84,6 +110,10 @@ namespace API.Filters
             obj.ExceptionHandled = true;
         }
 
+        /// <summary>
+        /// Unknown exception
+        /// </summary>
+        /// <param name="obj"><see cref="ExceptionContext"/></param>
         private void HandleUnknownException(ExceptionContext obj)
         {
             var details = new ProblemDetails

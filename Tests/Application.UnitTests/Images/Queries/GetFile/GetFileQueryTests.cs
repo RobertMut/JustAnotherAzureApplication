@@ -63,7 +63,7 @@ namespace Application.UnitTests.Images.Queries.GetFile
             var query = new GetFileQuery()
             {
                 Filename = "miniature_300x300_notshared.Png",
-                UserId = DbSets.UserId.ToString()
+                UserId = Guid.NewGuid().ToString()
             };
 
             Assert.ThrowsAsync<FileNotFoundException>(async () =>

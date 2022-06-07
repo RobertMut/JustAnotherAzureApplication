@@ -3,13 +3,25 @@ using System.Reflection;
 
 namespace Application.Common.Mappings
 {
+    /// <summary>
+    /// Class MappingProfile
+    /// </summary>
     public class MappingProfile : Profile
     {
+        /// <summary>
+        /// Initializes new instance of <see cref="MappingProfile" /> class.
+        /// </summary>
         public MappingProfile()
         {
             ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
+        /// <summary>
+        /// Adds mappings within assembly
+        /// </summary>
+        /// <param name="assembly">
+        /// <see cref="Assembly"/>
+        /// </param>
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
             var types = assembly.GetExportedTypes()

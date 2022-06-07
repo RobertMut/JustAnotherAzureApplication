@@ -1,21 +1,18 @@
-﻿using API.Controllers;
-using API.IntegrationTests.Common;
-using NUnit.Framework;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace API.IntegrationTests.Controller.Images
 {
+    [TestFixture]
     public class Update
     {
-        private CustomWebApplicationFactory<ImagesController> _factory;
         private HttpClient _client;
 
         [SetUp]
         public async Task SetUp()
         {
-            _factory = new CustomWebApplicationFactory<ImagesController>();
-            _client = await _factory.GetAuthenticatedClient();
+            _client = GlobalSetupFixture.AuthenticatedHttpClient;
         }
 
         [Test]

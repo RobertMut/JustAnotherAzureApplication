@@ -9,6 +9,9 @@ using System.Net;
 
 namespace Application.Images.Commands.UpdateImage
 {
+    /// <summary>
+    /// Class UpdateImageCommand
+    /// </summary>
     public class UpdateImageCommand : IRequest
     {
         public string Filename { get; set; }
@@ -18,15 +21,32 @@ namespace Application.Images.Commands.UpdateImage
         public int? Version { get; set; }
         public string UserId { get; set; }
 
+        /// <summary>
+        /// Class UpdateImageCommandHandler
+        /// </summary>
         public class UpdateImageCommandHandler : IRequestHandler<UpdateImageCommand>
         {
             private readonly IBlobManagerService _blobManagerService;
 
+            /// <summary>
+            /// Initializes new instance of <see cref="UpdateImageCommandHandler" /> class.
+            /// </summary>
+            /// <param name="blobManagerService">The blob manager service</param>
             public UpdateImageCommandHandler(IBlobManagerService blobManagerService)
             {
                 _blobManagerService = blobManagerService;
             }
 
+            /// <summary>
+            /// Updates Image
+            /// </summary>
+            /// <param name="request">
+            /// <see cref="UpdateImageCommand"/>
+            /// </param>
+            /// <param name="cancellationToken">
+            /// <see cref="CancellationToken"/>
+            /// </param>
+            /// <returns>Unit</returns>
             public async Task<Unit> Handle(UpdateImageCommand request, CancellationToken cancellationToken)
             {
                 

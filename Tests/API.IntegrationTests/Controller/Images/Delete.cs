@@ -6,18 +6,16 @@ using System.Threading.Tasks;
 
 namespace API.IntegrationTests.Controller.Images
 {
+    [TestFixture]
     public class Delete
     {
-        private CustomWebApplicationFactory<ImagesController> _factory;
         private HttpClient _client;
 
         [SetUp]
         public async Task SetUp()
         {
-            _factory = new CustomWebApplicationFactory<ImagesController>();
-            _client = await _factory.GetAuthenticatedClient();
+            _client = GlobalSetupFixture.AuthenticatedHttpClient;
         }
-
 
         [Test]
         public async Task DeleteImageWithMiniatures()

@@ -2,6 +2,9 @@
 
 namespace Domain.Enums.Image
 {
+    /// <summary>
+    /// Enum Permissions
+    /// </summary>
     [DataContract]
     public enum Permissions
     {

@@ -13,8 +13,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure
 {
+    /// <summary>
+    /// Class DependencyInjection
+    /// </summary>
     public static class DependencyInjection
     {
+        /// <summary>
+        /// Adds DBContext, Unit of Work, BlobManagerService, BlobLeaseManager Token Generator
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
+        /// <param name="configuration"><see cref="IConfiguration"/></param>
+        /// <returns><see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             var jwt = configuration.GetSection("JWT");
@@ -38,6 +47,10 @@ namespace Infrastructure
             return services;
         }
 
+        /// <summary>
+        /// Inits database
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/></param>
         public static async Task InitDatabase(this IServiceCollection services)
         {
             using (var service = services.BuildServiceProvider())

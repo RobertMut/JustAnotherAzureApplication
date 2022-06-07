@@ -5,16 +5,46 @@ using File = Domain.Entities.File;
 
 namespace Infrastructure.Repositories
 {
+    /// <summary>
+    /// Class UnitOfWork
+    /// </summary>
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
+        /// <summary>
+        /// JAAADbContext
+        /// </summary>
         private IJAAADbContext _dbContext;
+        /// <summary>
+        /// File repository
+        /// </summary>
         private Repository<File> _fileRepository;
+        /// <summary>
+        /// Group repository
+        /// </summary>
         private Repository<Group> _groupRepository;
+        /// <summary>
+        /// Permissions repository
+        /// </summary>
         private Repository<Permission> _permissionRepository;
+        /// <summary>
+        /// User repository
+        /// </summary>
         private Repository<User> _userRepository;
+        /// <summary>
+        /// Group share repository
+        /// </summary>
         private Repository<GroupShare> _groupShareRepository;
+        /// <summary>
+        /// User share repository
+        /// </summary>
         private Repository<UserShare> _userShareRepository;
+        /// <summary>
+        /// Group user junction table repository
+        /// </summary>
         private Repository<GroupUser> _groupUserRepository;
+        /// <summary>
+        /// Is disposed
+        /// </summary>
         private bool disposedValue = false;
 
         public UnitOfWork(IJAAADbContext dbContext)
@@ -22,6 +52,9 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
+        /// <summary>
+        /// File repository getter
+        /// </summary>
         public Repository<File> FileRepository
         {
             get
@@ -34,6 +67,10 @@ namespace Infrastructure.Repositories
                 return _fileRepository;
             }
         }
+        
+        /// <summary>
+        /// Group repository getter
+        /// </summary>
         public Repository<Group> GroupRepository
         {
             get
@@ -46,6 +83,10 @@ namespace Infrastructure.Repositories
                 return _groupRepository;
             }
         }
+        
+        /// <summary>
+        /// Permissions repository getter
+        /// </summary>
         public Repository<Permission> PermissionRepository
         {
             get
@@ -58,6 +99,10 @@ namespace Infrastructure.Repositories
                 return _permissionRepository;
             }
         }
+        
+        /// <summary>
+        /// User repository getter
+        /// </summary>
         public Repository<User> UserRepository
         {
             get
@@ -70,6 +115,10 @@ namespace Infrastructure.Repositories
                 return _userRepository;
             }
         }
+        
+        /// <summary>
+        /// Group Share repository getter
+        /// </summary>
         public Repository<GroupShare> GroupShareRepository
         {
             get
@@ -82,6 +131,10 @@ namespace Infrastructure.Repositories
                 return _groupShareRepository;
             }
         }
+        
+        /// <summary>
+        /// User share repository getter
+        /// </summary>
         public Repository<UserShare> UserShareRepository
         {
             get
@@ -94,6 +147,10 @@ namespace Infrastructure.Repositories
                 return _userShareRepository;
             }
         }
+        
+        /// <summary>
+        /// Group user repository getter
+        /// </summary>
         public Repository<GroupUser> GroupUserRepository
         {
             get
@@ -107,11 +164,19 @@ namespace Infrastructure.Repositories
             }
         }
 
+        /// <summary>
+        /// Save changes
+        /// </summary>
+        /// <param name="cancellationToken"></param>
         public async virtual Task Save(CancellationToken cancellationToken = default)
         {
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
+        /// <summary>
+        /// Dbcontext dispose
+        /// </summary>
+        /// <param name="disposing">dispose dbcontext</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -124,6 +189,9 @@ namespace Infrastructure.Repositories
             disposedValue = true;
         }
 
+        /// <summary>
+        /// Dispose method
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);

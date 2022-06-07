@@ -9,14 +9,12 @@ namespace API.IntegrationTests.Controller.Images
 {
     public class Get
     {
-        private CustomWebApplicationFactory<ImagesController> _factory;
         private HttpClient _client;
 
         [SetUp]
         public async Task SetUp()
         {
-            _factory = new CustomWebApplicationFactory<ImagesController>();
-            _client = await _factory.GetAuthenticatedClient();
+            _client = GlobalSetupFixture.AuthenticatedHttpClient;
         }
 
         [Test]

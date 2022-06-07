@@ -8,7 +8,6 @@ namespace API.IntegrationTests.Controller.Images
 {
     public class Post
     {
-        private CustomWebApplicationFactory<ImagesController> _factory;
         private HttpClient _client;
         private byte[] _sample;
 
@@ -16,8 +15,7 @@ namespace API.IntegrationTests.Controller.Images
         public async Task SetUp()
         {
             _sample = new byte[] { 00, 00, 00, 00, 11, 22, 33 };
-            _factory = new CustomWebApplicationFactory<ImagesController>();
-            _client = await _factory.GetAuthenticatedClient();
+            _client = GlobalSetupFixture.AuthenticatedHttpClient;
         }
 
         [Test]
