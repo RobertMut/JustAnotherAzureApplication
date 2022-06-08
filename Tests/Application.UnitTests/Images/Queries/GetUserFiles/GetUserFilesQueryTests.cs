@@ -7,6 +7,7 @@ using Domain.Entities;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -14,6 +15,8 @@ using System.Threading.Tasks;
 
 namespace Application.UnitTests.Images.Queries.GetUserFiles
 {
+    [ExcludeFromCodeCoverage]
+    [TestFixture]
     public class GetUserFilesQueryTests
     {
         private IUnitOfWork _unitOfWork;

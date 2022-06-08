@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -16,6 +17,8 @@ using System.Threading.Tasks;
 
 namespace Application.UnitTests.Images.Commands.AddImage
 {
+    [ExcludeFromCodeCoverage]
+    [TestFixture]
     public class AddImageCommandTests
     {
         private Mock<IMediator> _mediator;

@@ -2,7 +2,6 @@
 using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Image;
 using Common.Images;
-using Domain.Entities;
 using Functions.Services;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
@@ -13,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 
 [assembly: FunctionsStartup(typeof(Functions.Startup))]
+
 namespace Functions
 {
     /// <summary>
@@ -35,8 +35,9 @@ namespace Functions
                 options.UseSqlServer(Environment.GetEnvironmentVariable(Database));
             });
             builder.Services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>());
-            builder.Services.AddSingleton<IBlobManagerService>(service =>
-                new BlobManagerService(Environment.GetEnvironmentVariable(Storage), Environment.GetEnvironmentVariable("ImagesContainer")));
+            builder.Services.AddSingleton<IBlobManagerService>(
+                new BlobManagerService(Environment.GetEnvironmentVariable(Storage),
+                    Environment.GetEnvironmentVariable("ImagesContainer")));
             builder.Services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IImageEditor, ImageEditor>();

@@ -9,6 +9,7 @@ using MediatR;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
@@ -17,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace Application.UnitTests.Images.Commands.DeleteImage
 {
+    [ExcludeFromCodeCoverage]
     [TestFixture]
     public class DeleteGroupShareCommandTests
     {

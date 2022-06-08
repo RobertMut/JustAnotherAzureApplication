@@ -10,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading;
@@ -18,6 +19,7 @@ using System.Threading.Tasks;
 namespace Application.UnitTests.Accounts.Commands.Login
 {
     [TestFixture]
+    [ExcludeFromCodeCoverage]
     public class LoginCommandTests
     {
         private Mock<IMediator> _mediator;

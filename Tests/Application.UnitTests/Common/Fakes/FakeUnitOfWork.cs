@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Database;
+﻿using System.Diagnostics.CodeAnalysis;
+using Application.Common.Interfaces.Database;
 using Application.Common.Virtuals;
 using Domain.Entities;
 using Moq;
@@ -13,6 +14,7 @@ using Infrastructure.Persistence;
 
 namespace Application.UnitTests.Common.Fakes
 {
+    [ExcludeFromCodeCoverage]
     public class FakeUnitOfWork : IUnitOfWork
     {
         private IJAAADbContext _context;

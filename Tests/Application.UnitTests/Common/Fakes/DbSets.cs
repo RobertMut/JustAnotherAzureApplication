@@ -3,10 +3,12 @@ using Domain.Entities;
 using Domain.Enums.Image;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using File = Domain.Entities.File;
 
 namespace Application.UnitTests.Common.Fakes
 {
+    [ExcludeFromCodeCoverage]
     public class DbSets
     {
         public static Guid UserId = Guid.NewGuid();

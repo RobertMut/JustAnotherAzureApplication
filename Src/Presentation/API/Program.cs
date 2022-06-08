@@ -7,8 +7,9 @@ using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Logging;
 
+const string appsettingsTestPath = ".//appsettings.test.json"; 
 var builder = WebApplication.CreateBuilder(args);
-if (!File.Exists(".//appsettings.test.json"))
+if (!File.Exists(appsettingsTestPath))
 {
     builder.Configuration.AddAzureKeyVault(builder.Configuration.GetValue<string>("KeyVault"));
 }
@@ -17,7 +18,10 @@ if (!File.Exists(".//appsettings.test.json"))
 // Add services to the container.
 builder.Services.AddControllers(opt =>
 {
-    opt.Filters.Add<ApiExceptionFilterAttribute>();
+    if (!File.Exists(appsettingsTestPath))
+    {
+        opt.Filters.Add<ApiExceptionFilterAttribute>();
+    }
 }).AddFluentValidation(x => x.AutomaticValidationEnabled = false);
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -48,3 +52,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

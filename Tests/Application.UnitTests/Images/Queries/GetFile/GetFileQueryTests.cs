@@ -9,11 +9,14 @@ using MediatR;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.UnitTests.Images.Queries.GetFile
 {
+    [ExcludeFromCodeCoverage]
+    [TestFixture]
     public class GetFileQueryTests
     {
         private Mock<IBlobManagerService> _service;

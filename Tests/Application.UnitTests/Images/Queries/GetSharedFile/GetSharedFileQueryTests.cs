@@ -1,4 +1,5 @@
-﻿using Application.Common.Exceptions;
+﻿using System.Diagnostics.CodeAnalysis;
+using Application.Common.Exceptions;
 using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Application.Common.Models.File;
@@ -12,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace Application.UnitTests.Images.Queries.GetSharedFile
 {
+    [ExcludeFromCodeCoverage]
+    [TestFixture]
     public class GetSharedFileQueryTests
     {
         private Mock<IBlobManagerService> _service;

@@ -5,24 +5,24 @@ using Application.UnitTests.Common.Fakes;
 using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.GroupShares.Commands.AddGroupShare;
+using Application.UserShares.Commands.AddUserShare;
 using Domain.Enums.Image;
 using Domain.Common.Helper.Filename;
 
-namespace Application.UnitTests.GroupShares.Commands.AddGroupShare
+namespace Application.UnitTests.UserShares.Commands.AddUserShare
 {
     [ExcludeFromCodeCoverage]
     [TestFixture]
-    public class AddGroupShareCommandTests
+    public class AddUserShareCommandTests
     {
         private IUnitOfWork _unitOfWork;
-        private AddGroupShareCommand.AddGroupShareCommandHandler _commandHandler;
+        private AddUserShareCommand.AddUserShareCommandHandler _commandHandler;
 
         [SetUp]
         public async Task SetUp()
         {
             _unitOfWork = new FakeUnitOfWork();
-            _commandHandler = new AddGroupShareCommand.AddGroupShareCommandHandler(_unitOfWork);
+            _commandHandler = new AddUserShareCommand.AddUserShareCommandHandler(_unitOfWork);
         }
 
         [Test]
@@ -30,15 +30,15 @@ namespace Application.UnitTests.GroupShares.Commands.AddGroupShare
         {
             Assert.DoesNotThrowAsync(async () =>
             {
-                var groupId = await _commandHandler.Handle(new AddGroupShareCommand
+                var userId = await _commandHandler.Handle(new AddUserShareCommand
                 {
                     Filename = NameHelper.GenerateMiniature(DbSets.UserId.ToString(), "300x300", NameHelper.GenerateHashedFilename("notshared.Png")),
-                    GroupId = DbSets.GroupId.ToString(),
+                    UserId = DbSets.UserId.ToString(),
                     PermissionId = Permissions.readwrite,
-                    UserId = DbSets.UserId.ToString()
+                    OtherUserId = DbSets.SecondUserId.ToString()
                 }, CancellationToken.None);
 
-                Assert.False(string.IsNullOrEmpty(groupId));
+                Assert.False(string.IsNullOrEmpty(userId));
             });
         }
 
@@ -47,13 +47,14 @@ namespace Application.UnitTests.GroupShares.Commands.AddGroupShare
         {
             Assert.ThrowsAsync<FileNotFoundException>(async () =>
             {
-                var groupId = await _commandHandler.Handle(new AddGroupShareCommand
+                var userId = await _commandHandler.Handle(new AddUserShareCommand
                 {
                     Filename = DbSets.OriginalFilename,
-                    GroupId = DbSets.GroupId.ToString(),
+                    UserId = DbSets.SecondUserId.ToString(),
                     PermissionId = Permissions.readwrite,
-                    UserId = DbSets.SecondUserId.ToString()
-                }, CancellationToken.None);
+                    OtherUserId = DbSets.SecondUserId.ToString()
+
+                }, CancellationToken.None) ;
             });
         }
     }

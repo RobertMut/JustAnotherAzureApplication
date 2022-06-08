@@ -6,12 +6,15 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.UnitTests.Images.Commands.UpdateImage
 {
+    [ExcludeFromCodeCoverage]
+    [TestFixture]
     public class UpdateImageCommandTests
     {
         private Mock<IMediator> _mediator;

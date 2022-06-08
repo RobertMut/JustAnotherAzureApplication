@@ -2,10 +2,13 @@
 using FluentValidation.Results;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Application.UnitTests.Common.Exception
 {
+    [TestFixture]
+    [ExcludeFromCodeCoverage]
     public class ValidationExceptionTests
     {
         [Test]

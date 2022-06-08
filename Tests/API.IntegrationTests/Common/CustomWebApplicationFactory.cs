@@ -1,7 +1,5 @@
-﻿using Application.Common.Interfaces.Blob;
-using Application.Common.Interfaces.Database;
+﻿using Application.Common.Interfaces.Database;
 using Infrastructure.Persistence;
-using Infrastructure.Services.Blob;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -26,20 +23,27 @@ namespace API.IntegrationTests.Common
     /// <typeparam name="TStartup">Startup</typeparam>
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
+        private string listenAddress;
+        private string listenPort;
+        
         /// <summary>
         /// Configures test WebHost
         /// </summary>
         /// <param name="builder"><see cref="IWebHostBuilder"/></param>
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.UseTestServer(x =>
-            {
-                x.BaseAddress = new Uri("https://localhost:7264/");
-            }).UseSetting("https_port", "7264");
             builder.UseConfiguration(new ConfigurationBuilder()
                 .AddJsonFile("appsettings.test.json")
                 .AddEnvironmentVariables()
                 .Build());
+            
+            listenAddress = builder.GetSetting("ListenAddress");
+            listenPort = builder.GetSetting("ListenPort");
+            builder.UseTestServer(x =>
+            {
+                x.BaseAddress = new Uri($"{listenAddress}:{listenPort}/");
+            }).UseSetting("https_port", listenPort);
+
             
             builder.ConfigureServices(services =>
             {
@@ -48,7 +52,6 @@ namespace API.IntegrationTests.Common
                 services.AddDbContext<JAAADbContext>(options =>
                 {
                     options.UseInMemoryDatabase("InMemoryDbForTesting");
-
                 });
 
                 services.AddScoped<IJAAADbContext, JAAADbContext>();
@@ -100,8 +103,10 @@ namespace API.IntegrationTests.Common
         public async Task<HttpClient> GetAuthenticatedClient()
         {
             var client = this.CreateClient(this.ClientOptions);
-
+            
+            client.BaseAddress = new Uri($"{listenAddress}:{listenPort}/");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, "Test");
+            
             return client;
         }
     }

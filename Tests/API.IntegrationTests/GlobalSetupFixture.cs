@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using API.Controllers;
@@ -25,11 +26,8 @@ public class GlobalSetupFixture
     [OneTimeSetUp]
     public static void RunBeforeAnyTests()
     {
-        var factory = new CustomWebApplicationFactory<AccountsController>();
-        var configuration = factory.Server.Services.GetRequiredService<IConfiguration>();
+        var factory = new CustomWebApplicationFactory<Program>();
         AuthenticatedHttpClient = factory.GetAuthenticatedClient().Result;
-        
-        _processId = RunFakeStorage(configuration);
     }
 
     /// <summary>
@@ -38,26 +36,26 @@ public class GlobalSetupFixture
     [OneTimeTearDown]
     public static void RunAfterTests()
     {
-        var process = Process.GetProcessById(_processId);
-        process.Kill();
+        //var process = Process.GetProcessById(_processId);
+        //process.Kill();
     }
     
     /// <summary>
     /// Starts fake storage
     /// </summary>
-    /// <param name="configuration"><see cref="IConfiguration"/></param>
     /// <returns>Process id</returns>
-    private static int RunFakeStorage(IConfiguration configuration)
+    private static int RunFakeStorage()
     {
-        string storageEmulatorPath = configuration.GetValue<string>("StorageEmulator");
-        string storageEmulatorArgs = configuration.GetValue<string>("StorageEmulatorArgs");
+        string storageEmulatorPath = Environment.GetEnvironmentVariable("storageEmulator");
+        string storageEmulatorArgs = Environment.GetEnvironmentVariable("StorageEmulatorArgs");
         Process storageEmulatorProcess = new Process();
             
-        storageEmulatorProcess.StartInfo = new ProcessStartInfo()
+        storageEmulatorProcess.StartInfo = new ProcessStartInfo
         {
             FileName = storageEmulatorPath,
             WindowStyle = ProcessWindowStyle.Hidden,
-            Arguments = storageEmulatorArgs
+            Arguments = storageEmulatorArgs,
+
         };
             
         storageEmulatorProcess.Start();

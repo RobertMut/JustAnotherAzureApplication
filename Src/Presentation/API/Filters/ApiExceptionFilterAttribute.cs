@@ -121,10 +121,12 @@ namespace API.Filters
                 Status = StatusCodes.Status500InternalServerError,
                 Title = "An error occurred while processing your request.",
                 Type = $"{Rfc7231}#section-6.6.1",
-                Detail = obj.Exception.Message,
+                Detail = obj.Exception.StackTrace,
+                Instance = obj.Exception.Source,
             };
             obj.Result = new ObjectResult(details)
             {
+                Value = obj.Exception.Message,
                 StatusCode = StatusCodes.Status500InternalServerError
             };
             obj.ExceptionHandled = true;

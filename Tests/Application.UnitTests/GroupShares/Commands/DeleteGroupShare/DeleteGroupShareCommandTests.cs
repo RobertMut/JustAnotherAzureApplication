@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Database;
+﻿using System.Diagnostics.CodeAnalysis;
+using Application.Common.Interfaces.Database;
 using Application.GroupShares.Commands.DeleteGroupShare;
 using Application.UnitTests.Common.Fakes;
 using NUnit.Framework;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.UnitTests.GroupShares.Commands.DeleteGroupShare
 {
+    [ExcludeFromCodeCoverage]
     [TestFixture]
     public class DeleteGroupShareCommandTests
     {
