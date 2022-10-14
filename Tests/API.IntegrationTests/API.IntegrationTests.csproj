@@ -6,12 +6,13 @@
 
     <IsPackable>false</IsPackable>
 
-    <Configurations>Debug;Release;Test</Configurations>
+    <Configurations>Debug;Release;Test;Testing</Configurations>
 
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Gherkin" Version="23.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.2" />
@@ -20,9 +21,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="Moq" Version="4.17.1" />
-    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
     <PackageReference Include="coverlet.collector" Version="3.1.0" />
+    <PackageReference Include="SpecFlow" Version="4.0.16-beta" />
+    <PackageReference Include="SpecFlow.NUnit" Version="4.0.16-beta" />
+    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="4.0.16-beta" />
   </ItemGroup>
 
   <ItemGroup>

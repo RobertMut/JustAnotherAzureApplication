@@ -122,7 +122,7 @@ namespace API.Filters
                 Title = "An error occurred while processing your request.",
                 Type = $"{Rfc7231}#section-6.6.1",
                 Detail = obj.Exception.StackTrace,
-                Instance = obj.Exception.Source,
+                Instance = obj.Exception.Source
             };
             obj.Result = new ObjectResult(details)
             {

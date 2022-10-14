@@ -41,8 +41,9 @@ namespace Application.Account.Commands.Register
             /// <exception cref="DuplicatedException">When user exists</exception>
             public async Task<Unit> Handle(RegisterCommand request, CancellationToken cancellationToken)
             {
-                var user = await _unitOfWork.UserRepository.GetObjectBy(x => x.Username == request.RegisterModel.Username, cancellationToken: cancellationToken);
-                if (user == null)
+                var user = await _unitOfWork.UserRepository.GetObjectBy(x => x.Username.Equals(request.RegisterModel.Username), cancellationToken: cancellationToken);
+                
+                if (user is null or null)
                 {
                     await _unitOfWork.UserRepository.InsertAsync(new User
                     {
@@ -51,13 +52,11 @@ namespace Application.Account.Commands.Register
 
                     }, cancellationToken);
                     await _unitOfWork.Save(cancellationToken);
-                }
-                else
-                {
-                    throw new DuplicatedException(request.RegisterModel.Username);
+                    
+                    return Unit.Value;
                 }
 
-                return Unit.Value;
+                throw new DuplicatedException(request.RegisterModel.Username);
             }
         }
     }

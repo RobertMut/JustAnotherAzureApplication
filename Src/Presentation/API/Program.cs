@@ -7,9 +7,9 @@ using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Logging;
 
-const string appsettingsTestPath = ".//appsettings.test.json"; 
+const string Testing = "Testing";
 var builder = WebApplication.CreateBuilder(args);
-if (!File.Exists(appsettingsTestPath))
+if (!Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").Equals(Testing))
 {
     builder.Configuration.AddAzureKeyVault(builder.Configuration.GetValue<string>("KeyVault"));
 }
@@ -18,10 +18,7 @@ if (!File.Exists(appsettingsTestPath))
 // Add services to the container.
 builder.Services.AddControllers(opt =>
 {
-    if (!File.Exists(appsettingsTestPath))
-    {
-        opt.Filters.Add<ApiExceptionFilterAttribute>();
-    }
+    opt.Filters.Add<ApiExceptionFilterAttribute>();
 }).AddFluentValidation(x => x.AutomaticValidationEnabled = false);
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -34,7 +31,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").Equals(Testing))
 {
     IdentityModelEventSource.ShowPII = true;
     app.UseSwagger();

@@ -6,7 +6,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <Configurations>Debug;Release;Test</Configurations>
+    <Configurations>Debug;Release;Test;Testing</Configurations>
 
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
