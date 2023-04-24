@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Database;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Domain.Entities;
 using MediatR;
 
 namespace Application.UserShares.Queries.GetSharesByUser

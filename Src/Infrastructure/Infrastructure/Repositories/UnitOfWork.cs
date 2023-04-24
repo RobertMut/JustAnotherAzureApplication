@@ -17,11 +17,11 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// File repository
         /// </summary>
-        private Repository<File> _fileRepository;
+        private Repository<File?> _fileRepository;
         /// <summary>
         /// Group repository
         /// </summary>
-        private Repository<Group> _groupRepository;
+        private Repository<Group?> _groupRepository;
         /// <summary>
         /// Permissions repository
         /// </summary>
@@ -33,11 +33,11 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// Group share repository
         /// </summary>
-        private Repository<GroupShare> _groupShareRepository;
+        private Repository<GroupShare?> _groupShareRepository;
         /// <summary>
         /// User share repository
         /// </summary>
-        private Repository<UserShare> _userShareRepository;
+        private Repository<UserShare?> _userShareRepository;
         /// <summary>
         /// Group user junction table repository
         /// </summary>
@@ -55,13 +55,13 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// File repository getter
         /// </summary>
-        public Repository<File> FileRepository
+        public Repository<File?> FileRepository
         {
             get
             {
                 if (_fileRepository == null)
                 {
-                    _fileRepository = new Repository<File>(_dbContext);
+                    _fileRepository = new Repository<File?>(_dbContext);
                 }
                 
                 return _fileRepository;
@@ -71,13 +71,13 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// Group repository getter
         /// </summary>
-        public Repository<Group> GroupRepository
+        public Repository<Group?> GroupRepository
         {
             get
             {
                 if(_groupRepository == null)
                 {
-                    _groupRepository = new Repository<Group>(_dbContext);
+                    _groupRepository = new Repository<Group?>(_dbContext);
                 }
 
                 return _groupRepository;
@@ -119,13 +119,13 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// Group Share repository getter
         /// </summary>
-        public Repository<GroupShare> GroupShareRepository
+        public Repository<GroupShare?> GroupShareRepository
         {
             get
             {
                 if (_groupShareRepository == null)
                 {
-                    _groupShareRepository = new Repository<GroupShare>(_dbContext);
+                    _groupShareRepository = new Repository<GroupShare?>(_dbContext);
                 }
 
                 return _groupShareRepository;
@@ -135,13 +135,13 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// User share repository getter
         /// </summary>
-        public Repository<UserShare> UserShareRepository
+        public Repository<UserShare?> UserShareRepository
         {
             get
             {
                 if (_userShareRepository == null)
                 {
-                    _userShareRepository = new Repository<UserShare>(_dbContext);
+                    _userShareRepository = new Repository<UserShare?>(_dbContext);
                 }
 
                 return _userShareRepository;

@@ -23,8 +23,54 @@ namespace API.Filters
                 { typeof(ArgumentException), HandleUnknownException },
                 { typeof(OperationFailedException), HandleUnknownException },
                 { typeof(ValidationException), HandleValidationException },
-                { typeof(UnauthorizedException), HandleUnauthorizedException }
+                { typeof(UnauthorizedException), HandleUnauthorizedException },
+                { typeof(DuplicatedException), HandleDuplicatedException },
+                { typeof(UserNotFoundException), HandleNotFoundException }
             };
+        }
+
+        /// <summary>
+        /// NotFound exception
+        /// </summary>
+        /// <param name="obj"><see cref="ExceptionContext"/></param>
+        private void HandleNotFoundException(ExceptionContext obj)
+        {
+            var details = new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Not Found",
+                Type = $"{Rfc7231}#section-6.5.4",
+                Detail = obj.Exception.Message
+            };
+
+            obj.Result = new ObjectResult(details)
+            {
+                StatusCode = StatusCodes.Status404NotFound
+            };
+
+            obj.ExceptionHandled = true;
+        }
+
+        /// <summary>
+        /// Conflict exception
+        /// </summary>
+        /// <param name="obj"><see cref="ExceptionContext"/></param>
+        private void HandleDuplicatedException(ExceptionContext obj)
+        {
+            var details = new ProblemDetails
+            {
+                Status = StatusCodes.Status409Conflict,
+                Title = "Conflict",
+                Type = $"{Rfc7231}#section-6.5.8",
+                Detail = obj.Exception.Message
+            };
+
+            obj.Result = new ObjectResult(details)
+            {
+                StatusCode = StatusCodes.Status409Conflict
+            };
+
+            obj.ExceptionHandled = true;
         }
 
         /// <summary>

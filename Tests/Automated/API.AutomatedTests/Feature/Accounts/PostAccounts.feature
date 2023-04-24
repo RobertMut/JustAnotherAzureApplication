@@ -20,10 +20,10 @@ Scenario: 01 Login
 	 And Response message contains '<ErrorMessage>'
 
 Examples: 
-| Username    | Password  | ErrorMessage                                      | ExpectedCode        |
-| Default     |           | "title":"One or more validation errors occurred." | BadRequest          |
-|             | 12345     | "title":"One or more validation errors occurred." | BadRequest          |
-| NonExisting | WrongPass | User NonExisting not found!                       | InternalServerError |
+| Username    | Password  | ErrorMessage                                      | ExpectedCode |
+| Default     |           | "title":"One or more validation errors occurred." | BadRequest   |
+|             | 12345     | "title":"One or more validation errors occurred." | BadRequest   |
+| NonExisting | WrongPass | User NonExisting not found!                       | NotFound     |
 
 Scenario: 03 Register user
 	Given I use 'AccountsRegister' endpoint
@@ -36,7 +36,7 @@ Scenario: 03 Register user
  	Given I clear the database data
  	
 Scenario: 04 Validate register exceptions
-	Given I use 'Accounts' endpoint
+	Given I use 'AccountsRegister' endpoint
 	And I prepare request with following values using 'RegisterModel' model
 	  | Username   | Password   |
 	  | <Username> | <Password> |
@@ -50,4 +50,14 @@ Examples:
   | Username        | Password | ErrorMessage                                      | ExpectedCode |
   | t_testdata_user |          | "title":"One or more validation errors occurred." | BadRequest   |
   |                 | 12345    | "title":"One or more validation errors occurred." | BadRequest   |
-  | Default         | 12345    | User NonExisting not found!                       | BadRequest   |
+  
+Scenario: 05 Validate register duplicated user exception
+	Given I use 'AccountsRegister' endpoint
+	And I prepare request with following values using 'RegisterModel' model
+	  | Username | Password |
+	  | Default  | 12345    |
+	When I make call to endpoint with an authorization token
+	Then Response code is 'Conflict'
+	And Response message contains 'Default'
+	And Database contains user 'Default'
+	Given I clear the database data

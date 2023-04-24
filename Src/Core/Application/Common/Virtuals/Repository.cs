@@ -11,7 +11,7 @@ namespace Application.Common.Virtuals
     public class Repository<TEntity> where TEntity : class
     {
         private IJAAADbContext _dbContext;
-        private DbSet<TEntity> _dbSet;
+        private DbSet<TEntity?> _dbSet;
 
         /// <summary>
         /// Initializes new instance of <see cref="Repository" /> class.
@@ -27,7 +27,7 @@ namespace Application.Common.Virtuals
         /// Deletes from repository
         /// </summary>
         /// <param name="entity">Entity</param>
-        public async virtual Task Delete(TEntity entity)
+        public async virtual Task Delete(TEntity? entity)
         {
             if (_dbContext.Entry(entity).State == EntityState.Detached)
             {
@@ -44,9 +44,9 @@ namespace Application.Common.Virtuals
         /// <param name="includeProperties">Properties</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>IEnumerable of entities</returns>
-        public async virtual Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>> orderBy = null, string includeProperties = "", CancellationToken cancellationToken = default)
+        public async virtual Task<IEnumerable<TEntity?>> GetAsync(Expression<Func<TEntity?, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>> orderBy = null, string includeProperties = "", CancellationToken cancellationToken = default)
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity?> query = _dbSet;
 
             if (filter != null)
             {
@@ -72,7 +72,7 @@ namespace Application.Common.Virtuals
         /// <param name="filter">Expression filter</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>Entity</returns>
-        public async virtual Task<TEntity> GetObjectBy(Expression<Func<TEntity, bool>> filter, CancellationToken cancellationToken = default)
+        public async virtual Task<TEntity?> GetObjectBy(Expression<Func<TEntity?, bool>> filter, CancellationToken cancellationToken = default)
         {
             return await _dbSet.AsQueryable().Where(filter).FirstOrDefaultAsync(cancellationToken);
 
@@ -84,7 +84,7 @@ namespace Application.Common.Virtuals
         /// <param name="entity">Entity to be insterted</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>Entity</returns>
-        public async virtual Task<TEntity> InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
+        public async virtual Task<TEntity?> InsertAsync(TEntity? entity, CancellationToken cancellationToken = default)
         {
             var entry = await _dbSet.AddAsync(entity, cancellationToken);
             
@@ -95,7 +95,7 @@ namespace Application.Common.Virtuals
         /// Updates entity
         /// </summary>
         /// <param name="entity">Entity to be updated</param>
-        public async virtual Task UpdateAsync(TEntity entity)
+        public async virtual Task UpdateAsync(TEntity? entity)
         {
             _dbSet.Attach(entity);
             _dbContext.Entry(entity).State = EntityState.Modified;

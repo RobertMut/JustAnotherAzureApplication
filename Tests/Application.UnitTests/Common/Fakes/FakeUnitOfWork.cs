@@ -2,13 +2,8 @@
 using Application.Common.Interfaces.Database;
 using Application.Common.Virtuals;
 using Domain.Entities;
-using Moq;
-using MockQueryable.Moq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Persistence;
 
@@ -32,17 +27,17 @@ namespace Application.UnitTests.Common.Fakes
             _context.GroupUsers.AddRange(DbSets.GetGroupUser());
             _context.SaveChangesAsync();
         }
-        public Repository<File> FileRepository => new Repository<File>(_context);
+        public Repository<File?> FileRepository => new Repository<File?>(_context);
 
-        public Repository<Group> GroupRepository => new Repository<Group>(_context);
+        public Repository<Group?> GroupRepository => new Repository<Group?>(_context);
 
         public Repository<Permission> PermissionRepository => new Repository<Permission>(_context);
 
         public Repository<User> UserRepository => new Repository<User>(_context);
 
-        public Repository<GroupShare> GroupShareRepository => new Repository<GroupShare>(_context);
+        public Repository<GroupShare?> GroupShareRepository => new Repository<GroupShare?>(_context);
 
-        public Repository<UserShare> UserShareRepository => new Repository<UserShare>(_context);
+        public Repository<UserShare?> UserShareRepository => new Repository<UserShare?>(_context);
 
         public Repository<GroupUser> GroupUserRepository => new Repository<GroupUser>(_context);
 

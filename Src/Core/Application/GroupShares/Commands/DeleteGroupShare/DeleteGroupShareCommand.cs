@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces.Database;
-using Domain.Enums.Image;
 using MediatR;
 
 namespace Application.GroupShares.Commands.DeleteGroupShare

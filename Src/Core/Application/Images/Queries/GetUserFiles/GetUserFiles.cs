@@ -1,6 +1,4 @@
-﻿using Application.Common.Interfaces.Blob;
-using Application.Common.Interfaces.Database;
-using Domain.Constants.Image;
+﻿using Application.Common.Interfaces.Database;
 using Domain.Entities;
 using Domain.Enums.Image;
 using MediatR;
@@ -46,7 +44,7 @@ namespace Application.Images.Queries.GetUserFiles
         {
             var userFiles = await _unitOfWork.FileRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId), cancellationToken: cancellationToken);
             var userGroups = await _unitOfWork.GroupUserRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId));
-            List<GroupShare> groupShares = new List<GroupShare>();
+            List<GroupShare?> groupShares = new List<GroupShare?>();
 
             foreach (var group in userGroups)
             {

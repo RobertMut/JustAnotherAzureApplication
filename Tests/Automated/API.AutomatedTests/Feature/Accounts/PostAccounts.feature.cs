@@ -118,7 +118,7 @@ this.ScenarioInitialize(scenarioInfo);
         [NUnit.Framework.DescriptionAttribute("02 Validate login exceptions")]
         [NUnit.Framework.TestCaseAttribute("Default", "", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
         [NUnit.Framework.TestCaseAttribute("", "12345", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
-        [NUnit.Framework.TestCaseAttribute("NonExisting", "WrongPass", "User NonExisting not found!", "InternalServerError", null)]
+        [NUnit.Framework.TestCaseAttribute("NonExisting", "WrongPass", "User NonExisting not found!", "NotFound", null)]
         public void _02ValidateLoginExceptions(string username, string password, string errorMessage, string expectedCode, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
@@ -212,7 +212,6 @@ this.ScenarioInitialize(scenarioInfo);
         [NUnit.Framework.DescriptionAttribute("04 Validate register exceptions")]
         [NUnit.Framework.TestCaseAttribute("t_testdata_user", "", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
         [NUnit.Framework.TestCaseAttribute("", "12345", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
-        [NUnit.Framework.TestCaseAttribute("Default", "12345", "User NonExisting not found!", "BadRequest", null)]
         public void _04ValidateRegisterExceptions(string username, string password, string errorMessage, string expectedCode, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
@@ -233,7 +232,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 39
- testRunner.Given("I use \'Accounts\' endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I use \'AccountsRegister\' endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
                 TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                             "Username",
@@ -257,6 +256,54 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And(string.Format("Database not contains user \'{0}\'", username), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 47
+ testRunner.Given("I clear the database data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("05 Validate register duplicated user exception")]
+        public void _05ValidateRegisterDuplicatedUserException()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("05 Validate register duplicated user exception", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 54
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 55
+ testRunner.Given("I use \'AccountsRegister\' endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+                TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Username",
+                            "Password"});
+                table5.AddRow(new string[] {
+                            "Default",
+                            "12345"});
+#line 56
+ testRunner.And("I prepare request with following values using \'RegisterModel\' model", ((string)(null)), table5, "And ");
+#line hidden
+#line 59
+ testRunner.When("I make call to endpoint with an authorization token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 60
+ testRunner.Then("Response code is \'Conflict\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 61
+ testRunner.And("Response message contains \'Default\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 62
+ testRunner.And("Database contains user \'Default\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 63
  testRunner.Given("I clear the database data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
             }

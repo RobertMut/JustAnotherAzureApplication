@@ -12,11 +12,11 @@ namespace Application.Common.Interfaces.Database
         /// <summary>
         /// File repository
         /// </summary>
-        Repository<File> FileRepository { get; }
+        Repository<File?> FileRepository { get; }
         /// <summary>
         /// Group repository
         /// </summary>
-        Repository<Group> GroupRepository { get; }
+        Repository<Group?> GroupRepository { get; }
         /// <summary>
         /// Permission repository
         /// </summary>
@@ -28,11 +28,11 @@ namespace Application.Common.Interfaces.Database
         /// <summary>
         /// Group Share repository
         /// </summary>
-        Repository<GroupShare> GroupShareRepository { get; }
+        Repository<GroupShare?> GroupShareRepository { get; }
         /// <summary>
         /// User Share repository
         /// </summary>
-        Repository<UserShare> UserShareRepository { get; }
+        Repository<UserShare?> UserShareRepository { get; }
         /// <summary>
         /// Group User repository
         /// </summary>

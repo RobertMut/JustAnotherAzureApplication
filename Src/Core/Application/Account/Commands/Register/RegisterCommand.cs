@@ -43,13 +43,12 @@ namespace Application.Account.Commands.Register
             {
                 var user = await _unitOfWork.UserRepository.GetObjectBy(x => x.Username.Equals(request.RegisterModel.Username), cancellationToken: cancellationToken);
                 
-                if (user is null or null)
+                if (user is null)
                 {
                     await _unitOfWork.UserRepository.InsertAsync(new User
                     {
                         Username = request.RegisterModel.Username,
                         Password = request.RegisterModel.Password
-
                     }, cancellationToken);
                     await _unitOfWork.Save(cancellationToken);
                     
