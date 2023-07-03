@@ -1,20 +1,13 @@
 ﻿using FluentValidation;
 
-namespace Application.Images.Commands.UpdateImage
+namespace Application.Images.Commands.UpdateImage;
+
+public class UpdateImageCommandValidator : AbstractValidator<UpdateImageCommand>
 {
-    /// <summary>
-    /// Class UpdateImageCommandValidator
-    /// </summary>
-    public class UpdateImageCommandValidator : AbstractValidator<UpdateImageCommand>
+    public UpdateImageCommandValidator()
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="UpdateImageCommandValidator" /> class.
-        /// </summary>
-        public UpdateImageCommandValidator()
-        {
-            RuleFor(x => x.Width).NotNull().GreaterThan(0);
-            RuleFor(x => x.Height).NotNull().GreaterThan(0);
-            RuleFor(x => x.TargetType).NotEmpty();
-        }
+        RuleFor(x => x.Width).NotNull().GreaterThan(0);
+        RuleFor(x => x.Height).NotNull().GreaterThan(0);
+        RuleFor(x => x.TargetType).NotEmpty();
     }
 }

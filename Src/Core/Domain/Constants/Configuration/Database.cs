@@ -1,10 +1,6 @@
-﻿namespace Domain.Constants.Configuration
+﻿namespace Domain.Constants.Configuration;
+
+public class Database
 {
-    /// <summary>
-    /// Database class
-    /// </summary>
-    public class Database
-    {
-        public const string ConnectionStringName = "JAAADatabase";
-    }
+    public const string ConnectionStringName = "JAAADatabase";
 }

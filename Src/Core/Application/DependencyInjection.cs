@@ -4,27 +4,23 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
-namespace Application
+namespace Application;
+
+public static class DependencyInjection
 {
     /// <summary>
-    /// Class DependencyInjection
+    /// Adds application dependency injection
     /// </summary>
-    public static class DependencyInjection
+    /// <param name="services"><see cref="IServiceCollection"/></param>
+    /// <returns><see cref="IServiceCollection"/></returns>
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        /// <summary>
-        /// Adds application dependency injection
-        /// </summary>
-        /// <param name="services"><see cref="IServiceCollection"/></param>
-        /// <returns><see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddApplication(this IServiceCollection services)
-        {
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehaviour<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestSemaphoreBehaviour<,>));
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        services.AddMediatR(Assembly.GetExecutingAssembly());
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehaviour<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestSemaphoreBehaviour<,>));
 
-            return services;
-        }
+        return services;
     }
 }

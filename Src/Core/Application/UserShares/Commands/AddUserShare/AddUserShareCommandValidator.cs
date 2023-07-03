@@ -1,20 +1,13 @@
 ﻿using FluentValidation;
 
-namespace Application.UserShares.Commands.AddUserShare
+namespace Application.UserShares.Commands.AddUserShare;
+
+public class AddUserShareCommandValidator : AbstractValidator<AddUserShareCommand>
 {
-    /// <summary>
-    /// Class AddUserShareCommandValidator
-    /// </summary>
-    public class AddUserShareCommandValidator : AbstractValidator<AddUserShareCommand>
+    public AddUserShareCommandValidator()
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="AddUserShareCommandValidator" /> class.
-        /// </summary>
-        public AddUserShareCommandValidator()
-        {
-            RuleFor(x => x.UserId).NotEmpty().NotNull();
-            RuleFor(x => x.Filename).NotEmpty().NotNull();
-            RuleFor(x => x.PermissionId).NotNull();
-        }
+        RuleFor(x => x.UserId).NotEmpty().NotNull();
+        RuleFor(x => x.Filename).NotEmpty().NotNull();
+        RuleFor(x => x.PermissionId).NotNull();
     }
 }

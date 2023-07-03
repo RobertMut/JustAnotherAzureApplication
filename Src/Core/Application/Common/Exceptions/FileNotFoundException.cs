@@ -1,17 +1,9 @@
-﻿namespace Application.Common.Exceptions
+﻿namespace Application.Common.Exceptions;
+
+public class FileNotFoundException : Exception
 {
-    /// <summary>
-    /// Class FileNotFoundException
-    /// </summary>
-    public class FileNotFoundException : Exception
+    public FileNotFoundException(string filename)
+        : base($"File {filename} not found!")
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="FileNotFoundException" /> class.
-        /// </summary>
-        /// <param name="filename">Not found filename</param>
-        public FileNotFoundException(string filename)
-            : base($"File {filename} not found!")
-        {
-        }
     }
 }

@@ -6,6 +6,7 @@ using FluentValidation.AspNetCore;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.OpenApi.Models;
 
 const string Testing = "Testing";
 var builder = WebApplication.CreateBuilder(args);
@@ -26,20 +27,27 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo()
+    {
+        Title = "JustAnotherAzureApplication.Presentation",
+        Version = "v1"
+    });
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").Equals(Testing))
+if (app.Environment.IsDevelopment() || Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Testing)
 {
     IdentityModelEventSource.ShowPII = true;
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpLogging();
-//app.AddSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

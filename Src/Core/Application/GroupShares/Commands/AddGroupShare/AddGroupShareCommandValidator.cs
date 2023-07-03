@@ -1,20 +1,13 @@
 ﻿using FluentValidation;
 
-namespace Application.GroupShares.Commands.AddGroupShare
+namespace Application.GroupShares.Commands.AddGroupShare;
+
+public class AddGroupShareCommandValidator : AbstractValidator<AddGroupShareCommand>
 {
-    /// <summary>
-    /// Class AddGroupShareCommandValidator
-    /// </summary>
-    public class AddGroupShareCommandValidator : AbstractValidator<AddGroupShareCommand>
+    public AddGroupShareCommandValidator()
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="AddGroupShareCommandValidator" /> class.
-        /// </summary>
-        public AddGroupShareCommandValidator()
-        {
-            RuleFor(x => x.GroupId).NotEmpty().NotNull();
-            RuleFor(x => x.Filename).NotEmpty().NotNull();
-            RuleFor(x => x.PermissionId).NotNull();
-        }
+        RuleFor(x => x.GroupId).NotEmpty().NotNull();
+        RuleFor(x => x.Filename).NotEmpty().NotNull();
+        RuleFor(x => x.PermissionId).NotNull();
     }
 }

@@ -20,9 +20,9 @@ namespace API.AutomatedTests.Feature.Accounts
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("PostAccounts")]
+    [NUnit.Framework.DescriptionAttribute("AccountsController")]
     [NUnit.Framework.CategoryAttribute("Authenticate")]
-    public partial class PostAccountsFeature
+    public partial class AccountsControllerFeature
     {
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
@@ -30,14 +30,14 @@ namespace API.AutomatedTests.Feature.Accounts
         private static string[] featureTags = new string[] {
                 "Authenticate"};
         
-#line 1 "PostAccounts.feature"
+#line 1 "AccountsController.feature"
 #line hidden
         
         [NUnit.Framework.OneTimeSetUpAttribute()]
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Feature/Accounts", "PostAccounts", "\tSimple calculator for adding two numbers", ProgrammingLanguage.CSharp, featureTags);
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Feature/Accounts", "AccountsController", "\tAccount controller automated tests", ProgrammingLanguage.CSharp, featureTags);
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -76,12 +76,12 @@ namespace API.AutomatedTests.Feature.Accounts
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("01 Login")]
-        public void _01Login()
+        [NUnit.Framework.DescriptionAttribute("Login")]
+        public void Login()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("01 Login", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Login", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 5
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -105,7 +105,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("I prepare request with following values using \'LoginModel\' model", ((string)(null)), table1, "And ");
 #line hidden
 #line 10
-  testRunner.When("I make call to endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I make call to endpoint using POST method", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 11
   testRunner.Then("Response code is \'OK\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -115,11 +115,11 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("02 Validate login exceptions")]
+        [NUnit.Framework.DescriptionAttribute("Check login exceptions")]
         [NUnit.Framework.TestCaseAttribute("Default", "", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
         [NUnit.Framework.TestCaseAttribute("", "12345", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
         [NUnit.Framework.TestCaseAttribute("NonExisting", "WrongPass", "User NonExisting not found!", "NotFound", null)]
-        public void _02ValidateLoginExceptions(string username, string password, string errorMessage, string expectedCode, string[] exampleTags)
+        public void CheckLoginExceptions(string username, string password, string errorMessage, string expectedCode, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
@@ -127,7 +127,7 @@ this.ScenarioInitialize(scenarioInfo);
             argumentsOfScenario.Add("Password", password);
             argumentsOfScenario.Add("ErrorMessage", errorMessage);
             argumentsOfScenario.Add("ExpectedCode", expectedCode);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("02 Validate login exceptions", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Check login exceptions", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 13
  this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -151,7 +151,7 @@ this.ScenarioInitialize(scenarioInfo);
   testRunner.And("I prepare request with following values using \'LoginModel\' model", ((string)(null)), table2, "And ");
 #line hidden
 #line 18
-  testRunner.When("I make call to endpoint", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When("I make call to endpoint using POST method", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 19
   testRunner.Then(string.Format("Response code is \'{0}\'", expectedCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -164,12 +164,12 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("03 Register user")]
-        public void _03RegisterUser()
+        [NUnit.Framework.DescriptionAttribute("Register user")]
+        public void RegisterUser()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("03 Register user", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Register user", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 28
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -193,7 +193,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("I prepare request with following values using \'RegisterModel\' model", ((string)(null)), table3, "And ");
 #line hidden
 #line 33
-  testRunner.When("I make call to endpoint with an authorization token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.When("I make call to endpoint with an authorization token using POST method", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 34
   testRunner.Then("Response code is \'OK\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -209,10 +209,10 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("04 Validate register exceptions")]
+        [NUnit.Framework.DescriptionAttribute("Check register exceptions")]
         [NUnit.Framework.TestCaseAttribute("t_testdata_user", "", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
         [NUnit.Framework.TestCaseAttribute("", "12345", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
-        public void _04ValidateRegisterExceptions(string username, string password, string errorMessage, string expectedCode, string[] exampleTags)
+        public void CheckRegisterExceptions(string username, string password, string errorMessage, string expectedCode, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
@@ -220,7 +220,7 @@ this.ScenarioInitialize(scenarioInfo);
             argumentsOfScenario.Add("Password", password);
             argumentsOfScenario.Add("ErrorMessage", errorMessage);
             argumentsOfScenario.Add("ExpectedCode", expectedCode);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("04 Validate register exceptions", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Check register exceptions", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 38
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -244,7 +244,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("I prepare request with following values using \'RegisterModel\' model", ((string)(null)), table4, "And ");
 #line hidden
 #line 43
- testRunner.When("I make call to endpoint with an authorization token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I make call to endpoint with an authorization token using POST method", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 44
  testRunner.Then(string.Format("Response code is \'{0}\'", expectedCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -263,12 +263,12 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("05 Validate register duplicated user exception")]
-        public void _05ValidateRegisterDuplicatedUserException()
+        [NUnit.Framework.DescriptionAttribute("Check register duplicated user exception")]
+        public void CheckRegisterDuplicatedUserException()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("05 Validate register duplicated user exception", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Check register duplicated user exception", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 54
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -292,7 +292,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("I prepare request with following values using \'RegisterModel\' model", ((string)(null)), table5, "And ");
 #line hidden
 #line 59
- testRunner.When("I make call to endpoint with an authorization token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I make call to endpoint with an authorization token using POST method", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 60
  testRunner.Then("Response code is \'Conflict\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");

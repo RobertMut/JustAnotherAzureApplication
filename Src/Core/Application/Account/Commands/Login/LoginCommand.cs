@@ -5,60 +5,48 @@ using Application.Common.Models.Account;
 using MediatR;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace Application.Account.Commands.Login
+namespace Application.Account.Commands.Login;
+
+public class LoginCommand : IRequest<JwtSecurityToken>
 {
     /// <summary>
-    /// Class LoginCommand
+    /// Username, password
     /// </summary>
-    public class LoginCommand : IRequest<JwtSecurityToken>
+    public LoginModel LoginModel { get; set; }
+    
+    public class LoginCommandHandler : IRequestHandler<LoginCommand, JwtSecurityToken>
     {
-        /// <summary>
-        /// Username, password
-        /// </summary>
-        public LoginModel LoginModel { get; set; }
-
-        /// <summary>
-        /// Class LoginCommandHandler
-        /// </summary>
-        public class LoginCommandHandler : IRequestHandler<LoginCommand, JwtSecurityToken>
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ITokenGenerator _tokenGenerator;
+        
+        public LoginCommandHandler(IUnitOfWork unitOfWork, ITokenGenerator tokenGenerator)
         {
-            private readonly IUnitOfWork _unitOfWork;
-            private readonly ITokenGenerator _tokenGenerator;
+            _unitOfWork = unitOfWork;
+            _tokenGenerator = tokenGenerator;
+        }
 
-            /// <summary>
-            /// Initializes new instance of <see cref="LoginCommandHandler" /> class.
-            /// </summary>
-            /// <param name="unitOfWork">The unit of work</param>
-            /// <param name="tokenGenerator">Token generator class</param>
-            public LoginCommandHandler(IUnitOfWork unitOfWork, ITokenGenerator tokenGenerator)
+        /// <summary>
+        /// Login handler
+        /// </summary>
+        /// <param name="request">Login command with username and password</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>JwtSecurityToken</returns>
+        /// <exception cref="UserNotFoundException">When username not found</exception>
+        /// <exception cref="UnauthorizedException">When password is wrong</exception>
+        public async Task<JwtSecurityToken> Handle(LoginCommand request, CancellationToken cancellationToken)
+        {
+            var user = await _unitOfWork.UserRepository.GetObjectBy(x => x.Username == request.LoginModel.UserName, cancellationToken);
+
+            if (user == null) throw new UserNotFoundException(request.LoginModel.UserName);
+
+            if (request.LoginModel.UserName == user.Username && request.LoginModel.Password == user.Password)
             {
-                _unitOfWork = unitOfWork;
-                _tokenGenerator = tokenGenerator;
+                var token = await _tokenGenerator.GetToken(user);
+
+                return token;
             }
 
-            /// <summary>
-            /// Login handler
-            /// </summary>
-            /// <param name="request">Login command with username and password</param>
-            /// <param name="cancellationToken">Cancellation token</param>
-            /// <returns>JwtSecurityToken</returns>
-            /// <exception cref="UserNotFoundException">When username not found</exception>
-            /// <exception cref="UnauthorizedException">When password is wrong</exception>
-            public async Task<JwtSecurityToken> Handle(LoginCommand request, CancellationToken cancellationToken)
-            {
-                var user = await _unitOfWork.UserRepository.GetObjectBy(x => x.Username == request.LoginModel.UserName, cancellationToken);
-
-                if (user == null) throw new UserNotFoundException(request.LoginModel.UserName);
-
-                if (request.LoginModel.UserName == user.Username && request.LoginModel.Password == user.Password)
-                {
-                    var token = await _tokenGenerator.GetToken(user);
-
-                    return token;
-                }
-
-                throw new UnauthorizedException(request.LoginModel.UserName);
-            }
+            throw new UnauthorizedException(request.LoginModel.UserName);
         }
     }
 }

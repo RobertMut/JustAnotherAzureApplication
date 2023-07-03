@@ -1,19 +1,12 @@
 ﻿using FluentValidation;
 
-namespace Application.UserShares.Commands.DeleteUserShare
+namespace Application.UserShares.Commands.DeleteUserShare;
+
+public class DeleteUserShareCommandValidator : AbstractValidator<DeleteUserShareCommand>
 {
-    /// <summary>
-    /// Class DeleteUserShareCommandValidator
-    /// </summary>
-    public class DeleteUserShareCommandValidator : AbstractValidator<DeleteUserShareCommand>
+    public DeleteUserShareCommandValidator()
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="DeleteUserShareCommandValidator" /> class.
-        /// </summary>
-        public DeleteUserShareCommandValidator()
-        {
-            RuleFor(x => x.UserId).NotNull();
-            RuleFor(x => x.Filename).NotEmpty();
-        }
+        RuleFor(x => x.UserId).NotNull();
+        RuleFor(x => x.Filename).NotEmpty();
     }
 }

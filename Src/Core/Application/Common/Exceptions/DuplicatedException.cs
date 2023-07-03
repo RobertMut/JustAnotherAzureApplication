@@ -1,17 +1,9 @@
-﻿namespace Application.Common.Exceptions
+﻿namespace Application.Common.Exceptions;
+
+public class DuplicatedException : Exception
 {
-    /// <summary>
-    /// Class DuplicatedException
-    /// </summary>
-    public class DuplicatedException : Exception
+    public DuplicatedException(string name) 
+        : base($"{name} already exist!")
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="DuplicatedException" /> class.
-        /// </summary>
-        /// <param name="name">Duplicated filename</param>
-        public DuplicatedException(string name) 
-            : base($"{name} already exist!")
-        {
-        }
     }
 }

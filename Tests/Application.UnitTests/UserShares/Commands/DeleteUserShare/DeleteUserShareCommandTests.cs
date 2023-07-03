@@ -7,46 +7,45 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Exceptions;
 
-namespace Application.UnitTests.UserShares.Commands.DeleteUserShare
+namespace Application.UnitTests.UserShares.Commands.DeleteUserShare;
+
+[ExcludeFromCodeCoverage]
+[TestFixture]
+public class DeleteUserShareCommandTests
 {
-    [ExcludeFromCodeCoverage]
-    [TestFixture]
-    public class DeleteUserShareCommandTests
+    private IUnitOfWork _unitOfWork;
+    private DeleteUserShareCommand.DeleteUserShareCommandHandler _commandHandler;
+
+    [SetUp]
+    public async Task SetUp()
     {
-        private IUnitOfWork _unitOfWork;
-        private DeleteUserShareCommand.DeleteUserShareCommandHandler _commandHandler;
+        _unitOfWork = new FakeUnitOfWork();
+        _commandHandler = new DeleteUserShareCommand.DeleteUserShareCommandHandler(_unitOfWork);
+    }
 
-        [SetUp]
-        public async Task SetUp()
+    [Test]
+    public async Task HandleDoesNotThrow()
+    {
+        Assert.DoesNotThrowAsync(async () =>
         {
-            _unitOfWork = new FakeUnitOfWork();
-            _commandHandler = new DeleteUserShareCommand.DeleteUserShareCommandHandler(_unitOfWork);
-        }
-
-        [Test]
-        public async Task HandleDoesNotThrow()
-        {
-            Assert.DoesNotThrowAsync(async () =>
+            var userId = await _commandHandler.Handle(new DeleteUserShareCommand
             {
-                var userId = await _commandHandler.Handle(new DeleteUserShareCommand
-                {
-                    Filename = DbSets.MiniatureFilename,
-                    UserId = DbSets.SecondUserId.ToString()
-                }, CancellationToken.None);
-            });
-        }
+                Filename = DbSets.MiniatureFilename,
+                UserId = DbSets.SecondUserId.ToString()
+            }, CancellationToken.None);
+        });
+    }
 
-        [Test]
-        public async Task HandleThrowsShareNotFoundException()
+    [Test]
+    public async Task HandleThrowsShareNotFoundException()
+    {
+        Assert.ThrowsAsync<ShareNotFoundException>(async () =>
         {
-            Assert.ThrowsAsync<ShareNotFoundException>(async () =>
+            var userId = await _commandHandler.Handle(new DeleteUserShareCommand
             {
-                var userId = await _commandHandler.Handle(new DeleteUserShareCommand
-                {
-                    Filename = DbSets.OriginalFilename,
-                    UserId = DbSets.UserId.ToString()
-                }, CancellationToken.None);
-            });
-        }
+                Filename = DbSets.OriginalFilename,
+                UserId = DbSets.UserId.ToString()
+            }, CancellationToken.None);
+        });
     }
 }

@@ -1,12 +1,8 @@
-﻿namespace Domain.Constants.Image
+﻿namespace Domain.Constants.Image;
+
+public class Prefixes
 {
-    /// <summary>
-    /// Class Prefixes
-    /// </summary>
-    public class Prefixes
-    {
-        public const string OriginalImage = "original" + Name.Delimiter;
-        public const string MiniatureImage = "miniature" + Name.Delimiter;
-        public const string ImageFormat = "image/";
-    }
+    public const string OriginalImage = "original" + Name.Delimiter;
+    public const string MiniatureImage = "miniature" + Name.Delimiter;
+    public const string ImageFormat = "image/";
 }

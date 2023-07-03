@@ -13,36 +13,35 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.UnitTests.Images.Queries.GetUserFiles
+namespace Application.UnitTests.Images.Queries.GetUserFiles;
+
+[ExcludeFromCodeCoverage]
+[TestFixture]
+public class GetUserFilesQueryTests
 {
-    [ExcludeFromCodeCoverage]
-    [TestFixture]
-    public class GetUserFilesQueryTests
+    private IUnitOfWork _unitOfWork;
+
+    [SetUp]
+    public async Task SetUp()
     {
-        private IUnitOfWork _unitOfWork;
+        _unitOfWork = new FakeUnitOfWork();
+    }
 
-        [SetUp]
-        public async Task SetUp()
+    [Test]
+    public async Task GetSharedFile()
+    {
+        var handler = new GetUserFilesQueryHandler(_unitOfWork);
+        var query = new GetUserFilesQuery()
         {
-            _unitOfWork = new FakeUnitOfWork();
-        }
+            UserId = DbSets.UserId.ToString(),
+        };
 
-        [Test]
-        public async Task GetSharedFile()
+        Assert.DoesNotThrowAsync(async () =>
         {
-            var handler = new GetUserFilesQueryHandler(_unitOfWork);
-            var query = new GetUserFilesQuery()
-            {
-                UserId = DbSets.UserId.ToString(),
-            };
+            var responseFromHandler = await handler.Handle(query, CancellationToken.None);
 
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                var responseFromHandler = await handler.Handle(query, CancellationToken.None);
-
-                Assert.IsInstanceOf<UserFilesListVm>(responseFromHandler);
-                Assert.IsTrue(responseFromHandler.Files.Count() > 0);
-            });
-        }
+            Assert.IsInstanceOf<UserFilesListVm>(responseFromHandler);
+            Assert.IsTrue(responseFromHandler.Files.Count() > 0);
+        });
     }
 }

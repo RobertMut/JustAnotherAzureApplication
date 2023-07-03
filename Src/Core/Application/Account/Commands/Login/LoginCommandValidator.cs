@@ -1,21 +1,14 @@
 ﻿using Domain.Constants.Image;
 using FluentValidation;
 
-namespace Application.Account.Commands.Login
+namespace Application.Account.Commands.Login;
+
+public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
-    /// <summary>
-    /// Class LoginCommandValidator
-    /// </summary>
-    public class LoginCommandValidator : AbstractValidator<LoginCommand>
+    public LoginCommandValidator()
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="LoginCommandValidator" /> class.
-        /// </summary>
-        public LoginCommandValidator()
-        {
-            RuleFor(x => x.LoginModel.UserName).NotNull().NotEmpty();
-            RuleFor(x => x.LoginModel.Password).NotNull().NotEmpty();
-            RuleFor(x => x.LoginModel).NotNull();
-        }
+        RuleFor(x => x.LoginModel.UserName).NotNull().NotEmpty();
+        RuleFor(x => x.LoginModel.Password).NotNull().NotEmpty();
+        RuleFor(x => x.LoginModel).NotNull();
     }
 }

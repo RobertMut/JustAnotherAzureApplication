@@ -25,16 +25,17 @@ public class HttpCallerService : IHttpCallerService
         };
     }
 
-    public async Task<HttpResponseMessage> MakePostCall(string endpoint, HttpContent content, CancellationToken ct, AuthenticationHeaderValue authenticationHeaderValue = null)
+    public async Task<HttpResponseMessage> MakePostCall(string endpoint, string method, HttpContent content, CancellationToken ct, AuthenticationHeaderValue authenticationHeaderValue = null)
     {
         httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
         var response = await httpClient.SendAsync(new HttpRequestMessage
         {
             Content = content,
-            Method = HttpMethod.Post,
+            Method = new HttpMethod(method),
             RequestUri = new Uri(baseAddress+endpoint),
         }, ct);
         
         return response;
     }
+    
 }

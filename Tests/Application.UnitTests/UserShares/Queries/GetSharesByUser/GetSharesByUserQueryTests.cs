@@ -8,42 +8,41 @@ using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.UnitTests.UserShares.Queries.GetSharesByUser
+namespace Application.UnitTests.UserShares.Queries.GetSharesByUser;
+
+[ExcludeFromCodeCoverage]
+[TestFixture]
+public class GetSharesByUserQueryTests
 {
-    [ExcludeFromCodeCoverage]
-    [TestFixture]
-    public class GetSharesByUserQueryTests
+    private IUnitOfWork _unitOfWork;
+    private IMapper _mapper;
+
+    [SetUp]
+    public async Task SetUp()
     {
-        private IUnitOfWork _unitOfWork;
-        private IMapper _mapper;
-
-        [SetUp]
-        public async Task SetUp()
+        _unitOfWork = new FakeUnitOfWork();
+        var configurationProvider = new MapperConfiguration(cfg =>
         {
-            _unitOfWork = new FakeUnitOfWork();
-            var configurationProvider = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<MappingProfile>();
-            });
-            _mapper = configurationProvider.CreateMapper();
-        }
+            cfg.AddProfile<MappingProfile>();
+        });
+        _mapper = configurationProvider.CreateMapper();
+    }
 
-        [Test]
-        public async Task GetUserShares()
+    [Test]
+    public async Task GetUserShares()
+    {
+        var handler = new GetSharesByUserQueryHandler(_unitOfWork, _mapper);
+        var query = new GetSharesByUserQuery()
         {
-            var handler = new GetSharesByUserQueryHandler(_unitOfWork, _mapper);
-            var query = new GetSharesByUserQuery()
-            {
-                UserId = DbSets.SecondUserId.ToString()
-            };
+            UserId = DbSets.SecondUserId
+        };
 
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                var responseFromHandler = await handler.Handle(query, CancellationToken.None);
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            var responseFromHandler = await handler.Handle(query, CancellationToken.None);
 
-                Assert.IsInstanceOf<UserSharesListVm>(responseFromHandler);
-                Assert.True(responseFromHandler.Shares.Count > 0);
-            });
-        }
+            Assert.IsInstanceOf<UserSharesListVm>(responseFromHandler);
+            Assert.True(responseFromHandler.Shares.Count > 0);
+        });
     }
 }

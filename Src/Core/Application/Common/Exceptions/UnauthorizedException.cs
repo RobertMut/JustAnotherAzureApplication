@@ -1,16 +1,8 @@
-﻿namespace Application.Common.Exceptions
+﻿namespace Application.Common.Exceptions;
+
+public class UnauthorizedException : Exception
 {
-    /// <summary>
-    /// Class UnauthorizedException
-    /// </summary>
-    public class UnauthorizedException : Exception
+    public UnauthorizedException(string user) : base($"Invalid credentials for user {user}")
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="UnauthorizedException" /> class.
-        /// </summary>
-        /// <param name="user">The user</param>
-        public UnauthorizedException(string user) : base($"Invalid credentials for user {user}")
-        {
-        }
     }
 }

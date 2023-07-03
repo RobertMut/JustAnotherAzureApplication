@@ -1,19 +1,12 @@
 ﻿using FluentValidation;
 
-namespace Application.Groups.Commands.UpdateGroup
+namespace Application.Groups.Commands.UpdateGroup;
+
+public class UpdateGroupCommandValidator : AbstractValidator<UpdateGroupCommand>
 {
-    /// <summary>
-    /// Class UpdateGroupCommandValidator
-    /// </summary>
-    public class UpdateGroupCommandValidator : AbstractValidator<UpdateGroupCommand>
+    public UpdateGroupCommandValidator()
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="UpdateGroupCommandValidator" /> class.
-        /// </summary>
-        public UpdateGroupCommandValidator()
-        {
-            RuleFor(x => x.Name).NotEmpty().NotNull();
-            RuleFor(x => x.Description).NotEmpty().NotNull();
-        }
+        RuleFor(x => x.Name).NotEmpty().NotNull();
+        RuleFor(x => x.Description).NotEmpty().NotNull();
     }
 }

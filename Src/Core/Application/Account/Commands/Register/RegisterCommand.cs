@@ -4,59 +4,48 @@ using Application.Common.Models.Account;
 using Domain.Entities;
 using MediatR;
 
-namespace Application.Account.Commands.Register
+namespace Application.Account.Commands.Register;
+
+public class RegisterCommand : IRequest
 {
     /// <summary>
-    /// Class RegisterCommand
+    /// Username, password
     /// </summary>
-    public class RegisterCommand : IRequest
+    public RegisterModel RegisterModel { get; set; }
+    
+    public class RegisterCommandHandler : IRequestHandler<RegisterCommand>
     {
-        /// <summary>
-        /// Username, password
-        /// </summary>
-        public RegisterModel RegisterModel { get; set; }
-
-        /// <summary>
-        /// Class RegisterCommandHandler
-        /// </summary>
-        public class RegisterCommandHandler : IRequestHandler<RegisterCommand>
+        private readonly IUnitOfWork _unitOfWork;
+        
+        public RegisterCommandHandler(IUnitOfWork unitOfWork)
         {
-            private readonly IUnitOfWork _unitOfWork;
+            _unitOfWork = unitOfWork;
+        }
 
-            /// <summary>
-            /// Initializes new instance of <see cref="RegisterCommandHandler" /> class.
-            /// </summary>
-            /// <param name="unitOfWork">The unit of work</param>
-            public RegisterCommandHandler(IUnitOfWork unitOfWork)
-            {
-                _unitOfWork = unitOfWork;
-            }
-
-            /// <summary>
-            /// User register handler
-            /// </summary>
-            /// <param name="request">Register command with username and password</param>
-            /// <param name="cancellationToken">CancellationToken</param>
-            /// <returns>Unit</returns>
-            /// <exception cref="DuplicatedException">When user exists</exception>
-            public async Task<Unit> Handle(RegisterCommand request, CancellationToken cancellationToken)
-            {
-                var user = await _unitOfWork.UserRepository.GetObjectBy(x => x.Username.Equals(request.RegisterModel.Username), cancellationToken: cancellationToken);
+        /// <summary>
+        /// User register handler
+        /// </summary>
+        /// <param name="request">Register command with username and password</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>Unit</returns>
+        /// <exception cref="DuplicatedException">When user exists</exception>
+        public async Task<Unit> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        {
+            var user = await _unitOfWork.UserRepository.GetObjectBy(x => x.Username.Equals(request.RegisterModel.Username), cancellationToken: cancellationToken);
                 
-                if (user is null)
+            if (user is null)
+            {
+                await _unitOfWork.UserRepository.InsertAsync(new User
                 {
-                    await _unitOfWork.UserRepository.InsertAsync(new User
-                    {
-                        Username = request.RegisterModel.Username,
-                        Password = request.RegisterModel.Password
-                    }, cancellationToken);
-                    await _unitOfWork.Save(cancellationToken);
+                    Username = request.RegisterModel.Username,
+                    Password = request.RegisterModel.Password
+                }, cancellationToken);
+                await _unitOfWork.Save(cancellationToken);
                     
-                    return Unit.Value;
-                }
-
-                throw new DuplicatedException(request.RegisterModel.Username);
+                return Unit.Value;
             }
+
+            throw new DuplicatedException(request.RegisterModel.Username);
         }
     }
 }

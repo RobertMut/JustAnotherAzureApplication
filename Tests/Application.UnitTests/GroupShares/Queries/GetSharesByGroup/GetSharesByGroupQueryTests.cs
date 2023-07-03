@@ -8,42 +8,41 @@ using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.UnitTests.GroupShares.Queries.GetSharesByGroup
+namespace Application.UnitTests.GroupShares.Queries.GetSharesByGroup;
+
+[ExcludeFromCodeCoverage]
+[TestFixture]
+public class GetSharesByGroupQueryTests
 {
-    [ExcludeFromCodeCoverage]
-    [TestFixture]
-    public class GetSharesByGroupQueryTests
+    private IUnitOfWork _unitOfWork;
+    private IMapper _mapper;
+
+    [SetUp]
+    public async Task SetUp()
     {
-        private IUnitOfWork _unitOfWork;
-        private IMapper _mapper;
-
-        [SetUp]
-        public async Task SetUp()
+        _unitOfWork = new FakeUnitOfWork();
+        var configurationProvider = new MapperConfiguration(cfg =>
         {
-            _unitOfWork = new FakeUnitOfWork();
-            var configurationProvider = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<MappingProfile>();
-            });
-            _mapper = configurationProvider.CreateMapper();
-        }
+            cfg.AddProfile<MappingProfile>();
+        });
+        _mapper = configurationProvider.CreateMapper();
+    }
 
-        [Test]
-        public async Task GetGroupShares()
+    [Test]
+    public async Task GetGroupShares()
+    {
+        var handler = new GetSharesByGroupQueryHandler(_unitOfWork, _mapper);
+        var query = new GetSharesByGroupQuery()
         {
-            var handler = new GetSharesByGroupQueryHandler(_unitOfWork, _mapper);
-            var query = new GetSharesByGroupQuery()
-            {
-                GroupId = DbSets.GroupId.ToString()
-            };
+            GroupId = DbSets.GroupId.ToString()
+        };
 
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                var responseFromHandler = await handler.Handle(query, CancellationToken.None);
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            var responseFromHandler = await handler.Handle(query, CancellationToken.None);
 
-                Assert.IsInstanceOf<GroupSharesListVm>(responseFromHandler);
-                Assert.True(responseFromHandler.Shares.Count > 0);
-            });
-        }
+            Assert.IsInstanceOf<GroupSharesListVm>(responseFromHandler);
+            Assert.True(responseFromHandler.Shares.Count > 0);
+        });
     }
 }

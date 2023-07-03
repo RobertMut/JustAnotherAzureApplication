@@ -7,51 +7,50 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace API.IntegrationTests.Controller.Accounts
+namespace API.IntegrationTests.Controller.Accounts;
+
+public class Post
 {
-    public class Post
+    private HttpClient _client;
+
+    [SetUp]
+    public async Task SetUp()
     {
-        private HttpClient _client;
+        _client = GlobalSetupFixture.AuthenticatedHttpClient;
+    }
 
-        [SetUp]
-        public async Task SetUp()
+    [Test]
+    public async Task Login()
+    {
+        var content = new StringContent(JsonConvert.SerializeObject(new LoginModel
         {
-            _client = GlobalSetupFixture.AuthenticatedHttpClient;
-        }
+            UserName = "Default",
+            Password = "12345"
+        }), Encoding.UTF8, "application/json");
 
-        [Test]
-        public async Task Login()
+        var response = await _client.PostAsync("api/Accounts/", content);
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        Assert.True(responseContent.Contains("token"));
+        response.EnsureSuccessStatusCode();
+    }
+
+    [Test]
+    public async Task LoginFailedWrongCredentials()
+    {
+        var content = new StringContent(JsonConvert.SerializeObject(new LoginModel
         {
-            var content = new StringContent(JsonConvert.SerializeObject(new LoginModel
-            {
-                UserName = "Default",
-                Password = "12345"
-            }), Encoding.UTF8, "application/json");
+            UserName = "Test",
+            Password = "1234"
+        }), Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("api/Accounts/", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
+        var response = await _client.PostAsync("api/Accounts/", content);
+        var responseContent = await response.Content.ReadAsStringAsync();
 
-            Assert.True(responseContent.Contains("token"));
+        Assert.False(responseContent.Contains("token"));
+        Assert.Throws<HttpRequestException>(() =>
+        {
             response.EnsureSuccessStatusCode();
-        }
-
-        [Test]
-        public async Task LoginFailedWrongCredentials()
-        {
-            var content = new StringContent(JsonConvert.SerializeObject(new LoginModel
-            {
-                UserName = "Test",
-                Password = "1234"
-            }), Encoding.UTF8, "application/json");
-
-            var response = await _client.PostAsync("api/Accounts/", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            Assert.False(responseContent.Contains("token"));
-            Assert.Throws<HttpRequestException>(() =>
-            {
-                response.EnsureSuccessStatusCode();
-            });
-        }
+        });
     }
 }

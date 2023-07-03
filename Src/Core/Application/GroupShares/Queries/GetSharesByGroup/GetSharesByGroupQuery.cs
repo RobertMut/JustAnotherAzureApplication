@@ -3,55 +3,43 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 
-namespace Application.GroupShares.Queries.GetSharesByGroup
+namespace Application.GroupShares.Queries.GetSharesByGroup;
+
+public class GetSharesByGroupQuery : IRequest<GroupSharesListVm>
 {
     /// <summary>
-    /// Class GetSharesByGroupQuery
+    /// GroupId
     /// </summary>
-    public class GetSharesByGroupQuery : IRequest<GroupSharesListVm>
+    public string GroupId { get; set; }
+}
+
+public class GetSharesByGroupQueryHandler : IRequestHandler<GetSharesByGroupQuery, GroupSharesListVm>
+{
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+    
+    public GetSharesByGroupQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        /// <summary>
-        /// GroupId
-        /// </summary>
-        public string GroupId { get; set; }
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     /// <summary>
-    /// Class GetSharesByGroupQueryHandler
+    /// Gets group shares as list
     /// </summary>
-    public class GetSharesByGroupQueryHandler : IRequestHandler<GetSharesByGroupQuery, GroupSharesListVm>
+    /// <param name="request">GroupId</param>
+    /// <param name="cancellationToken">
+    /// <see cref="CancellationToken"/>
+    /// </param>
+    /// <returns>Group shares list</returns>
+    public async Task<GroupSharesListVm> Handle(GetSharesByGroupQuery request, CancellationToken cancellationToken)
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        var groupShares = await _unitOfWork.GroupShareRepository.GetAsync(x => x.GroupId == Guid.Parse(request.GroupId), cancellationToken: cancellationToken);
+        var groupSharesList = groupShares.AsQueryable().ProjectTo<GroupSharesDto>(_mapper.ConfigurationProvider);
 
-        /// <summary>
-        /// Initializes new instance of <see cref="GetSharesByGroupQueryHandler" /> class.
-        /// </summary>
-        /// <param name="unitOfWork">The <see cref="IUnitOfWork"/></param>
-        /// <param name="mapper">The <see cref="IMapper"/></param>
-        public GetSharesByGroupQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        return new GroupSharesListVm
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
-
-        /// <summary>
-        /// Gets group shares as list
-        /// </summary>
-        /// <param name="request">GroupId</param>
-        /// <param name="cancellationToken">
-        /// <see cref="CancellationToken"/>
-        /// </param>
-        /// <returns>Group shares list</returns>
-        public async Task<GroupSharesListVm> Handle(GetSharesByGroupQuery request, CancellationToken cancellationToken)
-        {
-            var groupShares = await _unitOfWork.GroupShareRepository.GetAsync(x => x.GroupId == Guid.Parse(request.GroupId), cancellationToken: cancellationToken);
-            var groupSharesList = groupShares.AsQueryable().ProjectTo<GroupSharesDto>(_mapper.ConfigurationProvider);
-
-            return new GroupSharesListVm
-            {
-                Shares = groupSharesList.ToList()
-            };
-        }
+            Shares = groupSharesList.ToList()
+        };
     }
 }

@@ -1,15 +1,11 @@
 ﻿using Azure.Storage.Blobs.Models;
 
-namespace Application.Common.Models.File
+namespace Application.Common.Models.File;
+
+public class FileVm
 {
     /// <summary>
-    /// Class FileVm
+    /// File
     /// </summary>
-    public class FileVm
-    {
-        /// <summary>
-        /// File
-        /// </summary>
-        public BlobDownloadResult File { get; set; }
-    }
+    public BlobDownloadResult File { get; set; }
 }

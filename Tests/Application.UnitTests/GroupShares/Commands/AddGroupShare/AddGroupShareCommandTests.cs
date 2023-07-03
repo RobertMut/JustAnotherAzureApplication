@@ -9,52 +9,51 @@ using Application.GroupShares.Commands.AddGroupShare;
 using Domain.Enums.Image;
 using Domain.Common.Helper.Filename;
 
-namespace Application.UnitTests.GroupShares.Commands.AddGroupShare
+namespace Application.UnitTests.GroupShares.Commands.AddGroupShare;
+
+[ExcludeFromCodeCoverage]
+[TestFixture]
+public class AddGroupShareCommandTests
 {
-    [ExcludeFromCodeCoverage]
-    [TestFixture]
-    public class AddGroupShareCommandTests
+    private IUnitOfWork _unitOfWork;
+    private AddGroupShareCommand.AddGroupShareCommandHandler _commandHandler;
+
+    [SetUp]
+    public async Task SetUp()
     {
-        private IUnitOfWork _unitOfWork;
-        private AddGroupShareCommand.AddGroupShareCommandHandler _commandHandler;
+        _unitOfWork = new FakeUnitOfWork();
+        _commandHandler = new AddGroupShareCommand.AddGroupShareCommandHandler(_unitOfWork);
+    }
 
-        [SetUp]
-        public async Task SetUp()
+    [Test]
+    public async Task HandleDoesNotThrow()
+    {
+        Assert.DoesNotThrowAsync(async () =>
         {
-            _unitOfWork = new FakeUnitOfWork();
-            _commandHandler = new AddGroupShareCommand.AddGroupShareCommandHandler(_unitOfWork);
-        }
-
-        [Test]
-        public async Task HandleDoesNotThrow()
-        {
-            Assert.DoesNotThrowAsync(async () =>
+            var groupId = await _commandHandler.Handle(new AddGroupShareCommand
             {
-                var groupId = await _commandHandler.Handle(new AddGroupShareCommand
-                {
-                    Filename = NameHelper.GenerateMiniature(DbSets.UserId.ToString(), "300x300", NameHelper.GenerateHashedFilename("notshared.Png")),
-                    GroupId = DbSets.GroupId.ToString(),
-                    PermissionId = Permissions.readwrite,
-                    UserId = DbSets.UserId.ToString()
-                }, CancellationToken.None);
+                Filename = NameHelper.GenerateMiniature(DbSets.UserId.ToString(), "300x300", NameHelper.GenerateHashedFilename("notshared.Png")),
+                GroupId = DbSets.GroupId.ToString(),
+                PermissionId = Permissions.readwrite,
+                UserId = DbSets.UserId.ToString()
+            }, CancellationToken.None);
 
-                Assert.False(string.IsNullOrEmpty(groupId));
-            });
-        }
+            Assert.False(string.IsNullOrEmpty(groupId));
+        });
+    }
 
-        [Test]
-        public async Task ThrowsFileNotFoundException()
+    [Test]
+    public async Task ThrowsFileNotFoundException()
+    {
+        Assert.ThrowsAsync<FileNotFoundException>(async () =>
         {
-            Assert.ThrowsAsync<FileNotFoundException>(async () =>
+            var groupId = await _commandHandler.Handle(new AddGroupShareCommand
             {
-                var groupId = await _commandHandler.Handle(new AddGroupShareCommand
-                {
-                    Filename = DbSets.OriginalFilename,
-                    GroupId = DbSets.GroupId.ToString(),
-                    PermissionId = Permissions.readwrite,
-                    UserId = DbSets.SecondUserId.ToString()
-                }, CancellationToken.None);
-            });
-        }
+                Filename = DbSets.OriginalFilename,
+                GroupId = DbSets.GroupId.ToString(),
+                PermissionId = Permissions.readwrite,
+                UserId = DbSets.SecondUserId.ToString()
+            }, CancellationToken.None);
+        });
     }
 }

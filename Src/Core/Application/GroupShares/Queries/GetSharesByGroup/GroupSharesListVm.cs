@@ -1,13 +1,9 @@
-﻿namespace Application.GroupShares.Queries.GetSharesByGroup
+﻿namespace Application.GroupShares.Queries.GetSharesByGroup;
+
+public class GroupSharesListVm
 {
     /// <summary>
-    /// Class GroupSharesListVm
+    /// List of group shares
     /// </summary>
-    public class GroupSharesListVm
-    {
-        /// <summary>
-        /// List of group shares
-        /// </summary>
-        public List<GroupSharesDto> Shares { get; set; }
-    }
+    public List<GroupSharesDto> Shares { get; set; }
 }

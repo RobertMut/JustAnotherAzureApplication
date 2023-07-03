@@ -41,15 +41,15 @@ public static class BeforeTestRunSteps
             {"@dbSchema", configuration["DatabaseSchema"]}
         };
 
-        objectContainer.RegisterInstanceAs(parameters, "sqlParameter");
+        objectContainer.RegisterInstanceAs(parameters, ScenarioContextNames.SqlParameters);
     }
 
     [BeforeTestRun(Order = 3)]
     public static async Task PrepareDatabase(IObjectContainer objectContainer)
     {
         var sqlExecutor = objectContainer.Resolve<ISqlCommandExecutor>();
-        var parameters = objectContainer.Resolve<Dictionary<string, string>>("sqlParameter");
-        string query = File.ReadAllText("SQLFiles\\ClearDatabase.sql");
+        var parameters = objectContainer.Resolve<Dictionary<string, string>>(ScenarioContextNames.SqlParameters);
+        string query = await File.ReadAllTextAsync("SQLFiles\\ClearDatabase.sql");
 
         await sqlExecutor.ExecuteWithoutReturn(query, parameters);
     }

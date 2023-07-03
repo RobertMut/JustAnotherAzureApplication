@@ -5,66 +5,58 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class GroupsController : ControllerBase
 {
-    /// <summary>
-    /// Class GroupsContoller
-    /// </summary>
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
-    public class GroupsController : ControllerBase
+    private readonly IMediator _mediator;
+    
+    public GroupsController(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        _mediator = mediator;
+    }
 
-        /// <summary>
-        /// Initializes new instance of <see cref="GroupsController" /> class.
-        /// </summary>
-        /// <param name="mediator"><see cref="IMediator"/></param>
-        public GroupsController(IMediator mediator)
+    /// <summary>
+    /// Get groups
+    /// </summary>
+    /// <returns>All groups</returns>
+    [HttpGet]
+    public async Task<IActionResult> GetGroups()
+    {
+        var groups = await _mediator.Send(new GetGroupsQuery());
+
+        return Ok(groups);
+    }
+
+    /// <summary>
+    /// Adds group
+    /// </summary>
+    /// <param name="command">Name and group description</param>
+    /// <returns>Group guid</returns>
+    [HttpPost]
+    public async Task<IActionResult> AddGroup([FromBody] AddGroupCommand command)
+    {
+        var group = await _mediator.Send(command);
+
+        return Ok(group);
+    }
+
+    /// <summary>
+    /// Deletes group
+    /// </summary>
+    /// <param name="groupId">Group guid to delete</param>
+    /// <returns>Ok</returns>
+    [HttpDelete("{groupId:guid}")]
+    public async Task<IActionResult> DeleteGroup(Guid groupId)
+    {
+        await _mediator.Send(new DeleteGroupCommand
         {
-            _mediator = mediator;
-        }
+            GroupId = groupId
+        });
 
-        /// <summary>
-        /// Get groups
-        /// </summary>
-        /// <returns>All groups</returns>
-        [HttpGet]
-        public async Task<IActionResult> GetGroups()
-        {
-            var groups = await _mediator.Send(new GetGroupsQuery(), new CancellationToken());
-
-            return Ok(groups);
-        }
-
-        /// <summary>
-        /// Adds group
-        /// </summary>
-        /// <param name="command">Name and group description</param>
-        /// <returns>Group guid</returns>
-        [HttpPost]
-        public async Task<IActionResult> AddGroup([FromBody] AddGroupCommand command)
-        {
-            var group = await _mediator.Send(command, new CancellationToken());
-
-            return Ok(group);
-        }
-
-        /// <summary>
-        /// Deletes group
-        /// </summary>
-        /// <param name="groupId">Group guid to delete</param>
-        /// <returns>Ok</returns>
-        [HttpDelete("groupId")]
-        public async Task<IActionResult> DeleteGroup([FromRoute] string groupId)
-        {
-            await _mediator.Send(new DeleteGroupCommand
-            {
-                GroupId = groupId
-            }, new CancellationToken());
-
-            return Ok();
-        }
+        return Ok();
     }
 }

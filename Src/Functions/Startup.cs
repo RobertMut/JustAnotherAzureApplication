@@ -13,34 +13,30 @@ using System;
 
 [assembly: FunctionsStartup(typeof(Functions.Startup))]
 
-namespace Functions
-{
-    /// <summary>
-    /// Class Startup
-    /// </summary>
-    public class Startup : FunctionsStartup
-    {
-        public const string Storage = "AzureWebJobsStorage";
-        public const string Database = "JAAADatabase";
-        public const string ContainerStringSetting = "%ImagesContainer%/";
+namespace Functions;
 
-        /// <summary>
-        /// Configures services
-        /// </summary>
-        /// <param name="builder"><see cref="IFunctionsHostBuilder"/></param>
-        public override void Configure(IFunctionsHostBuilder builder)
+public class Startup : FunctionsStartup
+{
+    public const string Storage = "AzureWebJobsStorage";
+    public const string Database = "JAAADatabase";
+    public const string ContainerStringSetting = "%ImagesContainer%/";
+
+    /// <summary>
+    /// Configures services
+    /// </summary>
+    /// <param name="builder"><see cref="IFunctionsHostBuilder"/></param>
+    public override void Configure(IFunctionsHostBuilder builder)
+    {
+        builder.Services.AddDbContext<JAAADbContext>(options =>
         {
-            builder.Services.AddDbContext<JAAADbContext>(options =>
-            {
-                options.UseSqlServer(Environment.GetEnvironmentVariable(Database));
-            });
-            builder.Services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>());
-            builder.Services.AddSingleton<IBlobManagerService>(
-                new BlobManagerService(Environment.GetEnvironmentVariable(Storage),
-                    Environment.GetEnvironmentVariable("ImagesContainer")));
-            builder.Services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IImageEditor, ImageEditor>();
-        }
+            options.UseSqlServer(Environment.GetEnvironmentVariable(Database));
+        });
+        builder.Services.AddScoped<IJAAADbContext>(provider => provider.GetService<JAAADbContext>());
+        builder.Services.AddSingleton<IBlobManagerService>(
+            new BlobManagerService(Environment.GetEnvironmentVariable(Storage),
+                Environment.GetEnvironmentVariable("ImagesContainer")));
+        builder.Services.AddScoped<ISupportedImageFormats, FunctionImageFormats>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IImageEditor, ImageEditor>();
     }
 }

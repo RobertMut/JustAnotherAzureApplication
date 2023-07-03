@@ -1,18 +1,11 @@
 ﻿using FluentValidation;
 
-namespace Application.Groups.Commands.DeleteGroup
+namespace Application.Groups.Commands.DeleteGroup;
+
+public class DeleteGroupCommandValidator : AbstractValidator<DeleteGroupCommand>
 {
-    /// <summary>
-    /// Class DeleteGroupCommandValidator
-    /// </summary>
-    public class DeleteGroupCommandValidator : AbstractValidator<DeleteGroupCommand>
+    public DeleteGroupCommandValidator()
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="DeleteGroupCommandValidator" /> class.
-        /// </summary>
-        public DeleteGroupCommandValidator()
-        {
-            RuleFor(x => x.GroupId).NotEmpty();
-        }
+        RuleFor(x => x.GroupId).NotEmpty();
     }
 }

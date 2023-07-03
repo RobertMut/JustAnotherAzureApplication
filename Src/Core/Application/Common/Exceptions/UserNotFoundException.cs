@@ -1,17 +1,9 @@
-﻿namespace Application.Common.Exceptions
+﻿namespace Application.Common.Exceptions;
+
+public class UserNotFoundException : Exception
 {
-    /// <summary>
-    /// Class UserNotFoundException
-    /// </summary>
-    public class UserNotFoundException : Exception
+    public UserNotFoundException(string username)
+        : base($"User {username} not found!")
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="UserNotFoundException" /> class.
-        /// </summary>
-        /// <param name="username">The user</param>
-        public UserNotFoundException(string username)
-            : base($"User {username} not found!")
-        {
-        }
     }
 }

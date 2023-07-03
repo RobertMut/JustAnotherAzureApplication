@@ -38,7 +38,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Files");
+                    b.ToTable("Files", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Group", b =>
@@ -56,7 +56,10 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups");
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("Groups", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.GroupShare", b =>
@@ -76,7 +79,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("GroupShares");
+                    b.ToTable("GroupShares", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.GroupUser", b =>
@@ -91,7 +94,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("GroupUsers");
+                    b.ToTable("GroupUsers", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Permission", b =>
@@ -114,7 +117,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -133,7 +136,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.UserShare", b =>
@@ -153,7 +156,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserShares");
+                    b.ToTable("UserShares", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.File", b =>

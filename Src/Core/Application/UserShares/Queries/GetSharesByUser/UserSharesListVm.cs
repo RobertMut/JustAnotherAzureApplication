@@ -1,13 +1,9 @@
-﻿namespace Application.UserShares.Queries.GetSharesByUser
+﻿namespace Application.UserShares.Queries.GetSharesByUser;
+
+public class UserSharesListVm
 {
     /// <summary>
-    /// Class UserSharesListVm
+    /// User shares dto list 
     /// </summary>
-    public class UserSharesListVm
-    {
-        /// <summary>
-        /// User shares dto list 
-        /// </summary>
-        public List<UserSharesDto> Shares { get; set; }
-    }
+    public List<UserSharesDto> Shares { get; set; }
 }

@@ -6,33 +6,32 @@ using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.UnitTests.GroupShares.Commands.DeleteGroupShare
+namespace Application.UnitTests.GroupShares.Commands.DeleteGroupShare;
+
+[ExcludeFromCodeCoverage]
+[TestFixture]
+public class DeleteGroupShareCommandTests
 {
-    [ExcludeFromCodeCoverage]
-    [TestFixture]
-    public class DeleteGroupShareCommandTests
+    private IUnitOfWork _unitOfWork;
+    private DeleteGroupShareCommand.DeleteGroupShareCommandHandler _commandHandler;
+
+    [SetUp]
+    public async Task SetUp()
     {
-        private IUnitOfWork _unitOfWork;
-        private DeleteGroupShareCommand.DeleteGroupShareCommandHandler _commandHandler;
+        _unitOfWork = new FakeUnitOfWork();
+        _commandHandler = new DeleteGroupShareCommand.DeleteGroupShareCommandHandler(_unitOfWork);
+    }
 
-        [SetUp]
-        public async Task SetUp()
+    [Test]
+    public async Task HandleDoesNotThrow()
+    {
+        Assert.DoesNotThrowAsync(async () =>
         {
-            _unitOfWork = new FakeUnitOfWork();
-            _commandHandler = new DeleteGroupShareCommand.DeleteGroupShareCommandHandler(_unitOfWork);
-        }
-
-        [Test]
-        public async Task HandleDoesNotThrow()
-        {
-            Assert.DoesNotThrowAsync(async () =>
+            var groupId = await _commandHandler.Handle(new DeleteGroupShareCommand
             {
-                var groupId = await _commandHandler.Handle(new DeleteGroupShareCommand
-                {
-                    Filename = DbSets.MiniatureFilename,
-                    GroupId = DbSets.GroupId.ToString()
-                }, CancellationToken.None);
-            });
-        }
+                Filename = DbSets.MiniatureFilename,
+                GroupId = DbSets.GroupId.ToString()
+            }, CancellationToken.None);
+        });
     }
 }

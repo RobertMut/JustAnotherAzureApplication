@@ -16,97 +16,96 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.UnitTests.Accounts.Commands.Login
+namespace Application.UnitTests.Accounts.Commands.Login;
+
+[TestFixture]
+[ExcludeFromCodeCoverage]
+public class LoginCommandTests
 {
-    [TestFixture]
-    [ExcludeFromCodeCoverage]
-    public class LoginCommandTests
+    private Mock<IMediator> _mediator;
+    private IUnitOfWork _unitOfWork;
+    private Mock<ITokenGenerator> _tokenGenerator;
+    private LoginCommand.LoginCommandHandler _handler;
+
+    [SetUp]
+    public async Task SetUp()
     {
-        private Mock<IMediator> _mediator;
-        private IUnitOfWork _unitOfWork;
-        private Mock<ITokenGenerator> _tokenGenerator;
-        private LoginCommand.LoginCommandHandler _handler;
+        _mediator = new Mock<IMediator>();
+        _unitOfWork = new FakeUnitOfWork();
+        _tokenGenerator = new Mock<ITokenGenerator>();
 
-        [SetUp]
-        public async Task SetUp()
+
+        _tokenGenerator.Setup(x => x.GetToken(It.IsAny<User>())).ReturnsAsync(new JwtSecurityToken());
+        var claims = new List<Claim> {
+            new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        _mediator.Setup(x => x.Send(It.IsAny<LoginCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new JwtSecurityToken(claims: claims));
+    }
+
+
+    [Test]
+    public async Task LoginTest()
+    {
+        _handler = new LoginCommand.LoginCommandHandler(_unitOfWork, _tokenGenerator.Object);
+        var loginQuery = new LoginCommand
         {
-            _mediator = new Mock<IMediator>();
-            _unitOfWork = new FakeUnitOfWork();
-            _tokenGenerator = new Mock<ITokenGenerator>();
-
-
-            _tokenGenerator.Setup(x => x.GetToken(It.IsAny<User>())).ReturnsAsync(new JwtSecurityToken());
-            var claims = new List<Claim> {
-                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            _mediator.Setup(x => x.Send(It.IsAny<LoginCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new JwtSecurityToken(claims: claims));
-        }
-
-
-        [Test]
-        public async Task LoginTest()
+            LoginModel = new LoginModel
+            {
+                UserName = "Default",
+                Password = "123456"
+            }
+        };
+        Assert.DoesNotThrowAsync(async () =>
         {
-            _handler = new LoginCommand.LoginCommandHandler(_unitOfWork, _tokenGenerator.Object);
-            var loginQuery = new LoginCommand
-            {
-                LoginModel = new LoginModel
-                {
-                    UserName = "Default",
-                    Password = "123456"
-                }
-            };
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                var responseFromHandler = await _handler.Handle(loginQuery, CancellationToken.None);
-                var response = await _mediator.Object.Send(loginQuery, CancellationToken.None);
+            var responseFromHandler = await _handler.Handle(loginQuery, CancellationToken.None);
+            var response = await _mediator.Object.Send(loginQuery, CancellationToken.None);
 
-                Assert.IsInstanceOf<JwtSecurityToken>(responseFromHandler);
-                Assert.IsInstanceOf<JwtSecurityToken>(response);
-            });
-        }
+            Assert.IsInstanceOf<JwtSecurityToken>(responseFromHandler);
+            Assert.IsInstanceOf<JwtSecurityToken>(response);
+        });
+    }
 
-        [Test]
-        public async Task LoginThrowsUserNotFound()
+    [Test]
+    public async Task LoginThrowsUserNotFound()
+    {
+        _handler = new LoginCommand.LoginCommandHandler(_unitOfWork, _tokenGenerator.Object);
+
+
+        var loginQuery = new LoginCommand
         {
-            _handler = new LoginCommand.LoginCommandHandler(_unitOfWork, _tokenGenerator.Object);
-
-
-            var loginQuery = new LoginCommand
+            LoginModel = new LoginModel
             {
-                LoginModel = new LoginModel
-                {
-                    UserName = "User",
-                    Password = "12345"
-                }
-            };
+                UserName = "User",
+                Password = "12345"
+            }
+        };
 
-            Assert.ThrowsAsync<UserNotFoundException>(async () =>
-            {
-                var responseFromHandler = await _handler.Handle(loginQuery, CancellationToken.None);
-            });
-        }
-
-        [Test]
-        public async Task LoginThrowsUnauthorized()
+        Assert.ThrowsAsync<UserNotFoundException>(async () =>
         {
-            _handler = new LoginCommand.LoginCommandHandler(_unitOfWork, _tokenGenerator.Object);
+            var responseFromHandler = await _handler.Handle(loginQuery, CancellationToken.None);
+        });
+    }
+
+    [Test]
+    public async Task LoginThrowsUnauthorized()
+    {
+        _handler = new LoginCommand.LoginCommandHandler(_unitOfWork, _tokenGenerator.Object);
 
 
-            var loginQuery = new LoginCommand
+        var loginQuery = new LoginCommand
+        {
+            LoginModel = new LoginModel
             {
-                LoginModel = new LoginModel
-                {
-                    UserName = "Default",
-                    Password = "1234"
-                }
-            };
+                UserName = "Default",
+                Password = "1234"
+            }
+        };
 
-            Assert.ThrowsAsync<UnauthorizedException>(async () =>
-            {
-                var responseFromHandler = await _handler.Handle(loginQuery, CancellationToken.None);
-            });
-        }
+        Assert.ThrowsAsync<UnauthorizedException>(async () =>
+        {
+            var responseFromHandler = await _handler.Handle(loginQuery, CancellationToken.None);
+        });
     }
 }

@@ -5,35 +5,34 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace API.IntegrationTests.Controller.Images
+namespace API.IntegrationTests.Controller.Images;
+
+public class Get
 {
-    public class Get
+    private HttpClient _client;
+
+    [SetUp]
+    public async Task SetUp()
     {
-        private HttpClient _client;
+        _client = GlobalSetupFixture.AuthenticatedHttpClient;
+    }
 
-        [SetUp]
-        public async Task SetUp()
-        {
-            _client = GlobalSetupFixture.AuthenticatedHttpClient;
-        }
+    [Test]
+    public async Task GetImage()
+    {
+        var response = await _client.GetAsync("/api/Images/miniature_300x300_sample1.jpeg");
 
-        [Test]
-        public async Task GetImage()
-        {
-            var response = await _client.GetAsync("/api/Images/miniature_300x300_sample1.jpeg");
+        response.EnsureSuccessStatusCode();
+        Assert.AreEqual(response.Content.Headers.ContentType, MediaTypeHeaderValue.Parse("image/jpeg"));
+        byte[]? bytes = await response.Content.ReadAsByteArrayAsync();
+        Assert.True(bytes.Length > 0);
+    }
 
-            response.EnsureSuccessStatusCode();
-            Assert.AreEqual(response.Content.Headers.ContentType, MediaTypeHeaderValue.Parse("image/jpeg"));
-            byte[]? bytes = await response.Content.ReadAsByteArrayAsync();
-            Assert.True(bytes.Length > 0);
-        }
+    [Test]
+    public async Task GetUnknown()
+    {
+        var response = await _client.GetAsync("/api/Images/miniature_unknown.tiff");
 
-        [Test]
-        public async Task GetUnknown()
-        {
-            var response = await _client.GetAsync("/api/Images/miniature_unknown.tiff");
-
-            Assert.False(response.IsSuccessStatusCode);
-        }
+        Assert.False(response.IsSuccessStatusCode);
     }
 }

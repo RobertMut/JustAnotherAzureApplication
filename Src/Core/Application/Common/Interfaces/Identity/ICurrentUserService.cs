@@ -1,13 +1,12 @@
-﻿namespace Application.Common.Interfaces.Identity
+﻿namespace Application.Common.Interfaces.Identity;
+
+/// <summary>
+/// Determines ICurrentUserService interface with UserId string.
+/// </summary>
+public interface ICurrentUserService
 {
     /// <summary>
-    /// Determines ICurrentUserService interface with UserId string.
+    /// Current user id
     /// </summary>
-    public interface ICurrentUserService
-    {
-        /// <summary>
-        /// Current user id
-        /// </summary>
-        string UserId { get; }
-    }
+    string UserId { get; }
 }

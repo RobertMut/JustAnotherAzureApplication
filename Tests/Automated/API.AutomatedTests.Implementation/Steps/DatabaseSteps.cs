@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using API.AutomatedTests.Implementation.Common.Constants;
 using API.AutomatedTests.Implementation.Common.Interfaces;
 using BoDi;
 using FluentAssertions;
@@ -9,14 +10,16 @@ namespace API.AutomatedTests.Implementation.Steps;
 [Binding]
 public class DatabaseSteps
 {
+    private readonly ScenarioContext _scenarioContext;
     private const string InitialStringPath = "SQLFiles\\";
-    private readonly ISqlCommandExecutor sqlCommandExecutor;
-    private readonly Dictionary<string, string> sqlParamters;
+    private readonly ISqlCommandExecutor _sqlCommandExecutor;
+    private readonly Dictionary<string, string> _sqlParamters;
 
-    public DatabaseSteps(IObjectContainer objectContainer)
+    public DatabaseSteps(IObjectContainer objectContainer, ScenarioContext scenarioContext)
     {
-        sqlParamters = objectContainer.Resolve<Dictionary<string, string>>("sqlParameter");
-        sqlCommandExecutor = objectContainer.Resolve<ISqlCommandExecutor>();
+        _scenarioContext = scenarioContext;
+        _sqlParamters = objectContainer.Resolve<Dictionary<string, string>>(ScenarioContextNames.SqlParameters);
+        _sqlCommandExecutor = objectContainer.Resolve<ISqlCommandExecutor>();
     }
     
     #region Given
@@ -26,20 +29,85 @@ public class DatabaseSteps
     {
         string query = await File.ReadAllTextAsync($"{InitialStringPath}ClearDatabase.sql");
 
-        await sqlCommandExecutor.ExecuteWithoutReturn(query, sqlParamters);
+        await _sqlCommandExecutor.ExecuteWithoutReturn(query, _sqlParamters);
     }
     
+    [Given("I add (.*) as sql parameter under key (.*)")]
+    public async Task AddAsSqlParameter(string parameter, string key)
+    {
+        _sqlParamters[key] = parameter;
+
+        _scenarioContext.Remove(ScenarioContextNames.SqlParameters);
+        _scenarioContext.Add(ScenarioContextNames.SqlParameters, _sqlParamters);
+    }
+    
+    [Given("I save response returned by sql file (.*) under (.*) (and as sql param?)")]
+    public async Task SaveResponseReturnedBySqlFileUnderKey(string file, string key, string saveType)
+    {
+        string query = await File.ReadAllTextAsync($"{InitialStringPath}{file}");
+
+        if (string.IsNullOrEmpty(query))
+        {
+            throw new SpecFlowException($"{InitialStringPath}{file} returned empty or null query.");
+        }
+        
+        object? response = await _sqlCommandExecutor.ExecuteAndReturnData(query, _sqlParamters);
+
+        if (response is null)
+        {
+            throw new SpecFlowException($"Response returned by sql file {file} is null.");
+        }
+        
+        _scenarioContext.Add(key, response);
+
+        if (saveType == "and as sql param")
+        {
+            _sqlParamters[key] = response.ToString();
+        }
+    }
     #endregion
     
     #region Then
 
-    [Then("Database (not contains|contains) user '(.*)'")]
-    public async Task DatabaseContainsUser(string contains, string user)
+    [Then("Database (not contains|contains) (user|group|group share|user share) '(.*)'")]
+    public async Task DatabaseContainsUser(string contains, string type, string user)
     {
-        string query = await File.ReadAllTextAsync($"{InitialStringPath}CheckIfUserExistsByItsName.sql", Encoding.UTF8);
+        string query = null;
         
-        sqlParamters["@username"] = user;
-        object? response = await sqlCommandExecutor.ExecuteAndReturnData(query, sqlParamters);
+        if (type == "user")
+        {
+             query  = await File.ReadAllTextAsync($"{InitialStringPath}CheckIfUserExistsByItsName.sql", Encoding.UTF8);
+        
+            _sqlParamters["@username"] = user;
+        }
+
+        if (type == "group")
+        {
+            query  = await File.ReadAllTextAsync($"{InitialStringPath}CheckIfGroupExistsByItsName.sql", Encoding.UTF8);
+        
+            _sqlParamters["@groupName"] = user;
+        }
+
+        if (type == "user share")
+        {
+            query  = await File.ReadAllTextAsync($"{InitialStringPath}CheckIfUserShareExistsByFilenameAndUserId.sql", Encoding.UTF8);
+        
+            _sqlParamters["@userShare"] = user;
+        }
+
+        if (type == "group share")
+        {
+            query  = await File.ReadAllTextAsync($"{InitialStringPath}CheckIfGroupShareExistsByFilenameAndGroupId.sql", Encoding.UTF8);
+        
+            _sqlParamters["@groupShare"] = user;
+        }
+
+        if (string.IsNullOrEmpty(query))
+        {
+            throw new SpecFlowException("File with query is null or does not exist.");
+        }
+        
+        object? response = await _sqlCommandExecutor.ExecuteAndReturnData(query, _sqlParamters);
         
         string stringifiedResposne = response?.ToString() ?? "";
 
@@ -51,7 +119,6 @@ public class DatabaseSteps
         {
             stringifiedResposne.Should().Be("Exists");
         }
-        
     }
     
     #endregion

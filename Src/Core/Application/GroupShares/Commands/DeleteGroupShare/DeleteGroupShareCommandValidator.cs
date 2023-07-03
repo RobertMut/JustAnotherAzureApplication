@@ -1,18 +1,11 @@
 ﻿using FluentValidation;
 
-namespace Application.GroupShares.Commands.DeleteGroupShare
+namespace Application.GroupShares.Commands.DeleteGroupShare;
+
+public class DeleteGroupShareCommandValidator : AbstractValidator<DeleteGroupShareCommand>
 {
-    /// <summary>
-    /// Class DeleteGroupShareCommandValidator
-    /// </summary>
-    public class DeleteGroupShareCommandValidator : AbstractValidator<DeleteGroupShareCommand>
+    public DeleteGroupShareCommandValidator()
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="DeleteGroupShareCommandValidator" /> class.
-        /// </summary>
-        public DeleteGroupShareCommandValidator()
-        {
-            RuleFor(x => x.GroupId).NotEmpty();
-        }
+        RuleFor(x => x.GroupId).NotEmpty();
     }
 }

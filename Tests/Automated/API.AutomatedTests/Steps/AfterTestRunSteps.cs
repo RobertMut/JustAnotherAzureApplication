@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using API.AutomatedTests.Implementation.Common.Constants;
 using API.AutomatedTests.Implementation.Common.Interfaces;
 using BoDi;
 using TechTalk.SpecFlow;
@@ -24,8 +25,8 @@ public static class AfterTestRunSteps
     public static async Task ClearDatabase(IObjectContainer objectContainer)
     {
         var commandExecutor = objectContainer.Resolve<ISqlCommandExecutor>();
-        var parameters = objectContainer.Resolve<Dictionary<string, string>>("sqlParameter");
-        string query = File.ReadAllText("SQLFiles\\ClearDatabase.sql");
+        var parameters = objectContainer.Resolve<Dictionary<string, string>>(ScenarioContextNames.SqlParameters);
+        string query = await File.ReadAllTextAsync("SQLFiles\\ClearDatabase.sql");
         
         await commandExecutor.ExecuteWithoutReturn(query, parameters);
     }

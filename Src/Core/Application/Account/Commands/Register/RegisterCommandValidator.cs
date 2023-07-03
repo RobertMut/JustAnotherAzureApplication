@@ -1,20 +1,13 @@
 ﻿using FluentValidation;
 
-namespace Application.Account.Commands.Register
+namespace Application.Account.Commands.Register;
+
+public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {
-    /// <summary>
-    /// Class RegisterCommandValidator
-    /// </summary>
-    public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
+    public RegisterCommandValidator()
     {
-        /// <summary>
-        /// Initializes new instance of <see cref="RegisterCommandValidator" /> class.
-        /// </summary>
-        public RegisterCommandValidator()
-        {
-            RuleFor(x => x.RegisterModel.Username).NotNull().NotEmpty();
-            RuleFor(x => x.RegisterModel.Password).NotNull().NotEmpty();
-            RuleFor(x => x.RegisterModel).NotNull();
-        }
+        RuleFor(x => x.RegisterModel.Username).NotNull().NotEmpty();
+        RuleFor(x => x.RegisterModel.Password).NotNull().NotEmpty();
+        RuleFor(x => x.RegisterModel).NotNull();
     }
 }

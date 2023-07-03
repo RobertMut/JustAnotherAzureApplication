@@ -57,7 +57,6 @@ public class SqlCommandExecutor : ISqlCommandExecutor
 
             try
             {
-                
                 await command.Connection.OpenAsync();
                 data = await command.ExecuteScalarAsync();
             }

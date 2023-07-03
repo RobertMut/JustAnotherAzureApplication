@@ -13,7 +13,8 @@ public class BlobService : IBlobService
     public BlobService(IConfiguration configuration)
     {
         string connectionString = configuration["AzureWebJobsStorage"];
-        blobContainerClient = new BlobServiceClient(connectionString).GetBlobContainerClient("ImagesContainer");
+        blobContainerClient = new BlobServiceClient(connectionString).GetBlobContainerClient(configuration.GetValue<string>("ImagesContainer"));
+        blobContainerClient.CreateIfNotExists(PublicAccessType.BlobContainer);
     }
 
     public async Task<bool> CheckIfBlobExists(string blobName,
@@ -23,11 +24,15 @@ public class BlobService : IBlobService
     public async Task<BlobContentInfo> AddBlobWithMetadata(string blobName,
         byte[] content,
         CancellationToken ct,
-        Dictionary<string, string> metadata = null) =>
-        (await blobContainerClient.GetBlobClient(blobName).UploadAsync(BinaryData.FromBytes(content), new BlobUploadOptions
-        {
-            Metadata = metadata
-        }, ct)).Value;
+        Dictionary<string, string> metadata = null)
+    {
+        using MemoryStream ms = new MemoryStream(content, false);
+        return (await blobContainerClient.GetBlobClient(blobName).UploadAsync(ms,
+            new BlobUploadOptions
+            {
+                Metadata = metadata
+            }, ct)).Value;
+    }
 
     public async Task DeleteBlobIfExists(string blobName, 
         CancellationToken ct) =>
