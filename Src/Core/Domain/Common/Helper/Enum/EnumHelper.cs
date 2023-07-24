@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Domain.Common.Helper.Enum;
 
-public class EnumHelper
+public static class EnumHelper
 {
     /// <summary>
     /// Gets description from value
@@ -16,7 +16,7 @@ public class EnumHelper
         EnumMemberAttribute attribute = value.GetType()
             .GetField(value.ToString())
             .GetCustomAttributes(typeof(EnumMemberAttribute), false)
-            .SingleOrDefault() as EnumMemberAttribute;
+            .SingleOrDefault() as EnumMemberAttribute ?? throw new InvalidOperationException("Attribute was null");
 
         return attribute.Value ?? value.ToString();
     }
@@ -34,15 +34,14 @@ public class EnumHelper
 
         if (!type.IsEnum)
         {
-            throw new ArgumentException();
+            throw new ArgumentException("Type is not in enum");
         }
 
         FieldInfo[] fields = type.GetFields();
         var field = fields
             .SelectMany(f => f.GetCustomAttributes(typeof(EnumMemberAttribute), false),
                 (field, attribute) => new { Field = field, Att = attribute })
-            .Where(attribute => ((EnumMemberAttribute)attribute.Att).Value == description)
-            .SingleOrDefault();
+            .SingleOrDefault(attribute => ((EnumMemberAttribute)attribute.Att).Value == description);
 
         return field == null ? default(T) : (T)field.Field.GetRawConstantValue();
     }

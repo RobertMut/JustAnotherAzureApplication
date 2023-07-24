@@ -1,6 +1,6 @@
 ﻿namespace Domain.Constants.Image;
 
-public class Metadata
+public static class Metadata
 {
     public const string OriginalFile = "OriginalFile";
     public const string TargetType = "TargetType";

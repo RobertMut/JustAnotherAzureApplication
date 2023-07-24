@@ -57,11 +57,12 @@ Scenario: Get images throws exception
 	And Response message contains '<ExpectedMessage>'
 
 Examples: 
-  | Filename   | height | width | ExpectedMessage                 |
-  | sample.jpg | 0      | 0     | "The UserId field is required." |
-  | sample.jpg | 100    | 0     |                                 |
-  | sample.jpg | 0      | 100   |                                 |
-  
+  | Filename   | height | width | ExpectedMessage               |
+  | sample.jpg | 0      | 0     | Width must be greater than 0  |
+  | sample.jpg | 0      | 0     | Height must be greater than 0 |
+  | sample.jpg | a      | 100   | The value 'a' is not valid.   |
+  | sample.jpg | 15     | b     | The value 'b' is not valid.   |
+   
 @CustomData
 @File:Data\\AddSharesWithUsersAndGroups.sql
 Scenario: Get image throws exception
@@ -78,8 +79,39 @@ Scenario: Get image throws exception
 	And Response message contains '<ExpectedMessage>'
 	
 Examples: 
-  | Filename      | height | width | ExpectedMessage |
-  | sample.jpg    | 0      | 0     |                 |
-  | wrongFilename | 100    | 100   |                 |
-  | sample.jpg    | 100    | 0     |                 |
-  | sample.jpg    | 0      | 100   |                 |
+  | Filename      | height | width | ExpectedMessage                               |
+  | sample.jpg    | 0      | 0     | Dimensions must be numeric and greater than 0 |
+  | wrongFilename | 100    | 100   | Invalid filename                              |
+  | sample.jpg    | 100    | b     | Dimensions must be numeric and greater than 0 |
+  | sample.jpg    | a      | 100   | Dimensions must be numeric and greater than 0 |
+  
+@CustomData
+@File:Data\\AddSharesWithUsersAndGroups.sql
+Scenario: Get image throws invalid dimension format exception
+	Given I use 'Images' endpoint
+	And I prepare form from table
+	  | file            | targetType | height | width |
+	  | File:sample.jpg | bmp        | 100    | 100   |
+	When I make call to endpoint with an authorization token using POST method
+	Then Response code is 'OK'
+	Given I use 'ImagesGetImage' endpoint
+	And I add 'false;<filename>;15;bmp' as url parameter
+	When I make call to endpoint with an authorization token using GET method
+	Then Response code is 'BadRequest'
+	And Response message contains 'Invalid dimension format'
+	
+@CustomData
+@File:Data\\AddSharesWithUsersAndGroups.sql
+Scenario: Get image throws invalid extension format
+	Given I use 'Images' endpoint
+	And I prepare form from table
+	  | file            | targetType | height | width |
+	  | File:sample.jpg | bmp        | 100    | 100   |
+	When I make call to endpoint with an authorization token using POST method
+	Then Response code is 'OK'
+	Given I use 'ImagesGetImage' endpoint
+	And I add 'false;<filename>;15; ' as url parameter
+	When I make call to endpoint with an authorization token using GET method
+	Then Response code is 'BadRequest'
+	And Response message contains 'Invalid extension format'
+	

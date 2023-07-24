@@ -33,9 +33,9 @@ Scenario: Create Group returns error message
     And Response message contains '<ErrorMessage>'
     Given I clear the database data
 Examples:
-  | GroupName    | Description | ErrorMessage                                      | ExpectedCode |
-  |              | Description | "title":"One or more validation errors occurred." | BadRequest   |
-  | t_testdata_1 |             | "title":"One or more validation errors occurred." | BadRequest   |
+  | GroupName    | Description | ErrorMessage                          | ExpectedCode |
+  |              | Description | Name must be not null or empty        | BadRequest   |
+  | t_testdata_1 |             | Description must be not null or empty | BadRequest   |
 
 Scenario: Create Group returns error message on too long values
     Given I use 'Groups' endpoint
@@ -45,9 +45,9 @@ Scenario: Create Group returns error message on too long values
     And Response message contains '<ErrorMessage>'
     Given I clear the database data
 Examples:
-  | FileName                      | ErrorMessage                                      | ExpectedCode |
-  | GroupsTooLongDescription.json | "title":"One or more validation errors occurred." | BadRequest   |
-  | GroupsTooLongName.json        | "title":"One or more validation errors occurred." | BadRequest   |
+  | FileName                      | ErrorMessage                   | ExpectedCode |
+  | GroupsTooLongDescription.json | Group description is too long. | BadRequest   |
+  | GroupsTooLongName.json        | Group name is too long.        | BadRequest   |
   
 @CustomData
 @File:Data\\AddGroup.sql
@@ -62,7 +62,7 @@ Scenario: Delete group
 
 Scenario: Delete not existing group should throw exception
     Given I use 'GroupsDeleteById' endpoint
-    And I add 00000000-0000-0000-0000-000000000000 as url parameter
+    And I add '00000000-0000-0000-0000-000000000000' as url parameter
     When I make call to endpoint with an authorization token using DELETE method
     Then Response code is 'BadRequest'
     And Response message contains '"title":"One or more validation errors occurred."'

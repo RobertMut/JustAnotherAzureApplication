@@ -19,7 +19,7 @@ if (!Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").Equals(Testing
 // Add services to the container.
 builder.Services.AddControllers(opt =>
 {
-    opt.Filters.Add<ApiExceptionFilterAttribute>();
+    opt.Filters.Add(new ApiExceptionFilterAttribute());
 }).AddFluentValidation(x => x.AutomaticValidationEnabled = false);
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -59,4 +59,4 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program { }
+public static partial class Program { }

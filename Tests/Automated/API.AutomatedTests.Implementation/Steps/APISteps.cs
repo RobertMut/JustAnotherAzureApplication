@@ -85,9 +85,8 @@ public class ApiSteps
     {
         Table replacedTable = new Table(table.Header.ToArray());
         var sqlParameters = _objectContainer.Resolve<Dictionary<string, string>>(ScenarioContextNames.SqlParameters);
-        var foundModel = Assembly.GetExecutingAssembly()
-            .GetTypes()
-            .FirstOrDefault(t => t.IsClass && t.Namespace.Equals(TestingModelsNamespace) && t.Name == model);
+        var foundModel = Array.Find(Assembly.GetExecutingAssembly()
+            .GetTypes(), t => t.IsClass && t.Namespace.Equals(TestingModelsNamespace) && t.Name == model);
 
         if (foundModel is null)
         {
@@ -100,7 +99,7 @@ public class ApiSteps
             for (int i = 0; i < row.Count; i++)
             {
                 var cell = row[i];
-                if (cell.StartsWith("@"))
+                if (cell.StartsWith('@'))
                 {
                     cells.Add(sqlParameters[cell]);
                 }
@@ -170,7 +169,7 @@ public class ApiSteps
 
         for (int i = 0; i < values.Length; i++)
         {
-            if (keysArray[i].StartsWith("@"))
+            if (keysArray[i].StartsWith('@'))
             {
                 values[i] = _scenarioContext.Get<object>(keysArray[i]);
             }
@@ -245,14 +244,14 @@ public class ApiSteps
         var responseMessage = _scenarioContext.Get<HttpResponseMessage>("response");
         string responseString = await responseMessage.Content.ReadAsStringAsync();
 
-        responseString.Contains(expectedMessage).Should().BeTrue();
+        responseString.Contains(expectedMessage).Should().BeTrue($"Expected {expectedMessage}, but it was not found in {responseString}");
     }
 
     [Then("Response file is same as '(.*)'")]
     public async Task ResponseFileIs(string file)
     {
         var responseMessage = _scenarioContext.Get<HttpResponseMessage>("response");
-        string response = await responseMessage.Content.ReadAsStringAsync();
+        
         byte[] responseFile = await responseMessage.Content.ReadAsByteArrayAsync();
         byte[] expected = await File.ReadAllBytesAsync($"Files\\{file}");
 

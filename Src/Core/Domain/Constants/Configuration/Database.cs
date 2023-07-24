@@ -1,6 +1,6 @@
 ﻿namespace Domain.Constants.Configuration;
 
-public class Database
+public static class Database
 {
     public const string ConnectionStringName = "JAAADatabase";
 }
