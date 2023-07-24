@@ -1,4 +1,7 @@
-﻿using Application.Common.Exceptions;
+﻿using System.Collections;
+using System.Text;
+using System.Web.Http.Results;
+using Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using FileNotFoundException = Application.Common.Exceptions.FileNotFoundException;
@@ -40,10 +43,10 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
             Type = $"{Rfc7231}#section-6.5.4",
             Detail = obj.Exception.Message
         };
-
-        obj.Result = new ObjectResult(details)
+        new ObjectResult(details)
         {
-            StatusCode = StatusCodes.Status404NotFound
+            StatusCode = StatusCodes.Status404NotFound,
+            Value = obj.Exception.Message
         };
 
         obj.ExceptionHandled = true;
@@ -65,7 +68,8 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 
         obj.Result = new ObjectResult(details)
         {
-            StatusCode = StatusCodes.Status409Conflict
+            StatusCode = StatusCodes.Status409Conflict,
+            Value = obj.Exception.Message
         };
 
         obj.ExceptionHandled = true;
@@ -110,17 +114,20 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     private void HandleException(ExceptionContext context)
     {
         Type type = context.Exception.GetType();
+        
         if (_exceptionHandlers.ContainsKey(type))
         {
             _exceptionHandlers[type].Invoke(context);
             return;
         }
+        
         if (!context.ModelState.IsValid)
         {
             HandleInvalidModelStateException(context);
 
             return;
         }
+        
         HandleUnknownException(context);
     }
 
@@ -133,9 +140,16 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
         var details = new ValidationProblemDetails(context.ModelState)
         {
             Type = $"{Rfc7231}#section-6.5.1",
+            Title = "BadRequest",
             Detail = context.Exception.Message
         };
-        context.Result = new BadRequestObjectResult(details);
+        
+        context.Result = new ObjectResult(details)
+        {
+            StatusCode = StatusCodes.Status400BadRequest,
+            Value = context.Exception.Message
+        };
+        
         context.ExceptionHandled = true;
     }
 
@@ -147,10 +161,16 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     {
         var detail = new ValidationProblemDetails(obj.ModelState)
         {
+            Title = "BadRequest",
             Type = $"{Rfc7231}#section-6.5.1",
-            Detail = obj.Exception.Message
+            Detail = obj.Exception.Message,
         };
-        obj.Result = new BadRequestObjectResult(detail);
+
+        obj.Result = new BadRequestObjectResult(detail)
+        {
+            StatusCode = StatusCodes.Status400BadRequest
+        };
+        
         obj.ExceptionHandled = true;
     }
 
@@ -174,5 +194,18 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
             StatusCode = StatusCodes.Status500InternalServerError
         };
         obj.ExceptionHandled = true;
+    }
+
+    private Dictionary<string, string[]> GetDetails(Exception ex)
+    {
+        Dictionary<string, string[]> dictionary = new Dictionary<string, string[]>();
+
+        foreach (var key in ex.Data.Keys)
+        {
+            var values = ex.Data[key] as IEnumerable<string>;
+            dictionary[key.ToString()] = values.ToArray();
+        }
+
+        return dictionary;
     }
 }

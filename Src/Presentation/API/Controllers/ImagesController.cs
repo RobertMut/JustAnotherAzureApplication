@@ -46,15 +46,11 @@ public class ImagesController : ControllerBase
     /// <param name="filename">image name</param>
     /// <param name="id">image version</param>
     /// <returns>image</returns>
-    [HttpGet("{filename}/{id?}")]
-    public async Task<IActionResult> GetImageAsync([FromRoute] string filename, int? id)
+    [HttpGet("{isOriginal:bool}/{filename}/{expectedMiniatureSize}/{expectedExtension?}/{id?}")]
+    public async Task<IActionResult> GetImageAsync([FromRoute] GetFileQuery query)
     {
-        var file = await _mediator.Send(new GetFileQuery
-        {
-            Filename = filename,
-            Id = id,
-            UserId = _currentUserService.UserId,
-        });
+        query.UserId = _currentUserService.UserId;
+        var file = await _mediator.Send(query);
 
         return new FileContentResult(file.File.Content.ToArray(), file.File.Details.ContentType);
     }

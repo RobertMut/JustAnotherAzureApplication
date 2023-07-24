@@ -6,7 +6,7 @@ public class DeleteUserShareCommandValidator : AbstractValidator<DeleteUserShare
 {
     public DeleteUserShareCommandValidator()
     {
-        RuleFor(x => x.UserId).NotNull();
-        RuleFor(x => x.Filename).NotEmpty();
+        RuleFor(x => x.UserId).NotNull().WithMessage("UserId must be not null");
+        RuleFor(x => x.Filename).NotEmpty().WithMessage("Filename must be not empty");
     }
 }

@@ -1,7 +1,7 @@
 {
   "shares": [
     {
-      "filename": "t.testdata.userShared1.jpg",
+      "filename": "t_testdata_userShared1.jpg",
       "permissions": "full"
     }
   ]

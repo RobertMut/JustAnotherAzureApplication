@@ -62,7 +62,7 @@ public static class BeforeTestRunSteps
         string apiPath = Path.GetFullPath(Files.ApiLocation, AppDomain.CurrentDomain.BaseDirectory);
 
         var apiProcess = commandRunner.Execute("dotnet run --launch-profile \"Testing\"", apiPath);
-        var functionProcess = commandRunner.Execute("func start", functionPath);
+        var functionProcess = commandRunner.Execute("func host start --pause-on-error --verbose", functionPath);
         var azuriteProcess = commandRunner.Execute("azurite", AppDomain.CurrentDomain.BaseDirectory);
         
         Thread.Sleep(20000);

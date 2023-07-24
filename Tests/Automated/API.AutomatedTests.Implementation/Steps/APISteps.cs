@@ -24,7 +24,8 @@ public class ApiSteps
     private readonly IHttpCallerService _httpCallerService;
     private readonly string _defaultUserToken;
 
-    public ApiSteps(IObjectContainer objectContainer, IHttpCallerService httpCallerService, FeatureContext featureContext, ScenarioContext scenarioContext,
+    public ApiSteps(IObjectContainer objectContainer, IHttpCallerService httpCallerService,
+        FeatureContext featureContext, ScenarioContext scenarioContext,
         IConfiguration configuration)
     {
         _objectContainer = objectContainer;
@@ -47,7 +48,7 @@ public class ApiSteps
             throw new Exception("Endpoint is null or empty!");
         }
 
-        _scenarioContext.Add("endpoint", endpointToBeCalled);
+        _scenarioContext["endpoint"] = endpointToBeCalled;
     }
 
     [Given(@"I prepare form from table")]
@@ -58,15 +59,16 @@ public class ApiSteps
         foreach (var header in table.Header)
         {
             var row = rows[header];
-            
+
             if (row.StartsWith("File:"))
             {
                 string filename = new string(row.Skip(5).ToArray());
                 byte[] file = await File.ReadAllBytesAsync($"Files\\{filename}");
-                
+
                 var streamContent = new StreamContent(new MemoryStream(file));
-                streamContent.Headers.ContentType = new MediaTypeHeaderValue($"image/{Path.GetExtension(filename).Remove(0,1)}");
-                
+                streamContent.Headers.ContentType =
+                    new MediaTypeHeaderValue($"image/{Path.GetExtension(filename).Remove(0, 1)}");
+
                 content.Add(streamContent, header, filename);
             }
             else
@@ -74,10 +76,10 @@ public class ApiSteps
                 content.Add(new StringContent(row), header);
             }
         }
-        
+
         _scenarioContext.Add("httpContent", content);
     }
-    
+
     [Given("I prepare request with following values using '(.*)' model")]
     public async Task PrepareRequestWithFollowingValuesUsingModel(string model, Table table)
     {
@@ -107,18 +109,18 @@ public class ApiSteps
                     cells.Add(cell);
                 }
             }
-            
+
             replacedTable.AddRow(cells.ToArray());
         }
 
         var instance = Activator.CreateInstance(foundModel);
         replacedTable.FillInstance(instance);
-        
+
         var content = new StringContent(JsonConvert.SerializeObject(instance), Encoding.UTF8, "application/json");
 
         _scenarioContext.Add("httpContent", content);
     }
-    
+
     [Given("I prepare request with file '(.*)'")]
     public async Task PrepareRequestWithFileUsingModel(string file)
     {
@@ -128,12 +130,12 @@ public class ApiSteps
         {
             throw new SpecFlowException($"File {file} does not exist or is empty!");
         }
-        
+
         var content = new StringContent(fileContent, Encoding.UTF8, "application/json");
 
         _scenarioContext.Add("httpContent", content);
     }
-    
+
     [Given("I encode url")]
     public async Task EncodeUrl()
     {
@@ -141,9 +143,9 @@ public class ApiSteps
         _scenarioContext.Remove("endpoint");
         string[] parts = endpoint.Split("/");
         IEnumerable<string> replacedElements = parts.Skip(2).Select(x => Uri.EscapeDataString(x).Replace("-", "%2d"));
-        
+
         endpoint = string.Join("/", parts.Take(2).Concat(replacedElements));
-        
+
         _scenarioContext.Add("endpoint", endpoint);
     }
 
@@ -158,7 +160,7 @@ public class ApiSteps
 
         _scenarioContext.Add("token", token);
     }
-    
+
     [Given("I replace url parameters with value under key (.*)")]
     public async Task GetTokenFromResponse(string keys)
     {
@@ -177,17 +179,18 @@ public class ApiSteps
                 values[i] = keysArray[i];
             }
         }
+
         endpoint = string.Format(endpoint, values);
 
         _scenarioContext.Remove("endpoint");
         _scenarioContext.Add("endpoint", endpoint);
     }
 
-    [Given("I add (.*) as url parameter")]
+    [Given("I add '(.*)' as url parameter")]
     public async Task AddUrlParameter(string parameter)
     {
         string endpoint = _scenarioContext.Get<string>("endpoint");
-        
+
         if (parameter.Contains(";"))
         {
             endpoint = string.Format(endpoint, parameter.Split(";"));
@@ -196,11 +199,10 @@ public class ApiSteps
         {
             endpoint = string.Format(endpoint, parameter);
         }
-        
+
         _scenarioContext.Remove("endpoint");
         _scenarioContext.Add("endpoint", endpoint);
     }
-
 
     #endregion
 
@@ -221,7 +223,7 @@ public class ApiSteps
         var response = await _httpCallerService.MakePostCall(endpoint, callMethod, httpContent, new CancellationToken(),
             authenticationHeaderValue);
 
-        _scenarioContext.Add("response", response);
+        _scenarioContext["response"] = response;
     }
 
     #endregion
@@ -245,7 +247,7 @@ public class ApiSteps
 
         responseString.Contains(expectedMessage).Should().BeTrue();
     }
-    
+
     [Then("Response file is same as '(.*)'")]
     public async Task ResponseFileIs(string file)
     {
@@ -256,19 +258,20 @@ public class ApiSteps
 
         responseFile.Should().HaveCount(x => expected.Length - 2 <= x && x <= expected.Length + 2);
     }
-    
+
     [Then("Response mapped as '(.*)' is the same as '(.*)'")]
     public async Task ResponseIsTheSameAsJson(string model, string jsonFile)
     {
         var responseMessage = _scenarioContext.Get<HttpResponseMessage>("response");
         string apiResponseString = await responseMessage.Content.ReadAsStringAsync();
         string jsonString = await File.ReadAllTextAsync($"{jsonFile}", Encoding.UTF8);
+        var type = Type.GetType($"{TestingModelsNamespace}.Output.{model}");
 
         var response = JsonConvert.DeserializeObject(
-            apiResponseString, Type.GetType($"{TestingModelsNamespace}.Output.{model}"));
+            apiResponseString, type);
         var baseModel = JsonConvert.DeserializeObject(
-            jsonString, Type.GetType($"{TestingModelsNamespace}.Output.{model}"));
-        
+            jsonString, type);
+
         response.Should().BeEquivalentTo(baseModel);
     }
 

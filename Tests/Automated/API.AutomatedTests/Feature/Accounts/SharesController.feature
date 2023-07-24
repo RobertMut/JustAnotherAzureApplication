@@ -1,6 +1,6 @@
 ﻿@Authenticate
 @Storage
-@Files:sample.jpg:t.testdata.groupShared1.jpeg;sample.jpg:t.testdata.userShared1.jpg
+@Files:sample.jpg:t_testdata_groupShared1.jpeg;sample.jpg:t_testdata_userShared1.jpg
 Feature: SharesController
 	Shares controller automated tests
 
@@ -32,10 +32,10 @@ Scenario: Delete user share
 	Given I use 'SharesDeleteUserShareByFileAndUserId' endpoint
 	And I add t_testdata_CustomUser2 as sql parameter under key @username
 	And I save response returned by sql file GetUserByName.sql under @userId and as sql param
-	And I replace url parameters with value under key t.testdata.userShared1.jpg;@userId
+	And I replace url parameters with value under key t_testdata_userShared1.jpg;@userId
 	When I make call to endpoint with an authorization token using DELETE method
 	Then Response code is 'OK'
-	Given I add t.testdata.userShared1.jpg as sql parameter under key @filename
+	Given I add t_testdata_userShared1.jpg as sql parameter under key @filename
 	Then Database not contains user share 't_testdata_CustomUser2'
 
 @CustomData
@@ -44,10 +44,10 @@ Scenario: Delete group share
 	Given I use 'SharesDeleteGroupShareByFileAndGroupId' endpoint
 	And I add t_testdata_CustomGroup as sql parameter under key @groupName
 	And I save response returned by sql file GetGroupByName.sql under @groupId and as sql param
-	And I replace url parameters with value under key t.testdata.groupShared1.jpg;@groupId
+	And I replace url parameters with value under key t_testdata_groupShared1.jpg;@groupId
 	When I make call to endpoint with an authorization token using DELETE method
 	Then Response code is 'OK'
-	Given I add t.testdata.groupShared1.jpg as sql parameter under key @filename
+	Given I add t_testdata_groupShared1.jpg as sql parameter under key @filename
 	Then Database not contains group share 't_testdata_CustomGroup'
 
 @CustomData
@@ -65,9 +65,9 @@ Scenario: Add user share
 	Then Response code is 'OK'
 Examples: 
   | Filename                   | PermissionInt |
-  | t.testdata.userShared1.jpg | 1             |
-  | t.testdata.userShared1.jpg |               |
-  | t.testdata.userShared1.jpg | 3             |
+  | t_testdata_userShared1.jpg | 1             |
+  | t_testdata_userShared1.jpg |               |
+  | t_testdata_userShared1.jpg | 3             |
 
 @CustomData
 @File:Data\\AddSharesWithUsersAndGroups.sql
@@ -78,15 +78,15 @@ Scenario: Add group share by user
 	And I add t_testdata_CustomUser3 as sql parameter under key @username
 	And I save response returned by sql file GetUserByName.sql under @userId and as sql param
 	And I prepare request with following values using 'GroupShareModel' model
-	  | GroupId | UserId  | Filename   | Permissions     |
+	  | GroupId  | UserId  | Filename   | Permissions     |
 	  | @groupId | @userId | <Filename> | <PermissionInt> |
 	When I make call to endpoint with an authorization token using POST method
 	Then Response code is 'OK'
 Examples: 
   | Filename                    | PermissionInt |
-  | t.testdata.userShared1.jpg | 1             |
-  | t.testdata.userShared1.jpg |               |
-  | t.testdata.userShared1.jpg | 3             |
+  | t_testdata_userShared1.jpg | 1             |
+  | t_testdata_userShared1.jpg |               |
+  | t_testdata_userShared1.jpg | 3             |
 
 @CustomData
 @File:Data\\AddSharesWithUsersAndGroups.sql
@@ -97,8 +97,8 @@ Scenario: Add group share by user without file
 	And I add t_testdata_CustomUser3 as sql parameter under key @username
 	And I save response returned by sql file GetUserByName.sql under @userId and as sql param
 	And I prepare request with following values using 'GroupShareModel' model
-	  | GroupId  | UserId  | Filename   | Permissions     |
-	  | @groupId | @userId | <Filename> | 0 |
+	  | GroupId  | UserId  | Filename   | Permissions |
+	  | @groupId | @userId | <Filename> | 0           |
 	When I make call to endpoint with an authorization token using POST method
 	Then Response code is 'NotFound'
 	And Response message contains 'File uknownFile.jpg not found!'

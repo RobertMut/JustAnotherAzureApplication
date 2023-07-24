@@ -1,4 +1,5 @@
 ﻿using API.AutomatedTests.Implementation.Common.Interfaces;
+using API.AutomatedTests.Implementation.Common.Options;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
@@ -10,10 +11,9 @@ public class BlobService : IBlobService
 {
     private readonly BlobContainerClient blobContainerClient;
 
-    public BlobService(IConfiguration configuration)
+    public BlobService(ConnectionStringsOptions options)
     {
-        string connectionString = configuration["AzureWebJobsStorage"];
-        blobContainerClient = new BlobServiceClient(connectionString).GetBlobContainerClient(configuration.GetValue<string>("ImagesContainer"));
+        blobContainerClient = new BlobServiceClient(options.AzureWebJobsStorage).GetBlobContainerClient("jaaa");
         blobContainerClient.CreateIfNotExists(PublicAccessType.BlobContainer);
     }
 

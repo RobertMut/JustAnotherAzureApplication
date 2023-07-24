@@ -1,10 +1,10 @@
 {
   "files":[
     {
-      "filename":"t.testdata.default.jpg",
+      "filename":"t_testdata_default.jpg",
       "isOwned":true,
       "permission":null,
-      "originalName":"t.testdata.default.jpg"
+      "originalName":"t_testdata_default.jpg"
     }
   ]
 }

@@ -2,7 +2,6 @@
 using Application.Common.Interfaces.Database;
 using Application.Common.Models.File;
 using Domain.Common.Helper.Filename;
-using Domain.Constants.Image;
 using MediatR;
 using FileNotFoundException = Application.Common.Exceptions.FileNotFoundException;
 
@@ -14,14 +13,28 @@ public class GetFileQuery : IRequest<FileVm>
     /// Filename
     /// </summary>
     public string Filename { get; set; }
+    
     /// <summary>
     /// Version id
     /// </summary>
     public int? Id { get; set; }
+    
     /// <summary>
     /// UserId
     /// </summary>
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
+    
+    /// <summary>
+    /// Determines if its miniature
+    /// </summary>
+    public bool IsOriginal { get; set; }
+    
+    /// <summary>
+    /// Expected extension
+    /// </summary>
+    public string? ExpectedExtension { get; set; }
+    
+    public string ExpectedMiniatureSize { get; set; }
 }
 
 public class GetFileQueryHandler : IRequestHandler<GetFileQuery, FileVm>
@@ -46,18 +59,20 @@ public class GetFileQueryHandler : IRequestHandler<GetFileQuery, FileVm>
     /// <exception cref="FileNotFoundException">If file does not exists</exception>
     public async Task<FileVm> Handle(GetFileQuery request, CancellationToken cancellationToken)
     {
-        string[] splittedFilename = request.Filename.Split(Name.Delimiter);
-        string filenameAfterHashing = NameHelper.GenerateHashedFilename(splittedFilename[^1]);
+        string requestedFilename = Path.GetFileNameWithoutExtension(request.Filename);
+        string filenameAfterHashing = NameHelper.GenerateHashedFilename(requestedFilename);
+        string extension = string.IsNullOrEmpty(request.ExpectedExtension) || request.IsOriginal
+            ? Path.GetExtension(request.Filename)
+            : $".{request.ExpectedExtension}";
         string filename = string.Empty;
-        bool isOriginal = Prefixes.OriginalImage.TrimEnd(char.Parse(Name.Delimiter)) == splittedFilename[0];
-            
-        if (isOriginal)
+        
+        if (request.IsOriginal)
         {
-            filename = NameHelper.GenerateOriginal(request.UserId, filenameAfterHashing);
+            filename = NameHelper.GenerateOriginal(request.UserId, filenameAfterHashing) + extension;
         } 
         else
         {
-            filename = NameHelper.GenerateMiniature(request.UserId, splittedFilename[^2], filenameAfterHashing);
+            filename = NameHelper.GenerateMiniature(request.UserId, request.ExpectedMiniatureSize, filenameAfterHashing) + extension;
         }
 
         var fileFromDatabase = await _unitOfWork.FileRepository.GetObjectBy(x => x.UserId == Guid.Parse(request.UserId) && x.Filename == filename, cancellationToken: cancellationToken);
@@ -67,7 +82,7 @@ public class GetFileQueryHandler : IRequestHandler<GetFileQuery, FileVm>
             throw new FileNotFoundException(request.Filename);
         }
 
-        var file = await _blobManagerService.DownloadAsync(filename, request.Id);
+        var file = await _blobManagerService.DownloadAsync(fileFromDatabase.Filename, request.Id);
 
         return new FileVm
         {

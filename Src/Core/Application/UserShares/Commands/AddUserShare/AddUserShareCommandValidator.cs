@@ -6,8 +6,8 @@ public class AddUserShareCommandValidator : AbstractValidator<AddUserShareComman
 {
     public AddUserShareCommandValidator()
     {
-        RuleFor(x => x.UserId).NotEmpty().NotNull();
-        RuleFor(x => x.Filename).NotEmpty().NotNull();
-        RuleFor(x => x.PermissionId).NotNull();
+        RuleFor(x => x.UserId).NotEmpty().NotNull().WithMessage("UserId must be not empty or null");
+        RuleFor(x => x.Filename).NotEmpty().NotNull().WithMessage("Filename must be not empty or null");
+        RuleFor(x => x.PermissionId).NotNull().WithMessage("PermissionId must be not null");
     }
 }

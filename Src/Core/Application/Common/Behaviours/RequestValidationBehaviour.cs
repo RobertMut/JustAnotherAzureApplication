@@ -31,15 +31,14 @@ public class RequestValidationBehaviour<TRequest, TResponse> : IPipelineBehavior
         if (_validators.Any())
         {
             var context = new ValidationContext<TRequest>(request);
-            var validationResults = await Task.WhenAll(
-                _validators.Select(v =>
-                    v.ValidateAsync(context, cancellationToken)));
 
-            var failures = validationResults
-                .Where(r => r.Errors.Any())
-                .SelectMany(r => r.Errors)
+            var failures = _validators
+                .Select(v => v.Validate(context))
+                .SelectMany(result => result.Errors)
+                .Where(f => f != null)
                 .ToList();
-            if (failures.Any())
+            
+            if (failures.Count != 0)
             {
                 throw new ValidationException(failures);
             }   

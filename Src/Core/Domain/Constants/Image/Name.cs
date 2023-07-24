@@ -2,5 +2,5 @@
 
 public static class Name
 {
-    public const string Delimiter = "."; 
+    public const string Delimiter = "_"; 
 }

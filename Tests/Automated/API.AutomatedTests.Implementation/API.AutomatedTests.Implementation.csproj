@@ -114,6 +114,10 @@
       <Content Include="Results\GetUserImages.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+      <None Remove="Files\response100x100.jpg" />
+      <Content Include="Files\response100x100.jpg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
     <ItemGroup>

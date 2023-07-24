@@ -47,6 +47,7 @@ if (app.Environment.IsDevelopment() || Environment.GetEnvironmentVariable("ASPNE
     app.UseSwaggerUI();
 }
 
+app.UseStatusCodePages();
 app.UseHttpLogging();
 
 app.UseHttpsRedirection();
