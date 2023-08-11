@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Database;
 using Application.UnitTests.Common.Fakes;

@@ -1,6 +1,7 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Database;
 using Domain.Entities;
+using FluentValidation;
 using MediatR;
 
 namespace Application.Groups.Commands.DeleteGroup;
@@ -10,7 +11,7 @@ public class DeleteGroupCommand : IRequest
     /// <summary>
     /// GroupId
     /// </summary>
-    public Guid GroupId { get; set; }
+    public string GroupId { get; set; }
 
     public class DeleteGroupCommandHandler : IRequestHandler<DeleteGroupCommand>
     {
@@ -31,7 +32,12 @@ public class DeleteGroupCommand : IRequest
         /// <returns>Unit</returns>
         public async Task<Unit> Handle(DeleteGroupCommand request, CancellationToken cancellationToken)
         {
-            var group = await _unitOfWork.GroupRepository.GetObjectBy(x => x.Id == request.GroupId, cancellationToken: cancellationToken);
+            if (!Guid.TryParse(request.GroupId, out Guid guid))
+            {
+                throw new ValidationException("Wrong guid format");
+            }
+            
+            var group = await _unitOfWork.GroupRepository.GetObjectBy(x => x.Id == guid, cancellationToken: cancellationToken);
 
             if (group is null)
             {

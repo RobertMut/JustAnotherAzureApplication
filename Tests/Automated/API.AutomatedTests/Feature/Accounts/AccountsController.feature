@@ -20,10 +20,10 @@ Scenario: Login
 	 And Response message contains '<ErrorMessage>'
 
 Examples: 
-| Username    | Password  | ErrorMessage                                      | ExpectedCode |
-| Default     |           | "title":"One or more validation errors occurred." | BadRequest   |
-|             | 12345     | "title":"One or more validation errors occurred." | BadRequest   |
-| NonExisting | WrongPass | User NonExisting not found!                       | NotFound     |
+| Username    | Password  | ErrorMessage                       | ExpectedCode |
+| Default     |           | Password must be not null or empty | BadRequest   |
+|             | 12345     | Username must be not null or empty | BadRequest   |
+| NonExisting | WrongPass | User NonExisting not found!        | NotFound     |
 
 Scenario: Register user
 	Given I use 'AccountsRegister' endpoint
@@ -47,9 +47,9 @@ Scenario: Check register exceptions
 	Given I clear the database data
 
 Examples: 
-  | Username        | Password | ErrorMessage                                      | ExpectedCode |
-  | t_testdata_user |          | "title":"One or more validation errors occurred." | BadRequest   |
-  |                 | 12345    | "title":"One or more validation errors occurred." | BadRequest   |
+  | Username        | Password | ErrorMessage                       | ExpectedCode |
+  | t_testdata_user |          | Password must be not null or empty | BadRequest   |
+  |                 | 12345    | Username must be not null or empty | BadRequest   |
   
 Scenario: Check register duplicated user exception
 	Given I use 'AccountsRegister' endpoint

@@ -17,8 +17,8 @@ public class GetFileQueryValidator : AbstractValidator<GetFileQuery>
         RuleFor(x => x.ExpectedMiniatureSize).Must(m => Regex.IsMatch(m, @"([0-9]+x[0-9]+)"))
             .WithMessage("Invalid dimension format");
         RuleFor(x => x.ExpectedMiniatureSize).Must(s =>
-                s.Split("x").ToList().TrueForAll(d =>
-                    int.TryParse(d, out int i) ? i > 0 : throw new ValidationException("Cannot parse int")))
+                s.Split("x").ToList().TrueForAll(d => 
+                    int.TryParse(d, out int i) && i > 0))
             .WithMessage("Dimensions must be numeric and greater than 0");
     }
 }

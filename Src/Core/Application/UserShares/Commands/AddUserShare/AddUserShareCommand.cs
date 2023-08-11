@@ -2,7 +2,6 @@
 using Domain.Entities;
 using Domain.Enums.Image;
 using MediatR;
-using FileNotFoundException = Application.Common.Exceptions.FileNotFoundException;
 
 
 namespace Application.UserShares.Commands.AddUserShare;

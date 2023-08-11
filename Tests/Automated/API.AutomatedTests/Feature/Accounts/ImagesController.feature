@@ -16,7 +16,7 @@ Scenario: Get user images
 @File:Data\\AddSharesWithUsersAndGroups.sql
 Scenario: Get non existing image
 	Given I use 'ImagesGetImage' endpoint
-	And I add 'nonexisting.jpg;0' as url parameter
+	And I add 'false;nonexisting.jpg;100x100;bmp' as url parameter
 	When I make call to endpoint with an authorization token using GET method
 	Then Response code is 'NotFound'
 
@@ -115,3 +115,68 @@ Scenario: Get image throws invalid extension format
 	Then Response code is 'BadRequest'
 	And Response message contains 'Invalid extension format'
 	
+@CustomData
+@File:Data\\AddSharesWithUsersAndGroups.sql
+Scenario: Delete Image
+	Given I use 'Images' endpoint
+	And I prepare form from table
+	  | file            | targetType | height | width |
+	  | File:sample.jpg | bmp        | 100    | 100   |
+	When I make call to endpoint with an authorization token using POST method
+	Then Response code is 'OK'
+	Given I use 'ImagesDeleteWholeFile' endpoint
+	And I add 'sample.jpg' as url parameter
+	When I make call to endpoint with an authorization token using DELETE method
+	Then Response code is 'OK'
+	
+@CustomData
+@File:Data\\AddSharesWithUsersAndGroups.sql
+Scenario: Delete Image with miniatures
+	Given I use 'Images' endpoint
+	And I prepare form from table
+	  | file            | targetType | height | width |
+	  | File:sample.jpg | bmp        | 100    | 100   |
+	When I make call to endpoint with an authorization token using POST method
+	Then Response code is 'OK'
+	Given I use 'ImagesDeleteWholeFileWithMiniatures' endpoint
+	And I add 'sample.jpg;true' as url parameter
+	When I make call to endpoint with an authorization token using DELETE method
+	Then Response code is 'OK'
+	
+@CustomData
+@File:Data\\AddSharesWithUsersAndGroups.sql
+Scenario: Delete Image with miniatures with specific size
+	Given I use 'Images' endpoint
+	And I prepare form from table
+	  | file            | targetType | height | width |
+	  | File:sample.jpg | bmp        | 100    | 100   |
+	When I make call to endpoint with an authorization token using POST method
+	Then Response code is 'OK'
+	Given I use 'ImagesDeleteWholeImageWithMiniatureSize' endpoint
+	And I add 'sample.jpg;true;100x100' as url parameter
+	When I make call to endpoint with an authorization token using DELETE method
+	Then Response code is 'OK'
+	
+@CustomData
+@File:Data\\AddSharesWithUsersAndGroups.sql
+Scenario: Delete Image exceptions
+	Given I use 'ImagesDeleteWholeFile' endpoint
+	And I add 'nonexisting.bmp' as url parameter
+	When I make call to endpoint with an authorization token using DELETE method
+	Then Response code is 'NotFound'
+	And Response message contains 'File nonexisting.bmp does not exist'
+  
+@CustomData
+@File:Data\\AddSharesWithUsersAndGroups.sql
+Scenario: Delete Image with sizes exceptions
+	Given I use 'ImagesDeleteWholeImageWithMiniatureSize' endpoint
+	And I add '<Filename>;true;<Size>' as url parameter
+	When I make call to endpoint with an authorization token using DELETE method
+	Then Response code is 'BadRequest'
+	And Response message contains '<ExpectedMessage>'
+
+Examples: 
+  | Filename   | Size  | ExpectedMessage                               |
+  | sample.jpg | 5     | Invalid dimension format                      |
+  | sample.jpg | ax100 | Dimensions must be numeric and greater than 0 |
+  | sample.jpg | 0x100 | Dimensions must be numeric and greater than 0 |

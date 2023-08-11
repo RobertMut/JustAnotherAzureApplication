@@ -1,7 +1,7 @@
 ﻿using Application.Common.Exceptions;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using FileNotFoundException = Application.Common.Exceptions.FileNotFoundException;
 
 namespace API.Filters;
 

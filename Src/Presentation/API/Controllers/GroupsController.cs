@@ -47,13 +47,11 @@ public class GroupsController : ControllerBase
     /// <summary>
     /// Deletes group
     /// </summary>
-    /// <param name="groupId">Group guid to delete</param>
     /// <returns>Ok</returns>
-    [HttpDelete("{groupId:guid}")]
+    [HttpDelete("{groupId}")]
     public async Task<IActionResult> DeleteGroup([FromRoute] DeleteGroupCommand command)
     {
         await _mediator.Send(command);
-
         return Ok();
     }
 }

@@ -3,7 +3,6 @@ using Application.Common.Interfaces.Database;
 using Domain.Entities;
 using Domain.Enums.Image;
 using MediatR;
-using FileNotFoundException = Application.Common.Exceptions.FileNotFoundException;
 
 namespace Application.GroupShares.Commands.AddGroupShare;
 

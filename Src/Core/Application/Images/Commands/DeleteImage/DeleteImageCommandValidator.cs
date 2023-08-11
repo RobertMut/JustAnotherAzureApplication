@@ -8,7 +8,14 @@ public class DeleteImageCommandValidator : AbstractValidator<DeleteImageCommand>
     public DeleteImageCommandValidator()
     {
         RuleFor(x => x.Filename).NotEmpty().WithMessage("Filename must be not empty");
-        RuleFor(x => x.Size).Must(x => x == "any" || string.IsNullOrEmpty(x) || Regex.IsMatch(x, @"^-?\d+x\d+"))
-            .WithMessage("Invalid size format");
+        When(x => !string.IsNullOrEmpty(x.Size), () =>
+        {
+            RuleFor(x => x.Size).Must(m => Regex.IsMatch(m, @"([0-9]+x[0-9]+)"))
+                .WithMessage("Invalid dimension format");
+            RuleFor(x => x.Size).Must(s =>
+                    s.Split("x").ToList().TrueForAll(d =>
+                        int.TryParse(d, out int i) && i > 0))
+                .WithMessage("Dimensions must be numeric and greater than 0");
+        });
     }
 }

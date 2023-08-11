@@ -53,7 +53,7 @@ public class DeleteImageCommand : IRequest
             var file = await _unitOfWork.FileRepository.GetObjectBy(x => x.OriginalName == request.Filename && x.UserId == Guid.Parse(request.UserId));
             if (file == null)
             {
-                throw new FileNotFoundException(request.Filename);
+                throw new FileNotFoundException($"File {request.Filename} does not exist");
             }
 
             string filename = file.Filename.Split(Name.Delimiter)[^1];

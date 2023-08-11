@@ -3,7 +3,6 @@ using Application.Common.Interfaces.Database;
 using Application.Common.Models.File;
 using Domain.Common.Helper.Filename;
 using MediatR;
-using FileNotFoundException = Application.Common.Exceptions.FileNotFoundException;
 
 namespace Application.Images.Queries.GetFile;
 

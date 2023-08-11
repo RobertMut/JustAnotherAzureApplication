@@ -62,7 +62,14 @@ Scenario: Delete group
 
 Scenario: Delete not existing group should throw exception
     Given I use 'GroupsDeleteById' endpoint
-    And I add '00000000-0000-0000-0000-000000000000' as url parameter
+    And I add '72fdb778-24e0-4fd8-9cc8-70648300bf74' as url parameter
+    When I make call to endpoint with an authorization token using DELETE method
+    Then Response code is 'NotFound'
+    And Response message contains 'Group named 72fdb778-24e0-4fd8-9cc8-70648300bf74 not found!'
+
+Scenario: Delete should throw wrong guid format
+    Given I use 'GroupsDeleteById' endpoint
+    And I add '72fdb778-4fd8-9cc8-70648300bf74' as url parameter
     When I make call to endpoint with an authorization token using DELETE method
     Then Response code is 'BadRequest'
-    And Response message contains '"title":"One or more validation errors occurred."'
+    And Response message contains 'Wrong guid format'
