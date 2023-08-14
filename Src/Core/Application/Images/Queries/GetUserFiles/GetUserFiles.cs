@@ -16,7 +16,7 @@ public class GetUserFilesQuery : IRequest<UserFilesListVm>
 public class GetUserFilesQueryHandler : IRequestHandler<GetUserFilesQuery, UserFilesListVm>
 {
     private readonly IUnitOfWork _unitOfWork;
-    
+
     public GetUserFilesQueryHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
@@ -32,14 +32,17 @@ public class GetUserFilesQueryHandler : IRequestHandler<GetUserFilesQuery, UserF
     /// <returns>User files list</returns>
     public async Task<UserFilesListVm> Handle(GetUserFilesQuery request, CancellationToken cancellationToken)
     {
-        var userFiles = await _unitOfWork.FileRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId), cancellationToken: cancellationToken);
+        var userFiles = await _unitOfWork.FileRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId),
+            cancellationToken: cancellationToken);
         var userGroups =
-            await _unitOfWork.GroupUserRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId), cancellationToken: cancellationToken);
+            await _unitOfWork.GroupUserRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId),
+                cancellationToken: cancellationToken);
         List<GroupShare?> groupShares = new List<GroupShare?>();
 
         foreach (var group in userGroups)
         {
-            groupShares.Add(await _unitOfWork.GroupShareRepository.GetObjectBy(x => group.GroupId == x.GroupId, cancellationToken));
+            groupShares.Add(
+                await _unitOfWork.GroupShareRepository.GetObjectBy(x => group.GroupId == x.GroupId, cancellationToken));
         }
 
         var files = (from userFile in userFiles
@@ -49,7 +52,8 @@ public class GetUserFilesQueryHandler : IRequestHandler<GetUserFilesQuery, UserF
                 IsOwned = true,
                 Permission = null,
                 OriginalName = userFile.OriginalName,
-            }).Concat(from userShared in await _unitOfWork.UserShareRepository.GetAsync(x => x.UserId == Guid.Parse(request.UserId), cancellationToken: cancellationToken)
+            }).Concat(from userShared in await _unitOfWork.UserShareRepository.GetAsync(
+                x => x.UserId == Guid.Parse(request.UserId), cancellationToken: cancellationToken)
             select new FileDto
             {
                 Filename = userShared.Filename,

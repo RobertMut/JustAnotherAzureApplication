@@ -17,25 +17,23 @@ namespace Application.UnitTests.Images.Commands.UpdateImage;
 [TestFixture]
 public class UpdateImageCommandTests
 {
-    private Mock<IMediator> _mediator;
     private Mock<IBlobManagerService> _service;
-    private Guid _userId;
 
     [SetUp]
     public async Task SetUp()
     {
-        _userId = Guid.NewGuid();
-        _mediator = new Mock<IMediator>();
-        _mediator.Setup(x => x.Send(It.IsAny<UpdateImageCommand>(), It.IsAny<CancellationToken>())).Returns(Unit.Task);
         _service = new Mock<IBlobManagerService>();
     }
 
     [Test]
     public async Task HandleDoesNotThrow()
     {
-        _service.Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.OK);
-        _service.Setup(x => x.PromoteBlobVersionAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.Created);
-        _mediator.Verify(x => x.Send(It.IsAny<UpdateImageCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        Guid userId = Guid.NewGuid();
+        _service.Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(),
+            It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.OK);
+        _service.Setup(x =>
+                x.PromoteBlobVersionAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(HttpStatusCode.Created);
 
         var handler = new UpdateImageCommand.UpdateImageCommandHandler(_service.Object);
         var command = new UpdateImageCommand()
@@ -45,22 +43,21 @@ public class UpdateImageCommandTests
             TargetType = Domain.Enums.Image.Format.png,
             Version = 1,
             Width = 1,
-            UserId = _userId.ToString()
+            UserId = userId.ToString()
         };
 
-        var responseMediator = await _mediator.Object.Send(command, CancellationToken.None);
-        var response = await handler.Handle(command, CancellationToken.None);
-
-        Assert.IsInstanceOf(typeof(Unit), response);
-        Assert.IsInstanceOf(typeof(Unit), responseMediator);
-        Assert.That(responseMediator, Is.Not.Null);
+        Assert.DoesNotThrowAsync(async () => await handler.Handle(command, CancellationToken.None));
     }
 
     [Test]
     public async Task ThrowsOperationFailedWhenPromotingException()
     {
-        _service.Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.OK);
-        _service.Setup(x => x.PromoteBlobVersionAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.InternalServerError);
+        Guid userId = Guid.NewGuid();
+        _service.Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(),
+            It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.OK);
+        _service.Setup(x =>
+                x.PromoteBlobVersionAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(HttpStatusCode.InternalServerError);
 
         var handler = new UpdateImageCommand.UpdateImageCommandHandler(_service.Object);
         var command = new UpdateImageCommand()
@@ -70,7 +67,7 @@ public class UpdateImageCommandTests
             TargetType = Domain.Enums.Image.Format.png,
             Version = 1,
             Width = 1,
-            UserId = _userId.ToString()
+            UserId = userId.ToString()
         };
 
         Assert.ThrowsAsync<OperationFailedException>(async () =>
@@ -82,8 +79,12 @@ public class UpdateImageCommandTests
     [Test]
     public async Task ThrowsOperationFailedWhenUpdatingException()
     {
-        _service.Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.InternalServerError);
-        _service.Setup(x => x.PromoteBlobVersionAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.Created);
+        Guid userId = Guid.NewGuid();
+        _service.Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(),
+            It.IsAny<CancellationToken>())).ReturnsAsync(HttpStatusCode.InternalServerError);
+        _service.Setup(x =>
+                x.PromoteBlobVersionAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(HttpStatusCode.Created);
 
         var handler = new UpdateImageCommand.UpdateImageCommandHandler(_service.Object);
         var command = new UpdateImageCommand()
@@ -93,7 +94,7 @@ public class UpdateImageCommandTests
             TargetType = Domain.Enums.Image.Format.png,
             Version = 1,
             Width = 1,
-            UserId = _userId.ToString()
+            UserId = userId.ToString()
         };
 
         Assert.ThrowsAsync<OperationFailedException>(async () =>

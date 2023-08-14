@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Src\Core\Application\Application.csproj" />
     <ProjectReference Include="..\..\Src\Infrastructure\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Automated\API.AutomatedTests.Implementation\API.AutomatedTests.Implementation.csproj" />
   </ItemGroup>
 
 </Project>

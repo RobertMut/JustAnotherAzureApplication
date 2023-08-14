@@ -1,18 +1,20 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces.Blob;
+﻿using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Application.Common.Models.File;
 using Application.Images.Queries.GetFile;
-using Application.UnitTests.Common.Fakes;
 using Azure.Storage.Blobs.Models;
-using MediatR;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Virtuals;
+using Application.UnitTests.Common.Mocking;
+using Domain.Common.Helper.Filename;
+using File = Domain.Entities.File;
 
 namespace Application.UnitTests.Images.Queries.GetFile;
 
@@ -21,62 +23,82 @@ namespace Application.UnitTests.Images.Queries.GetFile;
 public class GetFileQueryTests
 {
     private Mock<IBlobManagerService> _service;
-    private Mock<IMediator> _mediator;
     private IUnitOfWork _unitOfWork;
+    private Mock<Repository<File>> _fileRepositoryMock;
+    private IJAAADbContext _dbContext;
 
     [SetUp]
     public async Task SetUp()
     {
-        var blob = new Mock<BlobDownloadResult>();
+        _dbContext = Mock.Of<IJAAADbContext>();
         _service = new Mock<IBlobManagerService>();
-        _mediator = new Mock<IMediator>();
-        _unitOfWork = new FakeUnitOfWork();
-
-        _service.Setup(x => x.DownloadAsync(It.IsAny<string>(), It.IsAny<int>()))
-            .ReturnsAsync(blob.Object);
-        _mediator.Setup(x => x.Send(It.IsAny<GetFileQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new FileVm()
-        {
-            File = blob.Object
-        });
+        _fileRepositoryMock = new Mock<Repository<File>>(_dbContext);
+        
+        _unitOfWork = new UnitOfWorkMock(_fileRepositoryMock)
+            .GetMockedUnitOfWork();
     }
 
     [Test]
     public async Task GetFile()
     {
+        Guid userId = Guid.NewGuid();
+        var blob = new Mock<BlobDownloadResult>();
+        
+        _service.Setup(x => x.DownloadAsync(It.IsAny<string>(), It.IsAny<int>()))
+            .ReturnsAsync(blob.Object);
+        _fileRepositoryMock.Setup(x =>
+                x.GetObjectBy(It.IsAny<Expression<Func<File?, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new File
+            {
+                Filename = NameHelper.GenerateOriginal(userId.ToString(), NameHelper.GenerateHashedFilename("test")) + ".Png",
+                OriginalName = "test.Jpeg",
+                UserId = userId
+            });
+
         var handler = new GetFileQueryHandler(_service.Object, _unitOfWork);
         var query = new GetFileQuery()
         {
-            Filename = "miniature_300x300_test.Png",
-            UserId = DbSets.UserId.ToString()
+            Filename = "test.Jpeg",
+            UserId = userId.ToString(),
+            IsOriginal = true,
+            ExpectedExtension = "Png",
+            ExpectedMiniatureSize = "100x100"
         };
 
         Assert.DoesNotThrowAsync(async () =>
         {
             var responseFromHandler = await handler.Handle(query, CancellationToken.None);
-            var response = await _mediator.Object.Send(query, CancellationToken.None);
-
-            Assert.IsInstanceOf<FileVm>(responseFromHandler);
-            Assert.IsInstanceOf<FileVm>(response);
+            var expected = new FileVm
+            {
+                File = blob.Object
+            };
+            
+            Assert.True(responseFromHandler == expected);
         });
     }
 
     [Test]
-    public async Task GetOtherUserFileThrowsFileNotFoundException()
+    public async Task GetFileThrowsFileNotFound()
     {
+        Guid userId = Guid.NewGuid();
+        var blob = new Mock<BlobDownloadResult>();
+        
+        _service.Setup(x => x.DownloadAsync(It.IsAny<string>(), It.IsAny<int>()))
+            .ReturnsAsync(blob.Object);
+        _fileRepositoryMock.Setup(x =>
+                x.GetObjectBy(It.IsAny<Expression<Func<File?, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(default(File));
+
         var handler = new GetFileQueryHandler(_service.Object, _unitOfWork);
         var query = new GetFileQuery()
         {
-            Filename = "miniature_300x300_notshared.Png",
-            UserId = Guid.NewGuid().ToString()
+            Filename = "test.Jpeg",
+            UserId = userId.ToString(),
+            IsOriginal = true,
+            ExpectedExtension = "Png",
+            ExpectedMiniatureSize = "100x100"
         };
 
-        Assert.ThrowsAsync<FileNotFoundException>(async () =>
-        {
-            var responseFromHandler = await handler.Handle(query, CancellationToken.None);
-            var response = await _mediator.Object.Send(query, CancellationToken.None);
-
-            Assert.IsInstanceOf<FileVm>(responseFromHandler);
-            Assert.IsInstanceOf<FileVm>(response);
-        });
+        Assert.Throws<FileNotFoundException>(async () => await handler.Handle(query, CancellationToken.None));
     }
 }

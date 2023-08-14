@@ -8,26 +8,37 @@ namespace Application.UnitTests.Common.Mocking;
 
 public class UnitOfWorkMock
 {
-    private IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UnitOfWorkMock(Mock<Repository<File>> fileRepository,
-        Mock<Repository<Group>> groupRepository,
-        Mock<Repository<GroupShare>> groupSharesRepository,
-        Mock<Repository<UserShare>> userSharesRepository,
-        Mock<Repository<User>> userRepository,
-        Mock<Repository<GroupUser>> groupUserRepository,
-        Mock<Repository<Permission>> permissionRepository)
+    public UnitOfWorkMock(Mock<Repository<File>>? fileRepository = default,
+        Mock<Repository<Group>>? groupRepository = default,
+        Mock<Repository<GroupShare>>? groupSharesRepository = default,
+        Mock<Repository<UserShare>>? userSharesRepository = default,
+        Mock<Repository<User>>? userRepository = default,
+        Mock<Repository<GroupUser>>? groupUserRepository = default,
+        Mock<Repository<Permission>>? permissionRepository = default)
     {
         var unitOfWorkMock = new Mock<IUnitOfWork>();
-        unitOfWorkMock.Setup(x => x.FileRepository).Returns(fileRepository.Object);
-        unitOfWorkMock.Setup(x => x.GroupRepository).Returns(groupRepository.Object);
-        unitOfWorkMock.Setup(x => x.GroupShareRepository).Returns(groupSharesRepository.Object);
-        unitOfWorkMock.Setup(x => x.UserShareRepository).Returns(userSharesRepository.Object);
-        unitOfWorkMock.Setup(x => x.UserRepository).Returns(userRepository.Object);
-        unitOfWorkMock.Setup(x => x.GroupUserRepository).Returns(groupUserRepository.Object);
-        unitOfWorkMock.Setup(x => x.PermissionRepository).Returns(permissionRepository.Object);
+        if (fileRepository != null) unitOfWorkMock.Setup(x => x.FileRepository).Returns(fileRepository.Object);
+
+        if (groupRepository != null) unitOfWorkMock.Setup(x => x.GroupRepository).Returns(groupRepository.Object);
+
+        if (groupSharesRepository != null)
+            unitOfWorkMock.Setup(x => x.GroupShareRepository).Returns(groupSharesRepository.Object);
+
+        if (userSharesRepository != null)
+            unitOfWorkMock.Setup(x => x.UserShareRepository).Returns(userSharesRepository.Object);
+
+        if (userRepository != null) unitOfWorkMock.Setup(x => x.UserRepository).Returns(userRepository.Object);
+
+        if (groupUserRepository != null)
+            unitOfWorkMock.Setup(x => x.GroupUserRepository).Returns(groupUserRepository.Object);
+
+        if (permissionRepository != null)
+            unitOfWorkMock.Setup(x => x.PermissionRepository).Returns(permissionRepository.Object);
+
         unitOfWorkMock.Setup(x => x.Save(It.IsAny<CancellationToken>()));
-        _unitOfWork = new Mock<IUnitOfWork>().Object;
+        _unitOfWork = unitOfWorkMock.Object;
     }
 
     public IUnitOfWork GetMockedUnitOfWork() => _unitOfWork;

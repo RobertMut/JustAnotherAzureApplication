@@ -25,7 +25,7 @@ public class BlobManagerService : IBlobManagerService
     /// <param name="ct"><see cref="CancellationToken"/></param>
     /// <returns>Http status code from blob</returns>
     public async Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType,
-        IDictionary<string, string> metadata = null, CancellationToken ct = default)
+        IDictionary<string, string>? metadata, CancellationToken ct)
     {
         var blobClient = _blobContainerClient.GetBlobClient(filename);
         var blobOptions = new BlobUploadOptions()
@@ -103,7 +103,8 @@ public class BlobManagerService : IBlobManagerService
     {
         var blobClient = _blobContainerClient.GetBlobClient(filename);
         var version = await GetBlobVersions(filename);
-        var properties = blobClient.GetProperties().Value;
+        var properties = (await blobClient.GetPropertiesAsync(cancellationToken: ct)).Value;
+        
         using (var stream = await blobClient.WithVersion(version[id].VersionId).OpenReadAsync(new BlobOpenReadOptions(false), ct))
         {
             var response = await blobClient.UploadAsync(stream, new BlobUploadOptions
@@ -128,7 +129,7 @@ public class BlobManagerService : IBlobManagerService
     /// <param name="metadata">Metadata</param>
     /// <param name="ct"><see cref="CancellationToken"/></param>
     /// <returns>Http Code of operation</returns>
-    public async Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata, CancellationToken ct)
+    public async Task<HttpStatusCode> UpdateAsync(string filename, IDictionary<string, string> metadata = null, CancellationToken ct = default)
     {
         var client = _blobContainerClient.GetBlobClient(filename);
         var response = await client.SetMetadataAsync(metadata, default, ct);

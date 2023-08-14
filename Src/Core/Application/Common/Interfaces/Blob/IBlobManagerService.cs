@@ -18,7 +18,7 @@ public interface IBlobManagerService
     /// <param name="ct">CancellationToken</param>
     /// <returns>HttpStatusCode of operation</returns>
     Task<HttpStatusCode> AddAsync(Stream fileStream, string filename, string contentType,
-        IDictionary<string, string> metadata, CancellationToken ct);
+        IDictionary<string, string>? metadata, CancellationToken ct);
         
     /// <summary>
     /// Updates blob

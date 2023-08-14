@@ -3,7 +3,6 @@ using Application.Common.Exceptions;
 using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
 using Application.Common.Models.Account;
-using Application.UnitTests.Common.Fakes;
 using Domain.Entities;
 using MediatR;
 using Moq;
@@ -12,9 +11,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.Virtuals;
+using Application.UnitTests.Common.Mocking;
 
 namespace Application.UnitTests.Accounts.Commands.Login;
 
@@ -22,32 +24,38 @@ namespace Application.UnitTests.Accounts.Commands.Login;
 [ExcludeFromCodeCoverage]
 public class LoginCommandTests
 {
-    private Mock<IMediator> _mediator;
     private IUnitOfWork _unitOfWork;
     private Mock<ITokenGenerator> _tokenGenerator;
     private LoginCommand.LoginCommandHandler _handler;
+    private Mock<Repository<User>> _userRepositoryMock;
 
     [SetUp]
     public async Task SetUp()
     {
-        _mediator = new Mock<IMediator>();
-        _unitOfWork = new FakeUnitOfWork();
+        _userRepositoryMock = new Mock<Repository<User>>(Mock.Of<IJAAADbContext>());
+        _unitOfWork = new UnitOfWorkMock(userRepository: _userRepositoryMock)
+            .GetMockedUnitOfWork();
+        
         _tokenGenerator = new Mock<ITokenGenerator>();
-
-
         _tokenGenerator.Setup(x => x.GetToken(It.IsAny<User>())).ReturnsAsync(new JwtSecurityToken());
-        var claims = new List<Claim> {
-            new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
-
-        _mediator.Setup(x => x.Send(It.IsAny<LoginCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(new JwtSecurityToken(claims: claims));
     }
 
 
     [Test]
     public async Task LoginTest()
     {
+        var jwt = new JwtSecurityToken();
+        _tokenGenerator.Setup(x => x.GetToken(It.IsAny<User>()))
+            .ReturnsAsync(jwt);
+        _userRepositoryMock.Setup(x =>
+                x.GetObjectBy(It.IsAny<Expression<Func<User?, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new User
+            {
+                Id = Guid.NewGuid(),
+                Username = "Default",
+                Password = "123456",
+            });
+    
         _handler = new LoginCommand.LoginCommandHandler(_unitOfWork, _tokenGenerator.Object);
         var loginQuery = new LoginCommand
         {
@@ -60,52 +68,52 @@ public class LoginCommandTests
         Assert.DoesNotThrowAsync(async () =>
         {
             var responseFromHandler = await _handler.Handle(loginQuery, CancellationToken.None);
-            var response = await _mediator.Object.Send(loginQuery, CancellationToken.None);
-
-            Assert.IsInstanceOf<JwtSecurityToken>(responseFromHandler);
-            Assert.IsInstanceOf<JwtSecurityToken>(response);
+            
+            Assert.AreEqual(responseFromHandler, jwt);
         });
     }
 
     [Test]
-    public async Task LoginThrowsUserNotFound()
+    public async Task LoginThrowsIncorrectCredentials()
     {
-        _handler = new LoginCommand.LoginCommandHandler(_unitOfWork, _tokenGenerator.Object);
-
-
-        var loginQuery = new LoginCommand
-        {
-            LoginModel = new LoginModel
+        _userRepositoryMock.Setup(x =>
+                x.GetObjectBy(It.IsAny<Expression<Func<User?, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new User
             {
-                UserName = "User",
-                Password = "12345"
-            }
-        };
-
-        Assert.ThrowsAsync<UserNotFoundException>(async () =>
-        {
-            var responseFromHandler = await _handler.Handle(loginQuery, CancellationToken.None);
-        });
-    }
-
-    [Test]
-    public async Task LoginThrowsUnauthorized()
-    {
+                Id = Guid.NewGuid(),
+                Username = "Wrong",
+                Password = "Wrong2",
+            });
+        
         _handler = new LoginCommand.LoginCommandHandler(_unitOfWork, _tokenGenerator.Object);
-
-
         var loginQuery = new LoginCommand
         {
             LoginModel = new LoginModel
             {
                 UserName = "Default",
-                Password = "1234"
+                Password = "123456"
             }
         };
+        Assert.ThrowsAsync<UnauthorizedException>(async () => await _handler.Handle(loginQuery, CancellationToken.None), $"Invalid credentials for user Default");
+    }
 
-        Assert.ThrowsAsync<UnauthorizedException>(async () =>
+    [Test]
+    public async Task LoginThrowsUserNotFound()
+    {
+        _userRepositoryMock.Setup(x =>
+                x.GetObjectBy(It.IsAny<Expression<Func<User?, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(default(User));
+        
+        _handler = new LoginCommand.LoginCommandHandler(_unitOfWork, _tokenGenerator.Object);
+        var loginQuery = new LoginCommand
         {
-            var responseFromHandler = await _handler.Handle(loginQuery, CancellationToken.None);
-        });
+            LoginModel = new LoginModel
+            {
+                UserName = "Default",
+                Password = "123456"
+            }
+        };
+        
+        Assert.ThrowsAsync<UserNotFoundException>(async () => await _handler.Handle(loginQuery, CancellationToken.None), "User Default not found!");
     }
 }

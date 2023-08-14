@@ -23,16 +23,17 @@ public class AddGroupShareCommandTests
 {
     private IUnitOfWork _unitOfWork;
     private AddGroupShareCommand.AddGroupShareCommandHandler _commandHandler;
-    private Mock<Repository<GroupUser>> _groupUserRepositoryMock;
-    private Mock<Repository<File>> _fileRepositoryMock;
+    private Mock<Repository<GroupUser>>? _groupUserRepositoryMock;
+    private Mock<Repository<File>>? _fileRepositoryMock;
     private Mock<Repository<GroupShare>> _groupShareRepositoryMock;
-
+    private IJAAADbContext _dbContext;
     [SetUp]
     public async Task SetUp()
     {
-        _groupUserRepositoryMock = new Mock<Repository<GroupUser>>();
-        _fileRepositoryMock = new Mock<Repository<File>>();
-        _groupShareRepositoryMock = new Mock<Repository<GroupShare>>();
+        _dbContext = Mock.Of<IJAAADbContext>();
+        _groupUserRepositoryMock = new Mock<Repository<GroupUser>>(_dbContext);
+        _fileRepositoryMock = new Mock<Repository<File>>(_dbContext);
+        _groupShareRepositoryMock = new Mock<Repository<GroupShare>>(_dbContext);
 
         _unitOfWork = new UnitOfWorkMock(_fileRepositoryMock, default, _groupShareRepositoryMock, default,
             default, _groupUserRepositoryMock, default).GetMockedUnitOfWork();
@@ -98,7 +99,7 @@ public class AddGroupShareCommandTests
         
         Assert.ThrowsAsync<FileNotFoundException>(async () =>
         {
-            var groupId = await _commandHandler.Handle(new AddGroupShareCommand
+            await _commandHandler.Handle(new AddGroupShareCommand
             {
                 Filename = "nonExisting.jpg",
                 GroupId = groupUser.GroupId.ToString(),
