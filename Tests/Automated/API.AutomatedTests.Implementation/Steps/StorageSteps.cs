@@ -1,10 +1,12 @@
-﻿using API.AutomatedTests.Implementation.Common.Interfaces;
+﻿using System.Diagnostics.CodeAnalysis;
+using API.AutomatedTests.Implementation.Common.Interfaces;
 using BoDi;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 
 namespace API.AutomatedTests.Implementation.Steps;
 
+[ExcludeFromCodeCoverage]
 [Binding]
 public class StorageSteps
 {

@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using API.AutomatedTests.Implementation.Common.Interfaces;
 using API.AutomatedTests.Implementation.Common.Options;
 
 namespace API.AutomatedTests.Infrastructure.CommandRunner;
 
+[ExcludeFromCodeCoverage]
 public class LocalCommandRunner : ICommandRunner
 {
     private readonly LocalRunnerOptions _options;

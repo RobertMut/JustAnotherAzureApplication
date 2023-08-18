@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using API.AutomatedTests.Implementation.Common.Constants;
 using API.AutomatedTests.Implementation.Common.Interfaces;
 using BoDi;
@@ -7,6 +8,7 @@ using TechTalk.SpecFlow;
 namespace API.AutomatedTests.Steps;
 
 [Binding]
+[ExcludeFromCodeCoverage]
 public static class AfterTestRunSteps
 {
     [AfterTestRun(Order = 0)]

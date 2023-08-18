@@ -16,6 +16,7 @@ using Application.UnitTests.Common.Mocking;
 using Domain.Entities;
 using Domain.Enums.Image;
 using Moq;
+using Newtonsoft.Json;
 
 namespace Application.UnitTests.UserShares.Queries.GetSharesByUser;
 
@@ -74,28 +75,24 @@ public class GetSharesByUserQueryTests
         Assert.DoesNotThrowAsync(async () =>
         {
             var responseFromHandler = await handler.Handle(query, CancellationToken.None);
-            var expected = new UserFilesListVm
+            var expected = new UserSharesListVm
             {
-                Files = new List<FileDto>()
+                Shares = new List<UserSharesDto>()
                 {
                     new()
                     {
-                        Filename = null,
-                        IsOwned = true,
-                        Permission = Permissions.write,
-                        OriginalName = "test1.jpg"
+                        Filename = "test1.jpg",
+                        Permissions = Permissions.write.ToString(),
                     },
                     new()
                     {
-                        Filename = null,
-                        IsOwned = true,
-                        Permission = Permissions.readwrite,
-                        OriginalName = "test2.jpg"
+                        Filename = "test2.jpg",
+                        Permissions = Permissions.read.ToString(),
                     }
                 }
             };
             
-            Assert.AreEqual(responseFromHandler, expected);
+            Assert.AreEqual(JsonConvert.SerializeObject(responseFromHandler), JsonConvert.SerializeObject(expected));
         });
     }
 }

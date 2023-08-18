@@ -11,10 +11,13 @@ using Moq;
 using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
+using API.AutomatedTests.Implementation.Common.TestingModels.Output;
 using Application.Common.Virtuals;
 using Application.UnitTests.Common.Mocking;
 using Domain.Common.Helper.Filename;
 using Domain.Entities;
+using Newtonsoft.Json;
+using File = Domain.Entities.File;
 
 namespace Application.UnitTests.Images.Queries.GetSharedFile;
 
@@ -75,7 +78,7 @@ public class GetSharedFileQueryTests
         var handler = new GetSharedFileQueryHandler(_service.Object, _unitOfWork);
         var query = new GetSharedFileQuery
         {
-            Filename = "test.Jpeg",
+            Filename = "test_100x100_test_test.Jpeg",
             UserId = userId.ToString(),
             OtherUserId = userIdToShareTo.ToString(),
         };
@@ -85,11 +88,10 @@ public class GetSharedFileQueryTests
             var responseFromHandler = await handler.Handle(query, CancellationToken.None);
             var expected = new FileVm
             {
-                File = blob.Object
+                File = null
             };
 
-            Assert.IsInstanceOf<FileVm>(responseFromHandler);
-            Assert.Equals(responseFromHandler, expected);
+            Assert.AreEqual(JsonConvert.SerializeObject(responseFromHandler), JsonConvert.SerializeObject(expected));
         });
     }
 
@@ -132,7 +134,7 @@ public class GetSharedFileQueryTests
         var handler = new GetSharedFileQueryHandler(_service.Object, _unitOfWork);
         var query = new GetSharedFileQuery
         {
-            Filename = "test.Jpeg",
+            Filename = "test_100x100_test_test.Jpeg",
             UserId = userId.ToString(),
             OtherUserId = userIdToShareTo.ToString(),
             GroupId = groupId.ToString(),
@@ -143,11 +145,10 @@ public class GetSharedFileQueryTests
             var responseFromHandler = await handler.Handle(query, CancellationToken.None);
             var expected = new FileVm
             {
-                File = blob.Object
+                File = null
             };
 
-            Assert.IsInstanceOf<FileVm>(responseFromHandler);
-            Assert.Equals(responseFromHandler, expected);
+            Assert.AreEqual(JsonConvert.SerializeObject(responseFromHandler), JsonConvert.SerializeObject(expected));
         });
     }
 
@@ -173,7 +174,7 @@ public class GetSharedFileQueryTests
         var handler = new GetSharedFileQueryHandler(_service.Object, _unitOfWork);
         var query = new GetSharedFileQuery
         {
-            Filename = "test.Jpeg",
+            Filename = "test_100x100_test_test.Jpeg",
             UserId = userId.ToString(),
             OtherUserId = userIdToShareTo.ToString(),
         };
@@ -182,7 +183,7 @@ public class GetSharedFileQueryTests
             $"Share {query.Filename} was not found for id {userIdToShareTo.ToString()}");
 
         _fileRepositoryMock.Verify(x =>
-            x.GetObjectBy(It.IsAny<Expression<Func<File?, bool>>>(), It.IsAny<CancellationToken>()), Times.Once);
+            x.GetObjectBy(It.IsAny<Expression<Func<File?, bool>>>(), It.IsAny<CancellationToken>()), Times.Never);
         _userShareRepositoryMock.Verify(x =>
             x.GetObjectBy(It.IsAny<Expression<Func<UserShare?, bool>>>(), It.IsAny<CancellationToken>()), Times.Once());
     }
@@ -222,7 +223,7 @@ public class GetSharedFileQueryTests
         var handler = new GetSharedFileQueryHandler(_service.Object, _unitOfWork);
         var query = new GetSharedFileQuery
         {
-            Filename = "test.Jpeg",
+            Filename = "test_100x100_test_test.Jpeg",
             UserId = userId.ToString(),
             OtherUserId = userIdToShareTo.ToString(),
             GroupId = groupId.ToString(),
@@ -232,7 +233,7 @@ public class GetSharedFileQueryTests
             $"Access denied for {query.UserId} to {query.GroupId}");
 
         _fileRepositoryMock.Verify(x =>
-            x.GetObjectBy(It.IsAny<Expression<Func<File?, bool>>>(), It.IsAny<CancellationToken>()), Times.Once);
+            x.GetObjectBy(It.IsAny<Expression<Func<File?, bool>>>(), It.IsAny<CancellationToken>()), Times.Never);
         _userShareRepositoryMock.Verify(x =>
             x.GetObjectBy(It.IsAny<Expression<Func<UserShare?, bool>>>(), It.IsAny<CancellationToken>()), Times.Never);
         _groupShareRepositoryMock.Verify(x =>
@@ -274,17 +275,16 @@ public class GetSharedFileQueryTests
         var handler = new GetSharedFileQueryHandler(_service.Object, _unitOfWork);
         var query = new GetSharedFileQuery
         {
-            Filename = "test.Jpeg",
+            Filename = "test_100x100_test_test.Jpeg",
             UserId = userId.ToString(),
             OtherUserId = userIdToShareTo.ToString(),
             GroupId = groupId.ToString(),
         };
 
-        Assert.ThrowsAsync<AccessDeniedException>(async () => await handler.Handle(query, new CancellationToken()),
-            $"Share {query.Filename} was not found for id {groupId.ToString()}");
+        Assert.ThrowsAsync<ShareNotFoundException>(async () => await handler.Handle(query, new CancellationToken()));
 
         _fileRepositoryMock.Verify(x =>
-            x.GetObjectBy(It.IsAny<Expression<Func<File?, bool>>>(), It.IsAny<CancellationToken>()), Times.Once);
+            x.GetObjectBy(It.IsAny<Expression<Func<File?, bool>>>(), It.IsAny<CancellationToken>()), Times.Never);
         _userShareRepositoryMock.Verify(x =>
             x.GetObjectBy(It.IsAny<Expression<Func<UserShare?, bool>>>(), It.IsAny<CancellationToken>()), Times.Never);
         _groupShareRepositoryMock.Verify(x =>

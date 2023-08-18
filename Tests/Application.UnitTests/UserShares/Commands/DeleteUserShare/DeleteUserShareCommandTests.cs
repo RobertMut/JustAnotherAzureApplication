@@ -74,7 +74,7 @@ public class DeleteUserShareCommandTests
                 x.GetObjectBy(It.IsAny<Expression<Func<UserShare?, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(default(UserShare));
         
-        Assert.Throws<ShareNotFoundException>(async () => await _commandHandler.Handle(new DeleteUserShareCommand
+        Assert.ThrowsAsync<ShareNotFoundException>(async () => await _commandHandler.Handle(new DeleteUserShareCommand
         {
             Filename = "test.Jpeg",
             UserId = secondUserId.ToString()

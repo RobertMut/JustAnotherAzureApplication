@@ -1,9 +1,11 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Headers;
 using API.AutomatedTests.Implementation.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
 
 namespace API.AutomatedTests.Infrastructure.API;
 
+[ExcludeFromCodeCoverage]
 public class HttpCallerService : IHttpCallerService
 {
     private readonly string baseAddress;

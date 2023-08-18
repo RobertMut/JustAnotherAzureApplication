@@ -9,12 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using File = Domain.Entities.File;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Domain.Common.Helper.Filename;
 using Application.Common.Interfaces.Image;
 using System.Linq.Expressions;
 
 namespace Functions.UnitTests;
-
+[ExcludeFromCodeCoverage]
 public class MiniaturizeUnitTests
 {
     private Miniaturize _miniaturize;

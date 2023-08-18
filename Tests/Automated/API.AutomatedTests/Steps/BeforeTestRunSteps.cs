@@ -1,4 +1,5 @@
-﻿using API.AutomatedTests.Implementation;
+﻿using System.Diagnostics.CodeAnalysis;
+using API.AutomatedTests.Implementation;
 using API.AutomatedTests.Implementation.Common.Constants;
 using API.AutomatedTests.Implementation.Common.Interfaces;
 using API.AutomatedTests.Infrastructure;
@@ -10,6 +11,7 @@ using TechTalk.SpecFlow.Infrastructure;
 
 namespace API.AutomatedTests.Steps;
 
+[ExcludeFromCodeCoverage]
 [Binding]
 public static class BeforeTestRunSteps
 {

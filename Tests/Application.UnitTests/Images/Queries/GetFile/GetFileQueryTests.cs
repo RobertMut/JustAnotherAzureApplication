@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Application.Common.Virtuals;
 using Application.UnitTests.Common.Mocking;
 using Domain.Common.Helper.Filename;
+using Newtonsoft.Json;
 using File = Domain.Entities.File;
 
 namespace Application.UnitTests.Images.Queries.GetFile;
@@ -70,10 +71,10 @@ public class GetFileQueryTests
             var responseFromHandler = await handler.Handle(query, CancellationToken.None);
             var expected = new FileVm
             {
-                File = blob.Object
+                File = null
             };
             
-            Assert.True(responseFromHandler == expected);
+            Assert.AreEqual(JsonConvert.SerializeObject(responseFromHandler), JsonConvert.SerializeObject(expected));
         });
     }
 
@@ -99,6 +100,6 @@ public class GetFileQueryTests
             ExpectedMiniatureSize = "100x100"
         };
 
-        Assert.Throws<FileNotFoundException>(async () => await handler.Handle(query, CancellationToken.None));
+        Assert.ThrowsAsync<FileNotFoundException>(async () => await handler.Handle(query, CancellationToken.None));
     }
 }

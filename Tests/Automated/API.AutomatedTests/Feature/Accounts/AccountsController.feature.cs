@@ -116,8 +116,8 @@ this.ScenarioInitialize(scenarioInfo);
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Check login exceptions")]
-        [NUnit.Framework.TestCaseAttribute("Default", "", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
-        [NUnit.Framework.TestCaseAttribute("", "12345", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
+        [NUnit.Framework.TestCaseAttribute("Default", "", "Password must be not null or empty", "BadRequest", null)]
+        [NUnit.Framework.TestCaseAttribute("", "12345", "Username must be not null or empty", "BadRequest", null)]
         [NUnit.Framework.TestCaseAttribute("NonExisting", "WrongPass", "User NonExisting not found!", "NotFound", null)]
         public void CheckLoginExceptions(string username, string password, string errorMessage, string expectedCode, string[] exampleTags)
         {
@@ -210,8 +210,8 @@ this.ScenarioInitialize(scenarioInfo);
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Check register exceptions")]
-        [NUnit.Framework.TestCaseAttribute("t_testdata_user", "", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
-        [NUnit.Framework.TestCaseAttribute("", "12345", "\"title\":\"One or more validation errors occurred.\"", "BadRequest", null)]
+        [NUnit.Framework.TestCaseAttribute("t_testdata_user", "", "Password must be not null or empty", "BadRequest", null)]
+        [NUnit.Framework.TestCaseAttribute("", "12345", "Username must be not null or empty", "BadRequest", null)]
         public void CheckRegisterExceptions(string username, string password, string errorMessage, string expectedCode, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

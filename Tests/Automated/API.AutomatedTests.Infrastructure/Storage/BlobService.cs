@@ -1,12 +1,12 @@
-﻿using API.AutomatedTests.Implementation.Common.Interfaces;
+﻿using System.Diagnostics.CodeAnalysis;
+using API.AutomatedTests.Implementation.Common.Interfaces;
 using API.AutomatedTests.Implementation.Common.Options;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
 
 namespace API.AutomatedTests.Infrastructure.Storage;
 
+[ExcludeFromCodeCoverage]
 public class BlobService : IBlobService
 {
     private readonly BlobContainerClient blobContainerClient;

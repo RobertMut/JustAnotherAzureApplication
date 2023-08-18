@@ -1,10 +1,12 @@
-﻿using API.AutomatedTests.Implementation.Common.Constants;
+﻿using System.Diagnostics.CodeAnalysis;
+using API.AutomatedTests.Implementation.Common.Constants;
 using API.AutomatedTests.Implementation.Common.Interfaces;
 using BoDi;
 using TechTalk.SpecFlow;
 
 namespace API.AutomatedTests.Implementation.Steps.Helpers;
 
+[ExcludeFromCodeCoverage]
 public class DatabaseHelper
 {
     public static async Task ClearDatabase(IObjectContainer objectContainer, ISqlCommandExecutor sqlCommandExecutor)

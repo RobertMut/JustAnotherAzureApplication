@@ -9,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -16,7 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Functions.UnitTests;
-
+[ExcludeFromCodeCoverage]
 public class ImageEditorUnitTests
 {
     private Mock<IBlobManagerService> _blobManagerService;

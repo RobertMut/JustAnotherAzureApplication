@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
@@ -14,6 +15,7 @@ using TechTalk.SpecFlow.Assist;
 
 namespace API.AutomatedTests.Implementation.Steps;
 
+[ExcludeFromCodeCoverage]
 [Binding]
 public class ApiSteps
 {

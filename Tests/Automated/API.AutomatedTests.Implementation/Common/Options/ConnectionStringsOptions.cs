@@ -1,5 +1,8 @@
-﻿namespace API.AutomatedTests.Implementation.Common.Options;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace API.AutomatedTests.Implementation.Common.Options;
+
+[ExcludeFromCodeCoverage]
 public class ConnectionStringsOptions
 {
     public const string ConnectionStrings = "ConnectionStrings";

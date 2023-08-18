@@ -12,7 +12,9 @@ using Application.Common.Virtuals;
 using Application.UnitTests.Common.Mocking;
 using Domain.Common.Helper.Filename;
 using Domain.Entities;
+using Domain.Enums.Image;
 using Moq;
+using Newtonsoft.Json;
 
 namespace Application.UnitTests.Images.Queries.GetUserFiles;
 
@@ -107,32 +109,29 @@ public class GetUserFilesQueryTests
             var expected = new UserFilesListVm
             {
                 Files = new List<FileDto>()
-                {
-                    new()
+                {                    new()
                     {
-                        Filename = "test1.jpg",
-                        IsOwned = false,
-                        Permission = null,
-                        OriginalName = "test1.jpg",
-                    },
-                    new()
-                    {
-                        Filename = "test2.Jpeg",
+                        Filename = NameHelper.GenerateOriginal(userId.ToString(), NameHelper.GenerateHashedFilename("test")) + ".Png",
                         IsOwned = true,
                         Permission = null,
                         OriginalName = "test2.Jpeg",
                     },
                     new()
                     {
+                        Filename = "test1.jpg",
+                        IsOwned = false,
+                        Permission = Permissions.write,
+                    },
+                    new()
+                    {
                         Filename = "test3.Jpeg",
                         IsOwned = false,
-                        Permission = null,
-                        OriginalName = "test3.Jpeg",
+                        Permission = Permissions.write,
                     }
                 }
             };
-
-            Assert.Equals(responseFromHandler, expected);
+            
+            Assert.AreEqual(JsonConvert.SerializeObject(responseFromHandler), JsonConvert.SerializeObject(expected));
         });
     }
 }

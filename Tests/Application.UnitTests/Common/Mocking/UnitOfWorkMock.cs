@@ -1,11 +1,12 @@
-﻿using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using Application.Common.Interfaces.Database;
 using Application.Common.Virtuals;
 using Domain.Entities;
 using Moq;
 
 namespace Application.UnitTests.Common.Mocking;
-
+[ExcludeFromCodeCoverage]
 public class UnitOfWorkMock
 {
     private readonly IUnitOfWork _unitOfWork;

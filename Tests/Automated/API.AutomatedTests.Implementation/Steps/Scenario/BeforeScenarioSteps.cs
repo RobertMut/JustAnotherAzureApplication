@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using API.AutomatedTests.Implementation.Common.Constants;
 using API.AutomatedTests.Implementation.Common.Interfaces;
 using API.AutomatedTests.Implementation.Common.TestingModels;
@@ -12,6 +13,7 @@ using File = System.IO.File;
 
 namespace API.AutomatedTests.Implementation.Steps.Scenario;
 
+[ExcludeFromCodeCoverage]
 [Binding]
 public class BeforeScenarioSteps
 {

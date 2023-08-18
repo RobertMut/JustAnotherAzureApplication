@@ -55,7 +55,11 @@ public class AddUserShareCommandTests
                 OriginalName = "test.Jpeg",
                 UserId = userId
             });
-        _userShareRepositoryMock.Setup(x => x.InsertAsync(It.IsAny<UserShare?>(), It.IsAny<CancellationToken>()));
+        _userShareRepositoryMock.Setup(x => x.InsertAsync(It.IsAny<UserShare?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new UserShare
+            {
+                UserId = userId
+            });
         
         Assert.DoesNotThrowAsync(async () =>
         {

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Blob;
+﻿using System.Diagnostics.CodeAnalysis;
+using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Application.Common.Interfaces.Identity;
 using Domain.Entities;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure;
-
+[ExcludeFromCodeCoverage]
 public static class DependencyInjection
 {
     /// <summary>
@@ -72,40 +73,34 @@ public static class DependencyInjection
                     Description = "Everyone"
                 });
 
-                db.Permissions.AddRange(new[]
+                db.Permissions.AddRange(new Permission
                 {
-                    new Permission
-                    {
-                        Id = 0,
-                        Name = "Full",
-                        Delete = true,
-                        Read = true,
-                        Write = true
-                    },
-                    new Permission
-                    {
-                        Id = 1,
-                        Name = "ReadWrite",
-                        Delete = false,
-                        Read = true,
-                        Write = true
-                    },
-                    new Permission
-                    {
-                        Id = 2,
-                        Name = "Read",
-                        Delete = false,
-                        Read = true,
-                        Write = false,
-                    },
-                    new Permission
-                    {
-                        Id = 3,
-                        Name = "Write",
-                        Delete = false,
-                        Read = false,
-                        Write = true
-                    }
+                    Id = 0,
+                    Name = "Full",
+                    Delete = true,
+                    Read = true,
+                    Write = true
+                }, new Permission
+                {
+                    Id = 1,
+                    Name = "ReadWrite",
+                    Delete = false,
+                    Read = true,
+                    Write = true
+                }, new Permission
+                {
+                    Id = 2,
+                    Name = "Read",
+                    Delete = false,
+                    Read = true,
+                    Write = false,
+                }, new Permission
+                {
+                    Id = 3,
+                    Name = "Write",
+                    Delete = false,
+                    Read = false,
+                    Write = true
                 });
 
                 await db.SaveChangesAsync();

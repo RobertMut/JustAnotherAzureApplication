@@ -1,10 +1,12 @@
 ﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using API.AutomatedTests.Implementation.Common.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
 namespace API.AutomatedTests.Infrastructure.Database;
 
+[ExcludeFromCodeCoverage]
 public class SqlCommandExecutor : ISqlCommandExecutor
 {
     private readonly SqlConnection connection;

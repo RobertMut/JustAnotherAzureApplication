@@ -1,4 +1,5 @@
-﻿using System.Net.Security;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Security;
 using System.Runtime.CompilerServices;
 using System.Text;
 using API.AutomatedTests.Implementation.Common.Interfaces;
@@ -12,6 +13,7 @@ using File = System.IO.File;
 
 namespace API.AutomatedTests.Implementation.Steps.BeforeFeature;
 
+[ExcludeFromCodeCoverage]
 [Binding]
 public class BeforeFeatureSteps
 {

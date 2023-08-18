@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using API.AutomatedTests.Implementation.Common.Constants;
 using API.AutomatedTests.Implementation.Common.Interfaces;
 using BoDi;
@@ -7,6 +8,7 @@ using TechTalk.SpecFlow;
 
 namespace API.AutomatedTests.Implementation.Steps;
 
+[ExcludeFromCodeCoverage]
 [Binding]
 public class DatabaseSteps
 {
