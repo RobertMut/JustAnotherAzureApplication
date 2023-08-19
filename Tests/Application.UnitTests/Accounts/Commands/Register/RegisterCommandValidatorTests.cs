@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Application.Account.Commands.Login;
 using Application.Account.Commands.Register;
 using Application.Common.Models.Account;
 using NUnit.Framework;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text.Json;
 using Application.Common.Interfaces.Database;
 using Application.Common.Mappings;
 using Application.GroupShares.Queries.GetSharesByGroup;

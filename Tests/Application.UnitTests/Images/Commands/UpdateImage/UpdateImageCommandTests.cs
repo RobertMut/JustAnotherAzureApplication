@@ -1,7 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces.Blob;
 using Application.Images.Commands.UpdateImage;
-using MediatR;
 using Moq;
 using NUnit.Framework;
 using System;

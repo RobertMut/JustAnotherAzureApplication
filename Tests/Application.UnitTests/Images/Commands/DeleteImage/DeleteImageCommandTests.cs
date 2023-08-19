@@ -1,5 +1,4 @@
 ﻿using System;
-using Application.Common.Exceptions;
 using Application.Common.Interfaces.Blob;
 using Application.Common.Interfaces.Database;
 using Application.Images.Commands.DeleteImage;

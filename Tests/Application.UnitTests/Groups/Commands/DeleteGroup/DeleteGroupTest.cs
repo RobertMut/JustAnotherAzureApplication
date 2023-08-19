@@ -7,7 +7,6 @@ using Application.Common.Exceptions;
 using Application.Common.Interfaces.Database;
 using Application.Common.Virtuals;
 using Application.Groups.Commands.DeleteGroup;
-using Application.Groups.Commands.UpdateGroup;
 using Application.UnitTests.Common.Mocking;
 using Domain.Entities;
 using FluentValidation;

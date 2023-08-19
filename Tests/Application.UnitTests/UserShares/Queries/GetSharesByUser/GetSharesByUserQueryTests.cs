@@ -11,7 +11,6 @@ using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Common.Virtuals;
-using Application.Images.Queries.GetUserFiles;
 using Application.UnitTests.Common.Mocking;
 using Domain.Entities;
 using Domain.Enums.Image;

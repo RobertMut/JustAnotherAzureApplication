@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Application.Account.Commands.Login;
 using Application.Common.Models.Account;
-using FluentValidation;
 using NUnit.Framework;
 
 namespace Application.UnitTests.Accounts.Commands.Login;

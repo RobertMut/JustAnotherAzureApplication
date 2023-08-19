@@ -11,7 +11,6 @@ using Moq;
 using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
-using API.AutomatedTests.Implementation.Common.TestingModels.Output;
 using Application.Common.Virtuals;
 using Application.UnitTests.Common.Mocking;
 using Domain.Common.Helper.Filename;
