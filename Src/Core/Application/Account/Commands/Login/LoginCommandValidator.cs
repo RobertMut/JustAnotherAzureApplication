@@ -9,6 +9,5 @@ public class LoginCommandValidator : AbstractValidator<LoginCommand>
     {
         RuleFor(x => x.LoginModel.UserName).NotNull().NotEmpty().WithMessage("Username must be not null or empty");
         RuleFor(x => x.LoginModel.Password).NotNull().NotEmpty().WithMessage("Password must be not null or empty");
-        RuleFor(x => x.LoginModel).NotNull().WithMessage("Login form must be not null");
     }
 }

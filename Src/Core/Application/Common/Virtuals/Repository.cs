@@ -19,7 +19,7 @@ public class Repository<TEntity> where TEntity : class
     /// Deletes from repository
     /// </summary>
     /// <param name="entity">Entity</param>
-    public async virtual Task Delete(TEntity? entity)
+    public virtual async Task Delete(TEntity? entity)
     {
         if (_dbContext.Entry(entity).State == EntityState.Detached)
         {
@@ -36,7 +36,7 @@ public class Repository<TEntity> where TEntity : class
     /// <param name="includeProperties">Properties</param>
     /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>IEnumerable of entities</returns>
-    public async virtual Task<IEnumerable<TEntity?>> GetAsync(Expression<Func<TEntity?, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>> orderBy = null, string includeProperties = "", CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity?>> GetAsync(Expression<Func<TEntity?, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>> orderBy = null, string includeProperties = "", CancellationToken cancellationToken = default)
     {
         IQueryable<TEntity?> query = _dbSet;
 
@@ -64,7 +64,7 @@ public class Repository<TEntity> where TEntity : class
     /// <param name="filter">Expression filter</param>
     /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>Entity</returns>
-    public async virtual Task<TEntity?> GetObjectBy(Expression<Func<TEntity?, bool>> filter, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity?> GetObjectBy(Expression<Func<TEntity?, bool>> filter, CancellationToken cancellationToken = default)
     {
         return await _dbSet.AsQueryable().Where(filter).FirstOrDefaultAsync(cancellationToken);
 
@@ -76,7 +76,7 @@ public class Repository<TEntity> where TEntity : class
     /// <param name="entity">Entity to be insterted</param>
     /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>Entity</returns>
-    public async virtual Task<TEntity?> InsertAsync(TEntity? entity, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity?> InsertAsync(TEntity? entity, CancellationToken cancellationToken = default)
     {
         var entry = await _dbSet.AddAsync(entity, cancellationToken);
             
@@ -87,7 +87,7 @@ public class Repository<TEntity> where TEntity : class
     /// Updates entity
     /// </summary>
     /// <param name="entity">Entity to be updated</param>
-    public async virtual Task UpdateAsync(TEntity? entity)
+    public virtual async Task UpdateAsync(TEntity? entity)
     {
         _dbSet.Attach(entity);
         _dbContext.Entry(entity).State = EntityState.Modified;

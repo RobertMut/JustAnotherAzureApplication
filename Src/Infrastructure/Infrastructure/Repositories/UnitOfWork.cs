@@ -165,7 +165,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     /// Save changes
     /// </summary>
     /// <param name="cancellationToken"></param>
-    public async virtual Task Save(CancellationToken cancellationToken = default)
+    public virtual async Task Save(CancellationToken cancellationToken = default)
     {
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
