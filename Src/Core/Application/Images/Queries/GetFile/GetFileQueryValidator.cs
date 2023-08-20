@@ -8,9 +8,6 @@ public class GetFileQueryValidator : AbstractValidator<GetFileQuery>
 {
     public GetFileQueryValidator()
     {
-        RuleFor(x => x.Filename).NotEmpty().NotNull().WithMessage("Filename must me not null or empty.");
-        RuleFor(x => x.ExpectedMiniatureSize).NotEmpty().NotNull()
-            .WithMessage("Miniature size must be not null or empty");
         RuleFor(x => x.Filename).Must(f => Regex.IsMatch(f, @"[^\\]*\.(\w+)$")).WithMessage("Invalid filename");
         RuleFor(x => x.ExpectedExtension).Must(r => Regex.IsMatch($".{r}", @"^\.[a-zA-Z0-9]+$"))
             .WithMessage("Invalid extension format");
