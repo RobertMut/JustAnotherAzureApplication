@@ -32,5 +32,4 @@
     <ProjectReference Include="..\..\Core\Application\Application.csproj" />
     <ProjectReference Include="..\..\Core\Common\Common.csproj" />
   </ItemGroup>
-
 </Project>

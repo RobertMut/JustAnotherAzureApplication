@@ -41,10 +41,8 @@ public class BlobLeaseManager : IBlobLeaseManager
             {
                 return string.Empty;
             }
-            else
-            {
-                throw storageException;
-            }
+
+            throw;
         }
     }
 
