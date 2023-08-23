@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -8,6 +9,7 @@ using System.Text;
 
 namespace Infrastructure.Authentication;
 
+[ExcludeFromCodeCoverage]
 public static class Authentication
 {
     /// <summary>

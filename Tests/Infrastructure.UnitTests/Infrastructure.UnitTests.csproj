@@ -21,4 +21,8 @@
       <ProjectReference Include="..\..\Src\Infrastructure\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Persistence" />
+    </ItemGroup>
+
 </Project>

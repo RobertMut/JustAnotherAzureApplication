@@ -34,6 +34,7 @@ public class AzuriteInitializer
         if (process.Start())
         {
             _process = process;
+            Thread.Sleep(1000);
         }
 
         _uploadedFiles = new List<string>();
@@ -58,6 +59,7 @@ public class AzuriteInitializer
         }
         
         var blobClient = _blobContainerClient.GetBlobClient(name);
+        
         await blobClient.DeleteIfExistsAsync();
         await blobClient.UploadAsync(new MemoryStream(new byte[] { 255, 255, 255 }));
         

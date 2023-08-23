@@ -31,8 +31,8 @@ public class TokenGenerator : ITokenGenerator
         var authSigningKey = new SymmetricSecurityKey(secret);
         var authClaims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
         var token = new JwtSecurityToken(
             issuer: _jwt.GetValue<string>("ValidIssuer"),
