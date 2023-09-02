@@ -71,13 +71,21 @@ public class AzuriteInitializer
 
     public async Task Kill()
     {
-        if (_process != null)
+        _process.Kill();
+        await KillAzuriteNodeProcess();
+    }
+
+    private async Task KillAzuriteNodeProcess()
+    {
+        Process powershell = new Process();
+        powershell.StartInfo = new ProcessStartInfo
         {
-            _process.Kill();
-        }
-        else
-        {
-            throw new NullReferenceException("Process not started");
-        }
+            Arguments = "Get-Process -Id (Get-NetTCPConnection -LocalPort 10000).OwningProcess | foreach {$_.Kill()}",
+            CreateNoWindow = true,
+            FileName = "powershell.exe",
+            WindowStyle = ProcessWindowStyle.Hidden,
+        };
+
+        powershell.Start();
     }
 }

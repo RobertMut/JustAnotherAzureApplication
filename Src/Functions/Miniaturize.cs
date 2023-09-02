@@ -8,9 +8,11 @@ using System.IO;
 using File = Domain.Entities.File;
 using Application.Common.Interfaces.Image;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Functions;
 
+[ExcludeFromCodeCoverage]
 public class Miniaturize
 {
     private readonly IUnitOfWork _unitOfWork;

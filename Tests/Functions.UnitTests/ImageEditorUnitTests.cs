@@ -15,6 +15,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Functions.UnitTests.Common.Mocking;
 
 namespace Functions.UnitTests;
 [ExcludeFromCodeCoverage]

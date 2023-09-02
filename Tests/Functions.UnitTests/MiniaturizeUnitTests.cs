@@ -2,7 +2,6 @@ using Application.Common.Interfaces.Database;
 using Azure.Storage.Blobs.Specialized;
 using Functions.UnitTests.Common;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
 using NUnit.Framework;
 using System.IO;
 using System.Threading;
@@ -13,49 +12,51 @@ using System.Diagnostics.CodeAnalysis;
 using Domain.Common.Helper.Filename;
 using Application.Common.Interfaces.Image;
 using System.Linq.Expressions;
+using Application.Common.Virtuals;
+using Functions.UnitTests.Common.Mocking;
+using Moq;
 
 namespace Functions.UnitTests;
 [ExcludeFromCodeCoverage]
 public class MiniaturizeUnitTests
 {
     private Miniaturize _miniaturize;
-    private Mock<IUnitOfWork> _unitOfWork;
+    private IUnitOfWork _unitOfWork;
     private Mock<IImageEditor> _imageEditor;
-    private Guid _userId;
-    private string _originalFile;
-    private string _miniatureFile;
+    private IJAAADbContext _dbContext;
+    private Mock<Repository<File>> _fileRepositoryMock;
 
     [SetUp]
     public void Setup()
     {
-        _userId = Guid.NewGuid();
-        _originalFile = NameHelper.GenerateOriginal(_userId.ToString(), "file.png");
-        _miniatureFile = NameHelper.GenerateMiniature(_userId.ToString(), "30x30", "file.Jpeg");
-        _unitOfWork = new Mock<IUnitOfWork>();
+        _dbContext = Mock.Of<IJAAADbContext>();
+        _fileRepositoryMock = new Mock<Repository<File>>(_dbContext);
+        _unitOfWork = new UnitOfWorkMock(_fileRepositoryMock).GetMockedUnitOfWork();
         _imageEditor = new Mock<IImageEditor>();
-
-        _imageEditor.Setup(x => x.Resize(It.IsAny<BlobBaseClient>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_miniatureFile);
-        _unitOfWork.Setup(x => x.FileRepository.GetObjectBy(It.IsAny<Expression<Func<File, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync((Expression<Func<File, bool>> predicate) =>
-        {
-            return new File
-            {
-                Filename = _originalFile,
-                UserId = _userId
-            };
-        });
-        _unitOfWork.Setup(x => x.FileRepository.InsertAsync(It.IsAny<File>(), It.IsAny<CancellationToken>()));
-
-        _miniaturize = new Miniaturize(_unitOfWork.Object, _imageEditor.Object);
+        _miniaturize = new Miniaturize(_unitOfWork, _imageEditor.Object);
     }
 
     [Test]
     public async Task Miniaturize()
     {
+        var userId = Guid.NewGuid();
+        var originalFile = NameHelper.GenerateOriginal(userId.ToString(), "file.png");
+        var miniatureFile = NameHelper.GenerateMiniature(userId.ToString(), "30x30", "file.Jpeg");
+        _imageEditor.Setup(x => x.Resize(It.IsAny<BlobBaseClient>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(miniatureFile);
+
+        _fileRepositoryMock.Setup(x => x.GetObjectBy(It.IsAny<Expression<Func<File?, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new File
+        {
+            Filename = originalFile,
+            UserId = userId
+        });
+        _fileRepositoryMock.Setup(x => x.InsertAsync(It.IsAny<File>(), It.IsAny<CancellationToken>()));
+        
         var baseClient = new MockBlobBaseClient(10000, "image/Png", null);
 
         Assert.DoesNotThrowAsync(async () =>
         {
-            await _miniaturize.Run(new MemoryStream(), baseClient, _originalFile, NullLogger.Instance);
+            await _miniaturize.Run(new MemoryStream(), baseClient, originalFile, NullLogger.Instance);
         });
     }
 }

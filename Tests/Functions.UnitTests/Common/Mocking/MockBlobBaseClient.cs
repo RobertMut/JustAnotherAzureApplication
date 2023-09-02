@@ -1,12 +1,14 @@
-﻿using Azure;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using Azure;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
-namespace Functions.UnitTests.Common;
+namespace Functions.UnitTests.Common.Mocking;
 
+[ExcludeFromCodeCoverage]
 public class MockBlobBaseClient : BlobBaseClient
 {
     private readonly long _fileLenght;

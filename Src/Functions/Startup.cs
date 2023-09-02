@@ -10,11 +10,13 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 [assembly: FunctionsStartup(typeof(Functions.Startup))]
 
 namespace Functions;
 
+[ExcludeFromCodeCoverage]
 public class Startup : FunctionsStartup
 {
     public const string Storage = "AzureWebJobsStorage";

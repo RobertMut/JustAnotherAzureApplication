@@ -1,8 +1,6 @@
 ﻿using Application.Common.Interfaces.Database;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using File = Domain.Entities.File;
 
 namespace Infrastructure.Persistence;
@@ -41,28 +39,6 @@ public class JAAADbContext : DbContext, IJAAADbContext
     /// Group users junction dbset
     /// </summary>
     public DbSet<GroupUser> GroupUsers { get; set; }
-        
-    public override DatabaseFacade Database => base.Database;
-        
-    public override ValueTask DisposeAsync()
-    {
-        return base.DisposeAsync();
-    }
-
-    public override EntityEntry<TEntity> Entry<TEntity>(TEntity entity)
-    {
-        return base.Entry(entity);
-    }
-
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        return base.SaveChangesAsync(cancellationToken);
-    }
-
-    public override DbSet<TEntity> Set<TEntity>()
-    {
-        return base.Set<TEntity>();
-    }
 
     /// <summary>
     /// Sets entities relations and behaviour
