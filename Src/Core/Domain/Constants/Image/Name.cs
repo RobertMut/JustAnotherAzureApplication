@@ -1,7 +1,6 @@
-﻿namespace Domain.Constants.Image
+﻿namespace Domain.Constants.Image;
+
+public static class Name
 {
-    public static class Name
-    {
-        public const string Delimiter = "_"; 
-    }
+    public const string Delimiter = "_"; 
 }

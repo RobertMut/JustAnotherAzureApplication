@@ -1,10 +1,29 @@
-﻿namespace Domain.Entities
+﻿namespace Domain.Entities;
+
+public class User
 {
-    public class User
-    {
-        public Guid Id { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public ICollection<File> Files { get; set; }
-    }
+    /// <summary>
+    /// User guid
+    /// </summary>
+    public Guid Id { get; set; }
+    /// <summary>
+    /// Username
+    /// </summary>
+    public string Username { get; set; }
+    /// <summary>
+    /// Password
+    /// </summary>
+    public string Password { get; set; }
+    /// <summary>
+    /// Files
+    /// </summary>
+    public ICollection<File> Files { get; set; }
+    /// <summary>
+    /// Group Users
+    /// </summary>
+    public ICollection<GroupUser> GroupUsers { get; set; }
+    /// <summary>
+    /// User Shares
+    /// </summary>
+    public ICollection<UserShare> UserShares { get; set; }
 }

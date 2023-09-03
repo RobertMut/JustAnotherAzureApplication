@@ -1,5 +1,7 @@
 ﻿using Application.Common.Helpers.Exception;
 using Application.Common.Interfaces.Blob;
+using Application.Common.Interfaces.Database;
+using Common;
 using Domain.Common.Helper.Enum;
 using Domain.Common.Helper.Filename;
 using Domain.Constants.Image;
@@ -7,57 +9,98 @@ using Domain.Enums.Image;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
+using File = Domain.Entities.File;
 
-namespace Application.Images.Commands.AddImage
+namespace Application.Images.Commands.AddImage;
+
+public class AddImageCommand : IRequest<string>
 {
-    public class AddImageCommand : IRequest
+    /// <summary>
+    /// File
+    /// </summary>
+    public IFormFile File { get; set; }
+    /// <summary>
+    /// Filename
+    /// </summary>
+    public string Filename { get; set; }
+    /// <summary>
+    /// File content type
+    /// </summary>
+    public string ContentType { get; set; }
+    /// <summary>
+    /// File target type
+    /// </summary>
+    public Format? TargetType { get; set; }
+    /// <summary>
+    /// Target width
+    /// </summary>
+    public int Width { get; set; }
+    /// <summary>
+    /// Target height
+    /// </summary>
+    public int Height { get; set; }
+    /// <summary>
+    /// UserId
+    /// </summary>
+    public string UserId { get; set; }
+
+    public class AddImageCommandHandler : IRequestHandler<AddImageCommand, string>
     {
-        public IFormFile File { get; set; }
-        public string Filename { get; set; }
-        public string ContentType { get; set; }
-        public Format? TargetType { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public string UserId { get; set; }
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IBlobManagerService _service;
 
-        public class AddImageCommandHandler : IRequestHandler<AddImageCommand>
+        public AddImageCommandHandler(IBlobManagerService service, IUnitOfWork unitOfWork)
         {
-            private readonly IBlobManagerService _service;
+            _unitOfWork = unitOfWork;
+            _service = service;
+        }
 
-            public AddImageCommandHandler(IBlobManagerService service)
+        /// <summary>
+        /// Adds image with metadata
+        /// </summary>
+        /// <param name="request">
+        /// <see cref="AddImageCommand"/>
+        /// </param>
+        /// <param name="cancellationToken">
+        /// <see cref="CancellationToken"/>
+        /// </param>
+        /// <returns>Image name</returns>
+        public async Task<string> Handle(AddImageCommand request, CancellationToken cancellationToken)
+        {
+
+            var metadata = new Dictionary<string, string>
             {
-                _service = service;
+                { Metadata.OriginalFile, request.Filename },
+                { Metadata.TargetType, !request.TargetType.HasValue ? request.ContentType : EnumHelper.GetDescriptionFromEnumValue(request.TargetType.Value) },
+                { Metadata.TargetWidth, request.Width.ToString() },
+                { Metadata.TargetHeight, request.Height.ToString() },
+            };
+
+            string originalFilenameMD5 = NameHelper.GenerateHashedFilename(request.Filename);
+            string filename = NameHelper.GenerateOriginal(request.UserId, originalFilenameMD5);
+
+            using (var stream = request.File.OpenReadStream())
+            {
+                var statusCode = await _service.AddAsync(stream, filename, request.ContentType, metadata, cancellationToken);
+
+                StatusCode.Check(HttpStatusCode.Created, statusCode, this);
             }
 
-            public async Task<Unit> Handle(AddImageCommand request, CancellationToken cancellationToken)
+            var fileEntry = await _unitOfWork.FileRepository.GetObjectBy(x => x.Filename == filename, cancellationToken: cancellationToken);
+            if (fileEntry == null)
             {
-
-                var metadata = new Dictionary<string, string>
+                await _unitOfWork.FileRepository.InsertAsync(new File
                 {
-                    { Metadata.OriginalFile, request.Filename },
-                    { Metadata.TargetType, !request.TargetType.HasValue ? request.ContentType : EnumHelper.GetDescriptionFromEnumValue(request.TargetType.Value) },
-                    { Metadata.TargetWidth, request.Width.ToString() },
-                    { Metadata.TargetHeight, request.Height.ToString() },
-                };
-                request.Filename = request.Filename.Replace(char.Parse(Name.Delimiter), '-');
-                var existingBlobs = await _service.GetBlobsInfoByName(Prefixes.OriginalImage, null, $"{request.Filename}", request.UserId, cancellationToken);
-
-                if (existingBlobs.Count() > 0)
-                {
-                    request.Filename = $"new-{request.Filename}";
-                }
-                
-                string filename = NameHelper.GenerateOriginal(request.UserId, request.Filename);
-
-                using (var stream = request.File.OpenReadStream())
-                {
-                    var statusCode = await _service.AddAsync(stream, filename, request.ContentType, metadata, cancellationToken);
-
-                    StatusCode.Check(HttpStatusCode.Created, statusCode, this);
-                }
-
-                return Unit.Value;
+                    Filename = filename,
+                    OriginalName = request.Filename,
+                    UserId = Guid.Parse(request.UserId)
+                }, cancellationToken: cancellationToken);
+                await _unitOfWork.Save(cancellationToken);
             }
+
+            return request.Filename;
         }
     }
 }

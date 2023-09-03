@@ -1,0 +1,10 @@
+{
+  "groups":[
+    {
+      "id":"03f53651-73e3-4038-5cf8-08db4506fbb4","name":"Everyone","description":"Everyone"
+    },
+    {
+      "id":"19f84187-eeaa-4893-91c3-8f93a54167df","name":"t_testdata_CustomName","description":"t_testdata_Description"
+    }
+  ]
+}

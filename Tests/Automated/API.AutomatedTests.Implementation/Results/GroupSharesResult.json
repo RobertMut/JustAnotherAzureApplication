@@ -1,0 +1,8 @@
+{
+  "shares": [
+    {
+      "filename": "t_testdata_groupShared1.jpg",
+      "permissions": "full"
+    }
+  ]
+}

@@ -5,6 +5,10 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+
+    <Configurations>Debug;Release;Test;Testing</Configurations>
+
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="MockQueryable.Moq" Version="6.0.1" />
     <PackageReference Include="Moq" Version="4.17.1" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
@@ -21,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Src\Core\Application\Application.csproj" />
     <ProjectReference Include="..\..\Src\Infrastructure\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Automated\API.AutomatedTests.Implementation\API.AutomatedTests.Implementation.csproj" />
   </ItemGroup>
 
 </Project>

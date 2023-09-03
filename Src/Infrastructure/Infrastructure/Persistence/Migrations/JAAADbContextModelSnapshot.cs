@@ -27,6 +27,10 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<string>("Filename")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("OriginalName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -34,7 +38,86 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Files");
+                    b.ToTable("Files", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Group", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("Groups", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.GroupShare", b =>
+                {
+                    b.Property<string>("Filename")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Filename", "PermissionId", "GroupId");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("GroupShares", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.GroupUser", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "GroupId");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("GroupUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Delete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Read")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Write")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -53,7 +136,27 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.UserShare", b =>
+                {
+                    b.Property<string>("Filename")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Filename", "PermissionId", "UserId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserShares", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.File", b =>
@@ -67,9 +170,107 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.GroupShare", b =>
+                {
+                    b.HasOne("Domain.Entities.File", "File")
+                        .WithMany("GroupShares")
+                        .HasForeignKey("Filename")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Group", "Group")
+                        .WithMany("GroupShares")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Permission", "Permission")
+                        .WithMany("GroupShares")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("File");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Permission");
+                });
+
+            modelBuilder.Entity("Domain.Entities.GroupUser", b =>
+                {
+                    b.HasOne("Domain.Entities.Group", "Group")
+                        .WithMany("GroupUsers")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("GroupUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.UserShare", b =>
+                {
+                    b.HasOne("Domain.Entities.File", "File")
+                        .WithMany("UserShares")
+                        .HasForeignKey("Filename")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Permission", "Permission")
+                        .WithMany("UserShares")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("UserShares")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("File");
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.File", b =>
+                {
+                    b.Navigation("GroupShares");
+
+                    b.Navigation("UserShares");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Group", b =>
+                {
+                    b.Navigation("GroupShares");
+
+                    b.Navigation("GroupUsers");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Permission", b =>
+                {
+                    b.Navigation("GroupShares");
+
+                    b.Navigation("UserShares");
+                });
+
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Navigation("Files");
+
+                    b.Navigation("GroupUsers");
+
+                    b.Navigation("UserShares");
                 });
 #pragma warning restore 612, 618
         }

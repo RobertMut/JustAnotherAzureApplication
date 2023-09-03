@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Persistence
+namespace Infrastructure.Persistence;
+
+public class JAAADbContextFactory : DesignTimeDbContextFactoryBase<JAAADbContext>
 {
-    public class JAAADbContextFactory : DesignTimeDbContextFactoryBase<JAAADbContext>
+    protected override JAAADbContext CreateNewInstance(DbContextOptions<JAAADbContext> options)
     {
-        protected override JAAADbContext CreateNewInstance(DbContextOptions<JAAADbContext> options)
-        {
-            return new JAAADbContext(options);
-        }
+        return new JAAADbContext(options);
     }
 }

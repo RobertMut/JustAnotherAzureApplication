@@ -6,45 +6,48 @@ using Domain.Common.Helper.Enum;
 using Domain.Common.Helper.Filename;
 using Domain.Constants.Image;
 using Domain.Enums.Image;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Functions.Services
+namespace Functions.Services;
+
+public class ImageEditor : IImageEditor
 {
-    public class ImageEditor : IImageEditor
+    private readonly IBlobManagerService _service;
+    private readonly ISupportedImageFormats _formats;
+
+    public ImageEditor(ISupportedImageFormats formats, IBlobManagerService service)
     {
-        private readonly IBlobManagerService _service;
-        private readonly ISupportedImageFormats _formats;
+        _formats = formats;
+        _service = service;
+    }
 
-        public ImageEditor(ISupportedImageFormats formats, IBlobManagerService service)
+    public async Task<string> Resize(BlobBaseClient blob, Stream stream, string filename, string userId)
+    {
+        var metadata = blob.GetProperties().Value.Metadata;
+        string targetType = metadata[Metadata.TargetType];
+        int width = int.Parse(metadata[Metadata.TargetWidth]);
+        int height = int.Parse(metadata[Metadata.TargetHeight]);
+        var format = _formats.FileFormat[EnumHelper.GetEnumValueFromDescription<Format>(targetType)];
+
+        using (var image = Image.FromStream(stream))
+        using (var memStream = new MemoryStream())
         {
-            _formats = formats;
-            _service = service;
-        }
+            var resizedImage = new Bitmap(image, width, height);
+            resizedImage.Save(memStream, format);
+            memStream.Position = 0;
+            var convertedFormatToString = new ImageFormatConverter().ConvertToString(format);
+            string miniatureName = NameHelper.GenerateMiniature(userId, $"{width}x{height}", $"{Path.GetFileNameWithoutExtension(filename)}.{convertedFormatToString}");
+            await _service.AddAsync(memStream, miniatureName,
+                $"{Prefixes.ImageFormat}{convertedFormatToString}", new Dictionary<string, string>()
+                {
+                    { Metadata.OriginalFile, filename }
+                }, new CancellationToken());
 
-        public async Task<string> Resize(BlobBaseClient blob, Stream stream, string filename, string userId)
-        {
-            var metadata = blob.GetProperties().Value.Metadata;
-            string targetType = metadata[Metadata.TargetType];
-            int width = int.Parse(metadata[Metadata.TargetWidth]);
-            int height = int.Parse(metadata[Metadata.TargetHeight]);
-            var format = _formats.FileFormat[EnumHelper.GetEnumValueFromDescription<Format>(targetType)];
-
-            using (var image = Image.FromStream(stream))
-            using (var memStream = new MemoryStream())
-            {
-                var resizedImage = new Bitmap(image, width, height);
-                resizedImage.Save(memStream, format);
-                memStream.Position = 0;
-                var convertedFormatToString = new ImageFormatConverter().ConvertToString(format);
-                string miniatureName = NameHelper.GenerateMiniature(userId, $"{width}x{height}", $"{Path.GetFileNameWithoutExtension(filename)}.{convertedFormatToString}");
-                await _service.AddAsync(memStream, miniatureName,
-                    $"{Prefixes.ImageFormat}{convertedFormatToString}", null, new CancellationToken());
-
-                return miniatureName;
-            }
+            return miniatureName;
         }
     }
 }
