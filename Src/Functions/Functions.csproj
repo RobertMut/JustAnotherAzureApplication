@@ -26,9 +26,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="local.settings.json" />
-    <Content Include="local.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
   </ItemGroup>
 </Project>
